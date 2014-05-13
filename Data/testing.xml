@@ -1,0 +1,39 @@
+<entity name="player">
+    <client:StaticDrawable>
+        <Layer>Characters</Layer>
+        <Symbol>@</Symbol>
+        <ForeColor>Yellow</ForeColor>
+    </client:StaticDrawable>
+    <server:PlayerControl />
+</entity>
+
+<entity name="dust">
+    <client:StaticDrawable>
+        <Layer>Debris</Layer>
+        <ForeColor>DarkGray</ForeColor>
+    </client:StaticDrawable>
+</entity>
+
+<entity name="dust_0" base="dust">
+    <client:StaticDrawable>
+        <Symbol>.</Symbol>
+    </client:StaticDrawable>
+</entity>
+
+<entity name="dust_1" base="dust">
+    <client:StaticDrawable>
+        <Symbol>,</Symbol>
+    </client:StaticDrawable>
+</entity>
+
+<entity name="dust_2" base="dust">
+    <client:StaticDrawable>
+        <Symbol>'</Symbol>
+    </client:StaticDrawable>
+</entity>
+
+<entity name="dust_3" base="dust">
+    <client:StaticDrawable>
+        <Symbol>`</Symbol>
+    </client:StaticDrawable>
+</entity>
