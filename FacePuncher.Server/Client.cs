@@ -50,39 +50,41 @@ namespace FacePuncher
 
         public void SendVisibleLevelState(Level level, ulong time)
         {
-            var stream = _socket.GetStream();
-            using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, true)) {
-                writer.Write((byte) PacketType.LevelState);
+            try {
+                var stream = _socket.GetStream();
+                using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, true)) {
+                    writer.Write((byte) PacketType.LevelState);
 
-                writer.Write(time);
-                writer.Write(Player.ID);
+                    writer.Write(time);
+                    writer.Write(Player.ID);
 
-                lock (level) {
-                    var visibleRooms = _visibility
-                        .Where(x => x.UpdateVisibility(Player.Position, MaxVisibilityRange, time))
-                        .ToArray();
+                    lock (level) {
+                        var visibleRooms = _visibility
+                            .Where(x => x.UpdateVisibility(Player.Position, MaxVisibilityRange, time))
+                            .ToArray();
 
-                    writer.Write(visibleRooms.Length);
-                    foreach (var vis in visibleRooms) {
-                        writer.Write(vis.Room.Rect);
+                        writer.Write(visibleRooms.Length);
+                        foreach (var vis in visibleRooms) {
+                            writer.Write(vis.Room.Rect);
 
-                        var visibleTiles = vis.GetVisible(time).ToArray();
+                            var visibleTiles = vis.GetVisible(time).ToArray();
 
-                        writer.Write(visibleTiles.Length);
-                        foreach (var tile in visibleTiles) {
-                            writer.Write(tile.RelativePosition);
-                            writer.Write((byte) tile.State);
+                            writer.Write(visibleTiles.Length);
+                            foreach (var tile in visibleTiles) {
+                                writer.Write(tile.RelativePosition);
+                                writer.Write((byte) tile.State);
 
-                            writer.Write((ushort) tile.EntityCount);
-                            foreach (var ent in tile) {
-                                SendEntity(writer, ent);
+                                writer.Write((ushort) tile.EntityCount);
+                                foreach (var ent in tile) {
+                                    SendEntity(writer, ent);
+                                }
                             }
                         }
                     }
-                }
 
-                writer.Flush();
-            }
+                    writer.Flush();
+                }
+            } catch { }
         }
 
         public ConsoleKey ReadInput(ConsoleKey[] validKeys)

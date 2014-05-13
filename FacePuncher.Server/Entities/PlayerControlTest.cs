@@ -21,8 +21,10 @@ namespace FacePuncher.Entities
             Client.SendVisibleLevelState(Level, time);
 
             var direc = Tools.MovementKeys[Client.ReadInput(Tools.MovementKeys.Keys.ToArray())];
-            
+
             Entity.Move(Tile.GetNeighbour(direc));
+
+            Client.SendVisibleLevelState(Level, time);
         }
     }
 }

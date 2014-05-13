@@ -99,6 +99,8 @@ namespace FacePuncher
 
             ConsoleKey key;
 
+            while (Console.KeyAvailable) Console.ReadKey(true);
+
             do {
                 key = Console.ReadKey(true).Key;
             } while (!validKeys.Contains(key));
