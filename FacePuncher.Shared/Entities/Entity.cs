@@ -54,13 +54,27 @@ namespace FacePuncher.Entities
 
         public static Entity Create()
         {
-            return new Entity();
+            return new Entity(_sNextID++);
         }
 
         public static Entity Create(String type)
         {
             BuilderInfo info = _sEntBuilders[type];
             Entity ent = (info.Base != null ? Create(info.Base) : Create());
+            ent.PushClassName(type);
+            info.Builder(ent);
+            return ent;
+        }
+
+        public static Entity Create(uint id)
+        {
+            return new Entity(id);
+        }
+
+        public static Entity Create(uint id, String type)
+        {
+            BuilderInfo info = _sEntBuilders[type];
+            Entity ent = (info.Base != null ? Create(id, info.Base) : Create(id));
             ent.PushClassName(type);
             info.Builder(ent);
             return ent;
@@ -108,9 +122,9 @@ namespace FacePuncher.Entities
             get { return Tile.Position; }
         }
 
-        private Entity()
+        private Entity(uint id)
         {
-            ID = _sNextID++;
+            ID = id;
 
             _classNames = new Stack<string>();
 

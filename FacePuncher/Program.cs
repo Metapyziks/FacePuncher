@@ -17,9 +17,24 @@ namespace FacePuncher
         private static List<RoomVisibility> _visibility;
 
         private static Level _level;
+        private static uint _playerID;
         private static Entity _player;
 
         private static ulong _time;
+
+        static Entity ReadEntity(BinaryReader reader)
+        {
+            uint id = reader.ReadUInt32();
+            string className = reader.ReadString();
+
+            var ent = Entity.Create(id, className);
+
+            if (id == _playerID) {
+                _player = ent;
+            }
+
+            return ent;
+        }
 
         static void ReadVisibleLevelState()
         {
@@ -27,7 +42,7 @@ namespace FacePuncher
             var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true);
 
             _time = reader.ReadUInt64();
-            var plyPos = reader.ReadPosition();
+            _playerID = reader.ReadUInt32();
 
             lock (_level) {
                 int roomCount = reader.ReadInt32();
@@ -47,19 +62,27 @@ namespace FacePuncher
                     for (int j = 0; j < tileCount; ++j) {
                         var pos = reader.ReadPosition();
                         var state = (TileState) reader.ReadByte();
+                        var tile = vis.Room[pos];
 
                         vis.Reveal(pos, _time);
-                        vis.Room[pos].State = state;
+                        tile.State = state;
+
+                        // Temporary, should cache entities
+                        var ents = tile.ToArray();
+                        foreach (var ent in ents) {
+                            ent.Remove();
+                        }
+
+                        var entCount = reader.ReadUInt16();
+                        for (int k = 0; k < entCount; ++k) {
+                            var ent = ReadEntity(reader);
+                            ent.Place(tile);
+                        }
                     }
                 }
             }
 
             reader.Close();
-
-            if (_player == null) {
-                _player = Entity.Create("player");
-                _player.Place(_level[plyPos]);
-            }
         }
 
         static void Main(string[] args)

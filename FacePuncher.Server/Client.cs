@@ -40,13 +40,19 @@ namespace FacePuncher
             Player.Place(tiles[(int) (DateTime.Now.Ticks % tiles.Length)]);
         }
 
+        private void SendEntity(BinaryWriter writer, Entity ent)
+        {
+            writer.Write(ent.ID);
+            writer.Write(ent.ClassName);
+        }
+
         public void SendVisibleLevelState(Level level, ulong time)
         {
             var stream = _socket.GetStream();
             var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, true);
 
             writer.Write(time);
-            writer.Write(Player.Position);
+            writer.Write(Player.ID);
 
             lock (level) {
                 var visibleRooms = _visibility
@@ -63,6 +69,11 @@ namespace FacePuncher
                     foreach (var tile in visibleTiles) {
                         writer.Write(tile.RelativePosition);
                         writer.Write((byte) tile.State);
+
+                        writer.Write((ushort) tile.EntityCount);
+                        foreach (var ent in tile) {
+                            SendEntity(writer, ent);
+                        }
                     }
                 }
             }
