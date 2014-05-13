@@ -42,6 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Display.cs" />
+    <Compile Include="Entities\Drawable.cs" />
+    <Compile Include="Entities\StaticDrawable.cs" />
     <Compile Include="Graphics\Rendering.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

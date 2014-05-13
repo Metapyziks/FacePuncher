@@ -38,6 +38,8 @@ namespace FacePuncher.Geometry
 
         public TileState State { get; set; }
 
+        public IEnumerable<Entity> Entities { get { return _entities; } }
+
         public Tile(Room room, Position relPos)
         {
             Room = room;
@@ -50,6 +52,22 @@ namespace FacePuncher.Geometry
 
         public Tile(Room room, int relX, int relY)
             : this(room, new Position(relX, relY)) { }
+
+        internal void AddEntity(Entity ent)
+        {
+            if (ent.Tile != this) return;
+            if (_entities.Contains(ent)) return;
+
+            _entities.Add(ent);
+        }
+
+        internal void RemoveEntity(Entity ent)
+        {
+            if (ent.Tile == this) return;
+            if (!_entities.Contains(ent)) return;
+
+            _entities.Remove(ent);
+        }
 
         public IEnumerator<Entity> GetEnumerator()
         {

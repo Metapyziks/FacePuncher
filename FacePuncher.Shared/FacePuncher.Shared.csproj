@@ -7,7 +7,7 @@
     <ProjectGuid>{4E2355AF-F51D-4913-9EB0-845EB7759BB3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FacePuncher.Shared</RootNamespace>
+    <RootNamespace>FacePuncher</RootNamespace>
     <AssemblyName>FacePuncher.Shared</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\Component.cs" />
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Geometry\Level.cs" />
     <Compile Include="Geometry\Position.cs" />
