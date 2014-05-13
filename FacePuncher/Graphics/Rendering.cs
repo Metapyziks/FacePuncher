@@ -34,8 +34,8 @@ namespace FacePuncher.Graphics
             var subRect = vis.Room.Rect.Intersection(rect);
             var roomPos = vis.Room.Rect.TopLeft;
 
-            rect = subRect - roomPos;
             screenPos += roomPos - rect.TopLeft;
+            rect = subRect - roomPos;
 
             foreach (var tile in vis.GetVisible(attribs.Time)) {
                 if (rect.Intersects(tile.RelativePosition)) {
