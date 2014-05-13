@@ -90,7 +90,7 @@ namespace FacePuncher.Entities
 
         public readonly uint ID;
 
-        public String ClassName { get { return _classNames.LastOrDefault(); } }
+        public String ClassName { get { return _classNames.FirstOrDefault(); } }
 
         public Entity Parent { get; private set; }
 

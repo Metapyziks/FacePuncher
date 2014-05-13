@@ -122,15 +122,30 @@ namespace FacePuncher
                     .SetForeColor(ConsoleColor.Yellow);
             });
 
-            var dustSymbols = new[] {
-                ',', '.', '`', '\''
-            };
-
             Entity.Register("dust", ent => {
                 ent.AddComponent<StaticDrawable>()
                     .SetLayer(DrawableLayer.Debris)
-                    .SetSymbol(dustSymbols[1])
                     .SetForeColor(ConsoleColor.DarkGray);
+            });
+
+            Entity.Register("dust_0", "dust", ent => {
+                ent.GetComponent<StaticDrawable>()
+                    .SetSymbol('.');
+            });
+
+            Entity.Register("dust_1", "dust", ent => {
+                ent.GetComponent<StaticDrawable>()
+                    .SetSymbol(',');
+            });
+
+            Entity.Register("dust_2", "dust", ent => {
+                ent.GetComponent<StaticDrawable>()
+                    .SetSymbol('\'');
+            });
+
+            Entity.Register("dust_3", "dust", ent => {
+                ent.GetComponent<StaticDrawable>()
+                    .SetSymbol('`');
             });
 
             _level = new Level();

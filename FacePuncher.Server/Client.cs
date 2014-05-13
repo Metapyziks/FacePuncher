@@ -26,7 +26,7 @@ namespace FacePuncher
                 .ToList();
 
             Player = Entity.Create("player");
-            Player.AddComponent<PlayerControl>()
+            Player.GetComponent<PlayerControl>()
                 .SetClient(this);
 
             var rooms = level

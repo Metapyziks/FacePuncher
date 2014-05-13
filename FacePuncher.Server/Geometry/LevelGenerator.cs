@@ -26,7 +26,7 @@ namespace FacePuncher.Geometry
 
                     foreach (var tile in room) {
                         if (tile.State == TileState.Floor && rand.NextDouble() < 0.125) {
-                            var dust = Entity.Create("dust");
+                            var dust = Entity.Create("dust_" + rand.Next(4));
                             dust.Place(tile);
                         }
                     }

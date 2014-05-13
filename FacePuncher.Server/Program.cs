@@ -44,8 +44,19 @@ namespace FacePuncher.Server
 
         static void Main(string[] args)
         {
-            Entity.Register("player", ent => { });
+            Entity.Register("player", ent => {
+                ent.AddComponent<PlayerControl>();
+            });
+
             Entity.Register("dust", ent => { });
+
+            Entity.Register("dust_0", "dust", ent => { });
+
+            Entity.Register("dust_1", "dust", ent => { });
+
+            Entity.Register("dust_2", "dust", ent => { });
+
+            Entity.Register("dust_3", "dust", ent => { });
 
             var gen = new LevelGenerator();
             _level = gen.Generate(0);

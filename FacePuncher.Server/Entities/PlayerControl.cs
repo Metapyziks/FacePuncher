@@ -30,10 +30,11 @@ namespace FacePuncher.Entities
 
                 Client.SendVisibleLevelState(Level, time);
 
-                var direc = Tools.MovementKeys[Client.ReadInput(
-                    Tools.MovementKeys.Keys.Where(x =>
-                        Entity.CanMove(Tile.GetNeighbour(Tools.MovementKeys[x])))
-                    .ToArray())];
+                var validKeys = Tools.MovementKeys.Keys
+                    .Where(x => Entity.CanMove(Tile.GetNeighbour(Tools.MovementKeys[x])))
+                    .ToArray();
+
+                var direc = Tools.MovementKeys[Client.ReadInput(validKeys)];
 
                 Entity.Move(Tile.GetNeighbour(direc));
 
