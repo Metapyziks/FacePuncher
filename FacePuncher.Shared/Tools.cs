@@ -1,11 +1,28 @@
-﻿using System.IO;
-
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using FacePuncher.Geometry;
 
 namespace FacePuncher
 {
     public static class Tools
     {
+        public static readonly Dictionary<ConsoleKey, Direction> MovementKeys
+            = new Dictionary<ConsoleKey, Direction> {
+            { ConsoleKey.NumPad7, Direction.NorthWest },
+            { ConsoleKey.NumPad8, Direction.North },
+            { ConsoleKey.UpArrow, Direction.North },
+            { ConsoleKey.NumPad9, Direction.NorthEast },
+            { ConsoleKey.NumPad4, Direction.West },
+            { ConsoleKey.LeftArrow, Direction.West },
+            { ConsoleKey.NumPad6, Direction.East },
+            { ConsoleKey.RightArrow, Direction.East },
+            { ConsoleKey.NumPad1, Direction.SouthWest },
+            { ConsoleKey.NumPad2, Direction.South },
+            { ConsoleKey.DownArrow, Direction.South },
+            { ConsoleKey.NumPad3, Direction.SouthEast }
+        };
+
         public static int Clamp(this int val, int min, int max)
         {
             return val < min ? min : val > max ? max : val;

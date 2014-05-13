@@ -26,12 +26,15 @@ namespace FacePuncher
         {
             uint id = reader.ReadUInt32();
             string className = reader.ReadString();
+            
+            if (id == _playerID && _player != null) {
+                return _player;
+            }
 
+            // Temporary, should cache entities
             var ent = Entity.Create(id, className);
 
-            if (id == _playerID) {
-                _player = ent;
-            }
+            if (id == _playerID) _player = ent;
 
             return ent;
         }
@@ -39,50 +42,71 @@ namespace FacePuncher
         static void ReadVisibleLevelState()
         {
             var stream = _socket.GetStream();
-            var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true);
+            using (var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true)) {
+                _time = reader.ReadUInt64();
+                _playerID = reader.ReadUInt32();
 
-            _time = reader.ReadUInt64();
-            _playerID = reader.ReadUInt32();
+                lock (_level) {
+                    int roomCount = reader.ReadInt32();
+                    for (int i = 0; i < roomCount; ++i) {
+                        var rect = reader.ReadRectangle();
 
-            lock (_level) {
-                int roomCount = reader.ReadInt32();
-                for (int i = 0; i < roomCount; ++i) {
-                    var rect = reader.ReadRectangle();
+                        var vis = _visibility.FirstOrDefault(x => x.Room.Rect == rect);
 
-                    var vis = _visibility.FirstOrDefault(x => x.Room.Rect == rect);
+                        if (vis == null) {
+                            var room = _level.CreateRoom(rect);
+                            vis = new RoomVisibility(room);
 
-                    if (vis == null) {
-                        var room = _level.CreateRoom(rect);
-                        vis = new RoomVisibility(room);
-
-                        _visibility.Add(vis);
-                    }
-
-                    int tileCount = reader.ReadInt32();
-                    for (int j = 0; j < tileCount; ++j) {
-                        var pos = reader.ReadPosition();
-                        var state = (TileState) reader.ReadByte();
-                        var tile = vis.Room[pos];
-
-                        vis.Reveal(pos, _time);
-                        tile.State = state;
-
-                        // Temporary, should cache entities
-                        var ents = tile.ToArray();
-                        foreach (var ent in ents) {
-                            ent.Remove();
+                            _visibility.Add(vis);
                         }
 
-                        var entCount = reader.ReadUInt16();
-                        for (int k = 0; k < entCount; ++k) {
-                            var ent = ReadEntity(reader);
-                            ent.Place(tile);
+                        int tileCount = reader.ReadInt32();
+                        for (int j = 0; j < tileCount; ++j) {
+                            var pos = reader.ReadPosition();
+                            var state = (TileState) reader.ReadByte();
+                            var tile = vis.Room[pos];
+
+                            vis.Reveal(pos, _time);
+                            tile.State = state;
+
+                            var ents = tile.ToArray();
+                            foreach (var ent in ents) {
+                                ent.Remove();
+                            }
+
+                            var entCount = reader.ReadUInt16();
+                            for (int k = 0; k < entCount; ++k) {
+                                var ent = ReadEntity(reader);
+                                ent.Place(tile);
+                            }
                         }
                     }
                 }
             }
+        }
 
-            reader.Close();
+        static void SendInput()
+        {
+            ConsoleKey[] validKeys;
+
+            var stream = _socket.GetStream();
+            using (var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true)) {
+                validKeys = new ConsoleKey[reader.ReadUInt16()];
+                for (int i = 0; i < validKeys.Length; ++i) {
+                    validKeys[i] = (ConsoleKey) reader.ReadUInt16();
+                }
+            }
+
+            ConsoleKey key;
+
+            do {
+                key = Console.ReadKey(true).Key;
+            } while (!validKeys.Contains(key));
+
+            using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, true)) {
+                writer.Write((ushort) key);
+                writer.Flush();
+            }
         }
 
         static void Main(string[] args)
@@ -135,9 +159,19 @@ namespace FacePuncher
                 Display.Refresh();
             }, null, 0, 125);
 
-            ReadVisibleLevelState();
-            
-            Console.ReadKey(true);
+            var stream = _socket.GetStream();
+            while (true) {
+                var packetType = (PacketType) stream.ReadByte();
+
+                switch (packetType) {
+                    case PacketType.LevelState:
+                        ReadVisibleLevelState(); break;
+                    case PacketType.InputRequest:
+                        SendInput(); break;
+                    default:
+                        throw new Exception("Unexpected packet type");
+                }
+            }
         }
     }
 }

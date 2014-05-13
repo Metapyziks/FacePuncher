@@ -34,7 +34,6 @@ namespace FacePuncher.Server
                     var client = new Client(socket, _level);
                     Console.WriteLine("New client connected from {0}.", socket.Client.RemoteEndPoint);
                     _clients.Add(client);
-                    client.SendVisibleLevelState(_level, _time);
                 }
             }
 
@@ -57,15 +56,17 @@ namespace FacePuncher.Server
             _listenThread = new Thread(ListenerLoop);
             _listenThread.Start();
 
-            while (false) {
+            while (true) {
+                foreach (var client in _clients) {
+                    client.SendVisibleLevelState(_level, _time);
+                }
+
                 if (_clients.Count > 0) {
                     _level.Think(_time++);
                 } else {
                     Thread.Sleep(100);
                 }
             }
-
-            Console.ReadKey();
 
             _listener.Stop();
         }

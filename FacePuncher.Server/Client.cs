@@ -26,6 +26,8 @@ namespace FacePuncher
                 .ToList();
 
             Player = Entity.Create("player");
+            Player.AddComponent<PlayerControl>()
+                .SetClient(this);
 
             var rooms = level
                 .Where(x => x.Any(y => y.State == TileState.Floor))
@@ -49,37 +51,58 @@ namespace FacePuncher
         public void SendVisibleLevelState(Level level, ulong time)
         {
             var stream = _socket.GetStream();
-            var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, true);
+            using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, true)) {
+                writer.Write((byte) PacketType.LevelState);
 
-            writer.Write(time);
-            writer.Write(Player.ID);
+                writer.Write(time);
+                writer.Write(Player.ID);
 
-            lock (level) {
-                var visibleRooms = _visibility
-                    .Where(x => x.UpdateVisibility(Player.Position, MaxVisibilityRange, time))
-                    .ToArray();
+                lock (level) {
+                    var visibleRooms = _visibility
+                        .Where(x => x.UpdateVisibility(Player.Position, MaxVisibilityRange, time))
+                        .ToArray();
 
-                writer.Write(visibleRooms.Length);
-                foreach (var vis in visibleRooms) {
-                    writer.Write(vis.Room.Rect);
+                    writer.Write(visibleRooms.Length);
+                    foreach (var vis in visibleRooms) {
+                        writer.Write(vis.Room.Rect);
 
-                    var visibleTiles = vis.GetVisible(time).ToArray();
+                        var visibleTiles = vis.GetVisible(time).ToArray();
 
-                    writer.Write(visibleTiles.Length);
-                    foreach (var tile in visibleTiles) {
-                        writer.Write(tile.RelativePosition);
-                        writer.Write((byte) tile.State);
+                        writer.Write(visibleTiles.Length);
+                        foreach (var tile in visibleTiles) {
+                            writer.Write(tile.RelativePosition);
+                            writer.Write((byte) tile.State);
 
-                        writer.Write((ushort) tile.EntityCount);
-                        foreach (var ent in tile) {
-                            SendEntity(writer, ent);
+                            writer.Write((ushort) tile.EntityCount);
+                            foreach (var ent in tile) {
+                                SendEntity(writer, ent);
+                            }
                         }
                     }
                 }
+
+                writer.Flush();
+            }
+        }
+
+        public ConsoleKey ReadInput(ConsoleKey[] validKeys)
+        {
+            var stream = _socket.GetStream();
+
+            using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, true)) {
+                writer.Write((byte) PacketType.InputRequest);
+                writer.Write((ushort) validKeys.Length);
+
+                foreach (var key in validKeys) {
+                    writer.Write((ushort) key);
+                }
+
+                writer.Flush();
             }
 
-            writer.Flush();
-            writer.Close();
+            using (var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true)) {
+                return (ConsoleKey) reader.ReadUInt16();
+            }
         }
     }
 }

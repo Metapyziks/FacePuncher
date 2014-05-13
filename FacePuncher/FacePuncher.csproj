@@ -43,7 +43,6 @@
   <ItemGroup>
     <Compile Include="Display.cs" />
     <Compile Include="Entities\Drawable.cs" />
-    <Compile Include="Entities\PlayerControlTest.cs" />
     <Compile Include="Entities\StaticDrawable.cs" />
     <Compile Include="Graphics\Rendering.cs" />
     <Compile Include="Program.cs" />
