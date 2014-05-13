@@ -20,6 +20,13 @@ namespace FacePuncher.Graphics
     {
         public const int EntityFlashPeriod = 8;
 
+        static readonly char[] _sWallTiles = new[] {
+            '\u006f', '\u006f', '\u006f', '\u00c9',
+            '\u006f', '\u00cd', '\u00bb', '\u00cb',
+            '\u006f', '\u00c8', '\u00ba', '\u00cc',
+            '\u00bc', '\u00ca', '\u00b9', '\u00ce'
+        };
+
         public static void Draw(this Level level, Rectangle rect, Position screenPos, DrawAttributes attribs)
         {
             foreach (var room in level.GetIntersectingRooms(rect)) {
@@ -42,7 +49,13 @@ namespace FacePuncher.Graphics
             if (tile.State == TileState.Void) return;
 
             if (tile.State == TileState.Wall) {
-                Display.SetCell(screenPos, '#');
+                int adj = 
+                    (tile.GetNeighbour(Direction.East).State  == TileState.Wall ? 1 : 0) |
+                    (tile.GetNeighbour(Direction.South).State == TileState.Wall ? 2 : 0) |
+                    (tile.GetNeighbour(Direction.West).State  == TileState.Wall ? 4 : 0) |
+                    (tile.GetNeighbour(Direction.North).State == TileState.Wall ? 8 : 0);
+
+                Display.SetCell(screenPos, _sWallTiles[adj]);
                 return;
             }
 
@@ -62,7 +75,7 @@ namespace FacePuncher.Graphics
                 return;
             }
 
-            Display.SetCell(screenPos, '.', ConsoleColor.DarkGray);
+            Display.SetCell(screenPos, '+', ConsoleColor.DarkGray);
         }
     }
 }
