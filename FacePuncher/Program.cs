@@ -9,7 +9,7 @@ namespace FacePuncher
             Display.Initialize(96, 32);
 
             for (int i = 0; i < Display.Width * Display.Height; ++i) {
-                Display.SetCell(i % Display.Width, i / Display.Width, (char) i, ConsoleColor.Black, ConsoleColor.Gray);
+                Display.SetCell(i % Display.Width, i / Display.Width, (char) i);
             }
 
             Display.Refresh();

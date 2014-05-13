@@ -8,7 +8,7 @@ namespace FacePuncher
 {
     static class Display
     {
-        [DllImport("Kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("Kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         static extern SafeFileHandle CreateFile(
             string fileName,
             [MarshalAs(UnmanagedType.U4)] uint fileAccess,
@@ -27,7 +27,7 @@ namespace FacePuncher
           ref SmallRect lpWriteRegion);
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct Coord
+        struct Coord
         {
             public short X;
             public short Y;
@@ -40,7 +40,7 @@ namespace FacePuncher
         };
 
         [StructLayout(LayoutKind.Explicit)]
-        public struct CharInfo
+        struct CharInfo
         {
             [FieldOffset(0)]
             public char Char;
@@ -49,7 +49,7 @@ namespace FacePuncher
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct SmallRect
+        struct SmallRect
         {
             public short Left;
             public short Top;
@@ -61,9 +61,26 @@ namespace FacePuncher
         static CharInfo[] _sBuffer;
         static SmallRect _sRect;
 
+        static short GetAttributes(ConsoleColor fore, ConsoleColor back)
+        {
+            return (short) ((int) fore | ((int) back << 4));
+        }
+
+        /// <summary>
+        /// Horizontal size of the display in characters.
+        /// </summary>
         public static int Width { get { return _sRect.Right; } }
+
+        /// <summary>
+        /// Vertical size of the display in characters.
+        /// </summary>
         public static int Height { get { return _sRect.Bottom; } }
 
+        /// <summary>
+        /// Prepare the display for rendering.
+        /// </summary>
+        /// <param name="width">Desired horizontal size of the display in characters.</param>
+        /// <param name="height">Desired vertical size of the display in characters.</param>
         public static void Initialize(int width, int height)
         {
             _sHandle = CreateFile("CONOUT$", 0x40000000, 2, IntPtr.Zero, FileMode.Open, 0, IntPtr.Zero);
@@ -81,21 +98,36 @@ namespace FacePuncher
             Clear();
         }
 
+        /// <summary>
+        /// Wipe the display buffer.
+        /// </summary>
         public static void Clear()
         {
             for (int i = 0; i < _sBuffer.Length; ++i) {
                 _sBuffer[i].Char = ' ';
+                _sBuffer[i].Attributes = GetAttributes(ConsoleColor.Black, ConsoleColor.Black);
             }
         }
 
-        public static void SetCell(int x, int y, char symbol, ConsoleColor back, ConsoleColor fore)
+        /// <summary>
+        /// Set a specific character in the display buffer.
+        /// </summary>
+        /// <param name="x">Horizontal position of the character.</param>
+        /// <param name="y">Vertical position of the character.</param>
+        /// <param name="symbol">Character to display.</param>
+        /// <param name="fore">Foreground color of the character.</param>
+        /// <param name="back">Background color of the character.</param>
+        public static void SetCell(int x, int y, char symbol, ConsoleColor fore = ConsoleColor.Gray, ConsoleColor back = ConsoleColor.Black)
         {
             if (x < 0 || y < 0 || x >= _sRect.Right || y >= _sRect.Bottom) return;
 
             _sBuffer[x + y * _sRect.Right].Char = symbol;
-            _sBuffer[x + y * _sRect.Right].Attributes = (short) ((int) fore | ((int) back << 4));
+            _sBuffer[x + y * _sRect.Right].Attributes = GetAttributes(fore, back);
         }
 
+        /// <summary>
+        /// Send the display buffer to the console window.
+        /// </summary>
         public static void Refresh()
         {
             var rect = _sRect;
