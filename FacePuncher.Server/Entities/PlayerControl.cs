@@ -7,7 +7,14 @@ namespace FacePuncher.Entities
 {
     class PlayerControl : Component
     {
+        private ulong _nextMovement;
+
         public Client Client { get; private set; }
+
+        public ulong MovementPeriod
+        {
+            get { return 100; }
+        }
 
         public PlayerControl SetClient(Client client)
         {
@@ -18,16 +25,20 @@ namespace FacePuncher.Entities
         {
             if (Client == null) return;
 
-            Client.SendVisibleLevelState(Level, time);
+            if (time >= _nextMovement) {
+                _nextMovement += MovementPeriod;
 
-            var direc = Tools.MovementKeys[Client.ReadInput(
-                Tools.MovementKeys.Keys.Where(x =>
-                    Entity.CanMove(Tile.GetNeighbour(Tools.MovementKeys[x])))
-                .ToArray())];
+                Client.SendVisibleLevelState(Level, time);
 
-            Entity.Move(Tile.GetNeighbour(direc));
+                var direc = Tools.MovementKeys[Client.ReadInput(
+                    Tools.MovementKeys.Keys.Where(x =>
+                        Entity.CanMove(Tile.GetNeighbour(Tools.MovementKeys[x])))
+                    .ToArray())];
 
-            Client.SendVisibleLevelState(Level, time + 1);
+                Entity.Move(Tile.GetNeighbour(direc));
+
+                Client.SendVisibleLevelState(Level, time + 1);
+            }
         }
     }
 }

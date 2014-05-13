@@ -122,8 +122,6 @@ namespace FacePuncher
                     .SetForeColor(ConsoleColor.Yellow);
             });
 
-            var rand = new Random();
-
             var dustSymbols = new[] {
                 ',', '.', '`', '\''
             };
@@ -131,7 +129,7 @@ namespace FacePuncher
             Entity.Register("dust", ent => {
                 ent.AddComponent<StaticDrawable>()
                     .SetLayer(DrawableLayer.Debris)
-                    .SetSymbol(dustSymbols[rand.Next(dustSymbols.Length)])
+                    .SetSymbol(dustSymbols[1])
                     .SetForeColor(ConsoleColor.DarkGray);
             });
 
