@@ -100,6 +100,11 @@ namespace FacePuncher.Geometry
             return new Rectangle(tl.X, tl.Y, diff.X, diff.Y);
         }
 
+        public Position NearestPosition(Position pos)
+        {
+            return new Position(pos.X.Clamp(Left, Right - 1), pos.Y.Clamp(Top, Bottom - 1));
+        }
+
         public IEnumerable<Position> Positions
         {
             get

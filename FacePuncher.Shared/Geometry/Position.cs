@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace FacePuncher.Geometry
 {
@@ -20,6 +21,11 @@ namespace FacePuncher.Geometry
         /// Vertical component of the position.
         /// </summary>
         public int Y;
+
+        public int LengthSquared
+        {
+            get { return X * X + Y * Y; }
+        }
 
         /// <summary>
         /// Constructs a position with the specified coordinates.
@@ -60,6 +66,34 @@ namespace FacePuncher.Geometry
         public static bool operator !=(Position a, Position b)
         {
             return a.X != b.X || a.Y != b.Y;
+        }
+        
+        public IEnumerable<Position> BresenhamLine(Position dest)
+        {
+            var a = this;
+            var b = dest;
+
+            int dx = Math.Abs(b.X - a.X);
+            int dy = Math.Abs(b.Y - a.Y);
+
+            int sx = a.X < b.X ? 1 : -1;
+            int sy = a.Y < b.Y ? 1 : -1;
+            int err = dx - dy;
+
+            for (; ; ) {
+                yield return a;
+                if (a.X == b.X && a.Y == b.Y) yield break;
+
+                int e2 = 2 * err;
+                if (e2 > -dy) {
+                    err = err - dy;
+                    a.X += sx;
+                }
+                if (e2 < dx) {
+                    err = err + dx;
+                    a.Y += sy;
+                }
+            }
         }
 
         public override bool Equals(object obj)
