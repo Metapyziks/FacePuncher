@@ -34,12 +34,22 @@ namespace FacePuncher.Geometry
 
         public Tile this[int relX, int relY]
         {
-            get { return _tiles[relX, relY]; }
+            get
+            {
+                return this[new Position(relX, relY)];
+            }
         }
 
         public Tile this[Position relPos]
         {
-            get { return _tiles[relPos.X, relPos.Y]; }
+            get
+            {
+                if (relPos.X < 0 || relPos.Y < 0 || relPos.X >= Width || relPos.Y >= Height) {
+                    return Level[Rect.TopLeft + relPos];
+                }
+
+                return _tiles[relPos.X, relPos.Y];
+            }
         }
 
         public void ClearGeometry(Rectangle rect)
@@ -60,6 +70,13 @@ namespace FacePuncher.Geometry
         {
             foreach (var pos in rect.Positions) {
                 this[pos].State = TileState.Floor;
+            }
+        }
+
+        public void Think(ulong time)
+        {
+            foreach (var tile in _tiles) {
+                tile.Think(time);
             }
         }
 

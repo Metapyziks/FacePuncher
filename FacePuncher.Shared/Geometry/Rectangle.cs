@@ -71,6 +71,12 @@ namespace FacePuncher.Geometry
             return new Rectangle(rect.TopLeft - offset, rect.BottomRight - offset);
         }
 
+        public bool Intersects(Position pos)
+        {
+            return this.Left <= pos.X && this.Top <= pos.Y
+                && this.Right > pos.X && this.Bottom > pos.Y;
+        }
+
         public bool Intersects(Rectangle rect)
         {
             return this.Right > rect.Left && this.Bottom > rect.Top

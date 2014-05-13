@@ -72,6 +72,7 @@ namespace FacePuncher.Entities
         private Dictionary<Type, Component> _compDict;
         private List<Entity> _children;
         private bool _compsChanged;
+        private ulong _lastThink;
 
         public readonly uint ID;
 
@@ -280,8 +281,23 @@ namespace FacePuncher.Entities
             }
         }
 
+        public void Move(Tile dest)
+        {
+            if (dest.State == TileState.Void || dest.State == TileState.Wall)
+                return;
+
+            var orig = Tile;
+            Tile = dest;
+
+            orig.RemoveEntity(this);
+            Tile.AddEntity(this);
+        }
+
         public void Think(ulong time)
         {
+            if (_lastThink >= time) return;
+            _lastThink = time;
+
             if (_compsChanged) UpdateComponents();
 
             for (int i = _comps.Count - 1; i >= 0; --i)

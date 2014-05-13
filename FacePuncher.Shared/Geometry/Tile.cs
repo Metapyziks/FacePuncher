@@ -39,7 +39,7 @@ namespace FacePuncher.Geometry
         public TileState State { get; set; }
 
         public IEnumerable<Entity> Entities { get { return _entities; } }
-
+        
         public Tile(Room room, Position relPos)
         {
             Room = room;
@@ -67,6 +67,23 @@ namespace FacePuncher.Geometry
             if (!_entities.Contains(ent)) return;
 
             _entities.Remove(ent);
+        }
+
+        public Tile GetNeighbour(Position offset)
+        {
+            return Room[RelativePosition + offset];
+        }
+
+        public Tile GetNeighbour(Direction dir)
+        {
+            return GetNeighbour(new Position(((int) dir) % 3 - 1, ((int) dir) / 3 - 1));
+        }
+
+        public void Think(ulong time)
+        {
+            for (int i = _entities.Count - 1; i >= 0; --i) {
+                _entities[i].Think(time);
+            }
         }
 
         public IEnumerator<Entity> GetEnumerator()

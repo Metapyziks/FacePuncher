@@ -11,6 +11,7 @@ namespace FacePuncher
         static void Main(string[] args)
         {
             Entity.Register("player", ent => {
+                ent.AddComponent<PlayerControlTest>();
                 ent.AddComponent<StaticDrawable>()
                     .SetSymbol('@')
                     .SetForeColor(ConsoleColor.Yellow);
@@ -25,11 +26,15 @@ namespace FacePuncher
             ply.Place(room[4, 4]);
 
             Display.Initialize(96, 32);
-            level.Draw(Display.Rect, Position.Zero, new DrawAttributes(0));
-            Display.Refresh();
+
+            for (ulong time = 0; ; ++time) {
+                level.Think(time);
+                level.Draw(Display.Rect, Position.Zero, new DrawAttributes(0));
+                
+                Display.Refresh();
+            }
 
             Console.ReadKey();
         }
     }
 }
-

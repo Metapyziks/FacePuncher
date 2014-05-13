@@ -32,6 +32,32 @@ namespace FacePuncher.Geometry
             return _rooms.Where(x => x.Rect.Intersects(rect));
         }
 
+        public Tile this[int x, int y]
+        {
+            get
+            {
+                return this[new Position(x, y)];
+            }
+        }
+
+        public Tile this[Position pos]
+        {
+            get
+            {
+                var room = _rooms.FirstOrDefault(x => x.Rect.Intersects(pos));
+                if (room == null) return null;
+
+                return room[pos - room.Rect.TopLeft];
+            }
+        }
+
+        public void Think(ulong time)
+        {
+            foreach (var room in _rooms) {
+                room.Think(time);
+            }
+        }
+
         public IEnumerator<Room> GetEnumerator()
         {
             return _rooms.GetEnumerator();

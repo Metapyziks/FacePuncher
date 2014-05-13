@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Entities\Component.cs" />
     <Compile Include="Entities\Entity.cs" />
+    <Compile Include="Geometry\Direction.cs" />
     <Compile Include="Geometry\Level.cs" />
     <Compile Include="Geometry\Position.cs" />
     <Compile Include="Geometry\Rectangle.cs" />
