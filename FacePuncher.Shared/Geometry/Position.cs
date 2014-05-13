@@ -1,4 +1,6 @@
-﻿namespace FacePuncher.Geometry
+﻿using System;
+
+namespace FacePuncher.Geometry
 {
     /// <summary>
     /// Structure representing a location in Cartesian coordinates.
@@ -48,6 +50,11 @@
         public static Position operator *(int mul, Position pos)
         {
             return new Position(pos.X * mul, pos.Y * mul);
+        }
+
+        public override string ToString()
+        {
+            return String.Format("({0} {1})", X, Y);
         }
     }
 }

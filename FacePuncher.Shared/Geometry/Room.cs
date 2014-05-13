@@ -4,6 +4,8 @@ namespace FacePuncher.Geometry
 {
     public class Room : IEnumerable<Tile>
     {
+        public Level Level { get; private set; }
+
         public Rectangle Rect { get; private set; }
 
         public int Left { get { return Rect.Left; } }
@@ -16,8 +18,9 @@ namespace FacePuncher.Geometry
         
         private Tile[,] _tiles;
 
-        public Room(Rectangle rect)
+        public Room(Level level, Rectangle rect)
         {
+            Level = level;
             Rect = rect;
 
             _tiles = new Tile[Width, Height];
@@ -32,6 +35,32 @@ namespace FacePuncher.Geometry
         public Tile this[int relX, int relY]
         {
             get { return _tiles[relX, relY]; }
+        }
+
+        public Tile this[Position relPos]
+        {
+            get { return _tiles[relPos.X, relPos.Y]; }
+        }
+
+        public void ClearGeometry(Rectangle rect)
+        {
+            foreach (var pos in rect.Positions) {
+                this[pos].State = TileState.Void;
+            }
+        }
+
+        public void AddGeometry(Rectangle rect)
+        {
+            foreach (var pos in rect.Positions) {
+                this[pos].State = TileState.Wall;
+            }
+        }
+
+        public void SubtractGeometry(Rectangle rect)
+        {
+            foreach (var pos in rect.Positions) {
+                this[pos].State = TileState.Floor;
+            }
         }
 
         public IEnumerator<Tile> GetEnumerator()

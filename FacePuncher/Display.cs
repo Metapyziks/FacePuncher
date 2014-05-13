@@ -66,15 +66,17 @@ namespace FacePuncher
             return (short) ((int) fore | ((int) back << 4));
         }
 
+        public static Rectangle Rect { get; private set; }
+
         /// <summary>
         /// Horizontal size of the display in characters.
         /// </summary>
-        public static int Width { get { return _sRect.Right; } }
+        public static int Width { get { return Rect.Width; } }
 
         /// <summary>
         /// Vertical size of the display in characters.
         /// </summary>
-        public static int Height { get { return _sRect.Bottom; } }
+        public static int Height { get { return Rect.Height; } }
 
         /// <summary>
         /// Prepare the display for rendering.
@@ -83,6 +85,8 @@ namespace FacePuncher
         /// <param name="height">Desired vertical size of the display in characters.</param>
         public static void Initialize(int width, int height)
         {
+            Rect = new Rectangle(0, 0, width, height);
+
             _sHandle = CreateFile("CONOUT$", 0x40000000, 2, IntPtr.Zero, FileMode.Open, 0, IntPtr.Zero);
 
             Console.SetWindowSize(Math.Min(width, Console.WindowWidth), Math.Min(height, Console.WindowHeight));

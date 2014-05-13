@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace FacePuncher.Geometry
 {
@@ -90,6 +92,25 @@ namespace FacePuncher.Geometry
             var diff = br - tl;
 
             return new Rectangle(tl.X, tl.Y, diff.X, diff.Y);
+        }
+
+        public IEnumerable<Position> Positions
+        {
+            get
+            {
+                var rect = this;
+
+                return
+                    Enumerable.Range(Top, Height)
+                    .SelectMany(y =>
+                        Enumerable.Range(rect.Left, rect.Width)
+                        .Select(x => new Position(x, y)));
+            }
+        }
+
+        public override string ToString()
+        {
+            return String.Format("({0} {1} {2} {3})", Left, Top, Width, Height);
         }
     }
 }

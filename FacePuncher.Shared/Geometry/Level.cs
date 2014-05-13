@@ -18,6 +18,15 @@ namespace FacePuncher.Geometry
             _rooms = new List<Room>();
         }
 
+        public Room CreateRoom(Rectangle rect)
+        {
+            var room = new Room(this, rect);
+
+            _rooms.Add(room);
+
+            return room;
+        }
+
         public IEnumerable<Room> GetIntersectingRooms(Rectangle rect)
         {
             return _rooms.Where(x => x.Rect.Intersects(rect));

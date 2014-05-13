@@ -1,8 +1,10 @@
-﻿using FacePuncher.Geometry;
+﻿using System;
+
+using FacePuncher.Geometry;
 
 namespace FacePuncher.Graphics
 {
-    static class Renderer
+    static class Rendering
     {
         public static void Draw(this Level level, Rectangle rect, Position screenPos)
         {
@@ -16,10 +18,8 @@ namespace FacePuncher.Graphics
 
         public static void Draw(this Room room, Rectangle rect, Position screenPos)
         {
-            for (int y = rect.Top; y < rect.Height; ++y) {
-                for (int x = rect.Left; x < rect.Width; ++x) {
-                    room[x, y].Draw(screenPos);
-                }
+            foreach (var pos in rect.Positions) {
+                room[pos].Draw(screenPos + pos);
             }
         }
 
@@ -28,7 +28,7 @@ namespace FacePuncher.Graphics
             switch (tile.State) {
                 case TileState.Void: return;
                 case TileState.Wall: Display.SetCell(screenPos, '#'); break;
-                case TileState.Floor: Display.SetCell(screenPos, '.'); break;
+                case TileState.Floor: Display.SetCell(screenPos, '.', ConsoleColor.DarkGray); break;
             }
         }
     }
