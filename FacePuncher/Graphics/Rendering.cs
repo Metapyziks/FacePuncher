@@ -31,6 +31,12 @@ namespace FacePuncher.Graphics
 
         public static void Draw(this RoomVisibility vis, Rectangle rect, Position screenPos, DrawAttributes attribs)
         {
+            var subRect = vis.Room.Rect.Intersection(rect);
+            var roomPos = vis.Room.Rect.TopLeft;
+
+            rect = subRect - roomPos;
+            screenPos += roomPos - rect.TopLeft;
+
             foreach (var tile in vis.GetVisible(attribs.Time)) {
                 if (rect.Intersects(tile.RelativePosition)) {
                     tile.Draw(screenPos + tile.RelativePosition, attribs);

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
@@ -25,9 +26,18 @@ namespace FacePuncher
                 .ToList();
 
             Player = Entity.Create("player");
-            Player.Place(level
-                .First(x => x.Any(y => y.State == TileState.Floor))
-                .First(x => x.State == TileState.Floor));
+
+            var rooms = level
+                .Where(x => x.Any(y => y.State == TileState.Floor))
+                .ToArray();
+
+            var room = rooms[(int) (DateTime.Now.Ticks % rooms.Length)];
+
+            var tiles = room
+                .Where(x => x.State == TileState.Floor)
+                .ToArray();
+
+            Player.Place(tiles[(int) (DateTime.Now.Ticks % tiles.Length)]);
         }
 
         public void SendVisibleLevelState(Level level, ulong time)
@@ -36,6 +46,7 @@ namespace FacePuncher
             var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, true);
 
             writer.Write(time);
+            writer.Write(Player.Position);
 
             lock (level) {
                 var visibleRooms = _visibility

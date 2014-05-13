@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
@@ -28,6 +27,7 @@ namespace FacePuncher
             var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true);
 
             _time = reader.ReadUInt64();
+            var plyPos = reader.ReadPosition();
 
             lock (_level) {
                 int roomCount = reader.ReadInt32();
@@ -55,6 +55,11 @@ namespace FacePuncher
             }
 
             reader.Close();
+
+            if (_player == null) {
+                _player = Entity.Create("player");
+                _player.Place(_level[plyPos]);
+            }
         }
 
         static void Main(string[] args)
@@ -92,15 +97,18 @@ namespace FacePuncher
             int flash = 0;
             var renderTimer = new Timer(state => {
                 Display.Clear();
-                lock (_level) {
-                    var attribs = new DrawAttributes(_time, flash++);
 
-                    foreach (var vis in _visibility) {
-                        var rect = Display.Rect + new Position(4, 4) - halfSize;
-                        rect = rect.Intersection(vis.Room.Rect);
-                        vis.Draw(rect - vis.Room.Rect.TopLeft, Position.Zero, attribs);
+                lock (_level) {
+                    if (_player != null) {
+                        var attribs = new DrawAttributes(_time, flash++);
+                        var rect = Display.Rect + _player.Position - halfSize;
+
+                        foreach (var vis in _visibility) {
+                            vis.Draw(rect, Position.Zero, attribs);
+                        }
                     }
                 }
+
                 Display.Refresh();
             }, null, 0, 125);
 
