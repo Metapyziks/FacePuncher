@@ -295,10 +295,14 @@ namespace FacePuncher.Entities
             }
         }
 
+        public bool CanMove(Tile dest)
+        {
+            return dest.State == TileState.Floor;
+        }
+
         public void Move(Tile dest)
         {
-            if (dest.State == TileState.Void || dest.State == TileState.Wall)
-                return;
+            if (!CanMove(dest)) return;
 
             var orig = Tile;
             Tile = dest;
