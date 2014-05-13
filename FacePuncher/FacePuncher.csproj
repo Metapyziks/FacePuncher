@@ -42,7 +42,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Display.cs" />
+    <Compile Include="Entities\Entity.cs" />
     <Compile Include="Geometry\Level.cs" />
+    <Compile Include="Geometry\Position.cs" />
+    <Compile Include="Geometry\Rectangle.cs" />
+    <Compile Include="Geometry\Room.cs" />
     <Compile Include="Geometry\Tile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

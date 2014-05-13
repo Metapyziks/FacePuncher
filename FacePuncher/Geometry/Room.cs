@@ -22,11 +22,25 @@ namespace FacePuncher.Geometry
 
             _tiles = new Tile[Width, Height];
 
-            for (int x = 0; x < Width; ++x) {
-                for (int y = 0; y < Height; ++y) {
+            for (int y = 0; y < Height; ++y) {
+                for (int x = 0; x < Width; ++x) {
                     _tiles[x, y] = new Tile(this, x, y);
                 }
             }
+        }
+
+        public IEnumerator<Tile> GetEnumerator()
+        {
+            for (int y = 0; y < Height; ++y) {
+                for (int x = 0; x < Width; ++x) {
+                    yield return _tiles[x, y];
+                }
+            }
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

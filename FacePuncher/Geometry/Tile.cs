@@ -33,5 +33,15 @@ namespace FacePuncher.Geometry
 
         public Tile(Room room, int relX, int relY)
             : this(room, new Position(relX, relY)) { }
+
+        public IEnumerator<Entity> GetEnumerator()
+        {
+            return _entities.GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return _entities.GetEnumerator();
+        }
     }
 }
