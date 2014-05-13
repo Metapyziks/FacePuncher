@@ -4,6 +4,10 @@ namespace FacePuncher.Entities
 {
     class StaticDrawable : Drawable
     {
+        private DrawableLayer _layer;
+
+        public override DrawableLayer Layer { get { return _layer; } }
+
         public char Symbol { get; set; }
 
         public ConsoleColor ForeColor { get; set; }
@@ -12,9 +16,15 @@ namespace FacePuncher.Entities
 
         public StaticDrawable()
         {
+            _layer = DrawableLayer.Items;
             Symbol = '?';
             ForeColor = ConsoleColor.Gray;
             BackColor = ConsoleColor.Black;
+        }
+
+        public StaticDrawable SetLayer(DrawableLayer layer)
+        {
+            _layer = layer; return this;
         }
 
         public override char GetSymbol(Graphics.DrawAttributes attribs)

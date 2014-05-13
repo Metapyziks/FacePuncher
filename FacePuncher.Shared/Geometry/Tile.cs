@@ -16,6 +16,8 @@ namespace FacePuncher.Geometry
     /// </summary>
     public class Tile : IEnumerable<Entity>
     {
+        public static readonly Tile Default = new Tile(null, 0, 0);
+
         private List<Entity> _entities;
 
         /// <summary>
@@ -55,6 +57,8 @@ namespace FacePuncher.Geometry
 
         internal void AddEntity(Entity ent)
         {
+            if (State == TileState.Void) return;
+
             if (ent.Tile != this) return;
             if (_entities.Contains(ent)) return;
 

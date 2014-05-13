@@ -45,7 +45,7 @@ namespace FacePuncher.Geometry
             get
             {
                 var room = _rooms.FirstOrDefault(x => x.Rect.Intersects(pos));
-                if (room == null) return null;
+                if (room == null) return Tile.Default;
 
                 return room[pos - room.Rect.TopLeft];
             }

@@ -63,8 +63,14 @@ namespace FacePuncher.Graphics
                 .Where(x => x.HasComponent<Drawable>())
                 .Select(x => x.GetComponent<Drawable>())
                 .ToArray();
-
+            
             if (drawables.Length > 0) {
+                var layer = (DrawableLayer) drawables.Max(x => x.Layer);
+
+                drawables = drawables
+                    .Where(x => x.Layer == layer)
+                    .ToArray();
+
                 var drawable = drawables[EntityFlashPeriod % drawables.Length];
 
                 Display.SetCell(screenPos,

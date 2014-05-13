@@ -8,6 +8,8 @@ namespace FacePuncher.Geometry
 
         public Rectangle Rect { get; private set; }
 
+        public Rectangle RelativeRect { get { return new Rectangle(0, 0, Width, Height); } }
+
         public int Left { get { return Rect.Left; } }
         public int Top { get { return Rect.Top; } }
         public int Right { get { return Rect.Right; } }
@@ -54,21 +56,21 @@ namespace FacePuncher.Geometry
 
         public void ClearGeometry(Rectangle rect)
         {
-            foreach (var pos in rect.Positions) {
+            foreach (var pos in rect.Intersection(RelativeRect).Positions) {
                 this[pos].State = TileState.Void;
             }
         }
 
         public void AddGeometry(Rectangle rect)
         {
-            foreach (var pos in rect.Positions) {
+            foreach (var pos in rect.Intersection(RelativeRect).Positions) {
                 this[pos].State = TileState.Wall;
             }
         }
 
         public void SubtractGeometry(Rectangle rect)
         {
-            foreach (var pos in rect.Positions) {
+            foreach (var pos in rect.Intersection(RelativeRect).Positions) {
                 this[pos].State = TileState.Floor;
             }
         }
