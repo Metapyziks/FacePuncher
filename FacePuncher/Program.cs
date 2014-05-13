@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 using FacePuncher.Entities;
 using FacePuncher.Geometry;
@@ -8,6 +9,36 @@ namespace FacePuncher
 {
     class Program
     {
+        static Level Generate(int seed)
+        {
+            var rand = new Random(seed == 0 ? (int) (DateTime.Now.Ticks & 0x7fffffff) : seed);
+
+            var level = new Level();
+
+            for (int i = 0; i < 4; ++i) {
+                for (int j = 0; j < 4; ++j) {
+                    var room = level.CreateRoom(new Rectangle(i * 8, j * 8, 8, 8));
+
+                    room.AddGeometry(new Rectangle(0, 0, room.Width, room.Height));
+                    room.SubtractGeometry(new Rectangle(1, 1, room.Width - 2, room.Height - 2));
+
+                    if (i > 0) room.SubtractGeometry(new Rectangle(0, 3, 1, 2));
+                    if (j > 0) room.SubtractGeometry(new Rectangle(3, 0, 2, 1));
+                    if (i < 3) room.SubtractGeometry(new Rectangle(7, 3, 1, 2));
+                    if (j < 3) room.SubtractGeometry(new Rectangle(3, 7, 2, 1));
+
+                    foreach (var tile in room) {
+                        if (tile.State == TileState.Floor && rand.NextDouble() < 0.125) {
+                            var dust = Entity.Create("dust");
+                            dust.Place(tile);
+                        }
+                    }
+                }
+            }
+
+            return level;
+        }
+
         static void Main(string[] args)
         {
             var rand = new Random();
@@ -31,38 +62,26 @@ namespace FacePuncher
                     .SetForeColor(ConsoleColor.DarkGray);
             });
 
-            var level = new Level();
-            var room = level.CreateRoom(new Rectangle(4, 4, 12, 12));
-            room.AddGeometry(new Rectangle(1, 1, room.Width - 2, room.Height - 2));
-            room.SubtractGeometry(new Rectangle(2, 2, room.Width - 4, room.Height - 4));
-            room.AddGeometry(new Rectangle(6, 7, 4, 1));
-            room.AddGeometry(new Rectangle(11, 7, 2, 4));
-            room.SubtractGeometry(new Rectangle(10, 8, 2, 2));
+            var level = Generate(0);
 
             var ply = Entity.Create("player");
-            ply.Place(room[4, 4]);
-
-            room = level.CreateRoom(new Rectangle(room.Right, room.Top + 7, 12, 4));
-            room.AddGeometry(room.RelativeRect);
-            room.SubtractGeometry(new Rectangle(0, 1, room.Width - 1, 2));
-
-            foreach (var rm in level) {
-                foreach (var tile in rm) {
-                    if (rand.NextDouble() < 0.125 && tile.State == TileState.Floor) {
-                        var dust = Entity.Create("dust");
-                        dust.Place(tile);
-                    }
-                }
-            }
+            ply.Place(level[4, 4]);
             
             Display.Initialize(96, 32);
 
-            for (ulong time = 0; ; ++time) {
-                level.Think(time);
-                level.Draw(Display.Rect, Position.Zero, new DrawAttributes(0));
-                
+            var halfSize = new Position(Display.Width / 2, Display.Height / 2);
+
+            int flash = 0;
+            var renderTimer = new Timer(state => {
+                Display.Clear();
+                lock (level) {
+                    level.Draw(Display.Rect + ply.Position - halfSize,
+                        Position.Zero, new DrawAttributes(ply.Position, flash++));
+                }
                 Display.Refresh();
-            }
+            }, null, 0, 125);
+            
+            Console.ReadKey(true);
         }
     }
 }

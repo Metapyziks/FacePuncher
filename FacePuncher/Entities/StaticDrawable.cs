@@ -39,7 +39,7 @@ namespace FacePuncher.Entities
 
         public override ConsoleColor GetForeColor(Graphics.DrawAttributes attribs)
         {
-            return ForeColor;
+            return (ConsoleColor) (ForeColor + (attribs.Flash & 1));
         }
 
         public StaticDrawable SetForeColor(ConsoleColor color)

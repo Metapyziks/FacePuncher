@@ -8,10 +8,13 @@ namespace FacePuncher.Graphics
 {
     public struct DrawAttributes
     {
+        public Position Origin;
+
         public int Flash;
 
-        public DrawAttributes(int flash)
+        public DrawAttributes(Position origin, int flash)
         {
+            Origin = origin;
             Flash = flash;
         }
     }
@@ -47,6 +50,8 @@ namespace FacePuncher.Graphics
         public static void Draw(this Tile tile, Position screenPos, DrawAttributes attribs)
         {
             if (tile.State == TileState.Void) return;
+
+            if (!tile.IsVisibleFrom(attribs.Origin, 12)) return;
 
             if (tile.State == TileState.Wall) {
                 int adj = 

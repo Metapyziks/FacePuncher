@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 using FacePuncher.Entities;
 
@@ -88,6 +90,41 @@ namespace FacePuncher.Geometry
             for (int i = _entities.Count - 1; i >= 0; --i) {
                 _entities[i].Think(time);
             }
+        }
+
+        private static IEnumerable<Position> BresenhamLine(Position a, Position b)
+        {
+            int dx = Math.Abs(b.X - a.X);
+            int dy = Math.Abs(b.Y - a.Y);
+
+            int sx = a.X < b.X ? 1 : -1;
+            int sy = a.Y < b.Y ? 1 : -1;
+            int err = dx - dy;
+
+            for (;;) {
+                yield return a;
+                if (a.X == b.X && a.Y == b.Y) yield break;
+
+                int e2 = 2 * err;
+                if (e2 > -dy) {
+                    err = err - dy;
+                    a.X += sx;
+                }
+                if (e2 < dx) {
+                    err = err + dx;
+                    a.Y += sy;
+                }
+            }
+        }
+
+        public bool IsVisibleFrom(Position pos, int maxRadius)
+        {
+            var diff = Position - pos;
+
+            if (diff.X * diff.X + diff.Y * diff.Y > maxRadius * maxRadius) return false;
+
+            return BresenhamLine(pos, Position)
+                .All(x => x == Position || Room[x].State == TileState.Floor);
         }
 
         public IEnumerator<Entity> GetEnumerator()
