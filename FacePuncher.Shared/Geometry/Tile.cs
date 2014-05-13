@@ -43,6 +43,8 @@ namespace FacePuncher.Geometry
         public TileState State { get; set; }
 
         public IEnumerable<Entity> Entities { get { return _entities; } }
+
+        public int EntityCount { get { return _entities.Count; } }
         
         public Tile(Room room, Position relPos)
         {

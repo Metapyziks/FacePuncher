@@ -8,13 +8,12 @@ namespace FacePuncher.Graphics
 {
     public struct DrawAttributes
     {
-        public Position Origin;
-
+        public ulong Time;
         public int Flash;
 
-        public DrawAttributes(Position origin, int flash)
+        public DrawAttributes(ulong time, int flash)
         {
-            Origin = origin;
+            Time = time;
             Flash = flash;
         }
     }
@@ -30,28 +29,18 @@ namespace FacePuncher.Graphics
             '\u00bc', '\u00ca', '\u00b9', '\u00ce'
         };
 
-        public static void Draw(this Level level, Rectangle rect, Position screenPos, DrawAttributes attribs)
+        public static void Draw(this RoomVisibility vis, Rectangle rect, Position screenPos, DrawAttributes attribs)
         {
-            foreach (var room in level.GetIntersectingRooms(rect)) {
-                var subRect = room.Rect.Intersection(rect);
-                var roomPos = room.Rect.TopLeft;
-
-                room.Draw(subRect - roomPos, screenPos + roomPos - rect.TopLeft, attribs);
-            }
-        }
-
-        public static void Draw(this Room room, Rectangle rect, Position screenPos, DrawAttributes attribs)
-        {
-            foreach (var pos in rect.Positions) {
-                room[pos].Draw(screenPos + pos, attribs);
+            foreach (var tile in vis.GetVisible(attribs.Time)) {
+                if (rect.Intersects(tile.RelativePosition)) {
+                    tile.Draw(screenPos + tile.RelativePosition, attribs);
+                }
             }
         }
 
         public static void Draw(this Tile tile, Position screenPos, DrawAttributes attribs)
         {
             if (tile.State == TileState.Void) return;
-
-            if (!tile.IsVisibleFrom(attribs.Origin, 12)) return;
 
             if (tile.State == TileState.Wall) {
                 int adj = 

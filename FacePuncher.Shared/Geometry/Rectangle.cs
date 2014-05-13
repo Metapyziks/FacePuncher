@@ -6,6 +6,8 @@ namespace FacePuncher.Geometry
 {
     public struct Rectangle
     {
+        public static readonly Rectangle Zero = new Rectangle(0, 0, 0, 0);
+
         public int Left;
         public int Top;
 
@@ -117,6 +119,26 @@ namespace FacePuncher.Geometry
                         Enumerable.Range(rect.Left, rect.Width)
                         .Select(x => new Position(x, y)));
             }
+        }
+
+        public static bool operator ==(Rectangle a, Rectangle b)
+        {
+            return a.Left == b.Left && a.Top == b.Top && a.Width == b.Width && a.Height == b.Height;
+        }
+
+        public static bool operator !=(Rectangle a, Rectangle b)
+        {
+            return a.Left != b.Left || a.Top != b.Top || a.Width != b.Width || a.Height != b.Height;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Rectangle && this == ((Rectangle) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Top ^ Left ^ Width ^ Height;
         }
 
         public override string ToString()

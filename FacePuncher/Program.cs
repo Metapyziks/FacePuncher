@@ -1,4 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 
 using FacePuncher.Entities;
@@ -9,47 +14,61 @@ namespace FacePuncher
 {
     class Program
     {
-        static Level Generate(int seed)
+        private static TcpClient _socket;
+        private static List<RoomVisibility> _visibility;
+
+        private static Level _level;
+        private static Entity _player;
+
+        private static ulong _time;
+
+        static void ReadVisibleLevelState()
         {
-            var rand = new Random(seed == 0 ? (int) (DateTime.Now.Ticks & 0x7fffffff) : seed);
+            var stream = _socket.GetStream();
+            var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true);
 
-            var level = new Level();
+            _time = reader.ReadUInt64();
 
-            for (int i = 0; i < 4; ++i) {
-                for (int j = 0; j < 4; ++j) {
-                    var room = level.CreateRoom(new Rectangle(i * 8, j * 8, 8, 8));
+            lock (_level) {
+                int roomCount = reader.ReadInt32();
+                for (int i = 0; i < roomCount; ++i) {
+                    var rect = reader.ReadRectangle();
 
-                    room.AddGeometry(new Rectangle(0, 0, room.Width, room.Height));
-                    room.SubtractGeometry(new Rectangle(1, 1, room.Width - 2, room.Height - 2));
+                    var vis = _visibility.FirstOrDefault(x => x.Room.Rect == rect);
 
-                    if (i > 0) room.SubtractGeometry(new Rectangle(0, 3, 1, 2));
-                    if (j > 0) room.SubtractGeometry(new Rectangle(3, 0, 2, 1));
-                    if (i < 3) room.SubtractGeometry(new Rectangle(7, 3, 1, 2));
-                    if (j < 3) room.SubtractGeometry(new Rectangle(3, 7, 2, 1));
+                    if (vis == null) {
+                        var room = _level.CreateRoom(rect);
+                        vis = new RoomVisibility(room);
 
-                    foreach (var tile in room) {
-                        if (tile.State == TileState.Floor && rand.NextDouble() < 0.125) {
-                            var dust = Entity.Create("dust");
-                            dust.Place(tile);
-                        }
+                        _visibility.Add(vis);
+                    }
+
+                    int tileCount = reader.ReadInt32();
+                    for (int j = 0; j < tileCount; ++j) {
+                        var pos = reader.ReadPosition();
+                        var state = (TileState) reader.ReadByte();
+
+                        vis.Reveal(pos, _time);
+                        vis.Room[pos].State = state;
                     }
                 }
             }
 
-            return level;
+            reader.Close();
         }
 
         static void Main(string[] args)
         {
-            var rand = new Random();
+            Display.Initialize(96, 32);
 
             Entity.Register("player", ent => {
-                ent.AddComponent<PlayerControlTest>();
                 ent.AddComponent<StaticDrawable>()
                     .SetLayer(DrawableLayer.Characters)
                     .SetSymbol('@')
                     .SetForeColor(ConsoleColor.Yellow);
             });
+
+            var rand = new Random();
 
             var dustSymbols = new[] {
                 ',', '.', '`', '\''
@@ -62,24 +81,30 @@ namespace FacePuncher
                     .SetForeColor(ConsoleColor.DarkGray);
             });
 
-            var level = Generate(0);
+            _level = new Level();
+            _visibility = new List<RoomVisibility>();
 
-            var ply = Entity.Create("player");
-            ply.Place(level[4, 4]);
-            
-            Display.Initialize(96, 32);
+            _socket = new TcpClient();
+            _socket.Connect("localhost", 14242);
 
             var halfSize = new Position(Display.Width / 2, Display.Height / 2);
 
             int flash = 0;
             var renderTimer = new Timer(state => {
                 Display.Clear();
-                lock (level) {
-                    level.Draw(Display.Rect + ply.Position - halfSize,
-                        Position.Zero, new DrawAttributes(ply.Position, flash++));
+                lock (_level) {
+                    var attribs = new DrawAttributes(_time, flash++);
+
+                    foreach (var vis in _visibility) {
+                        var rect = Display.Rect + new Position(4, 4) - halfSize;
+                        rect = rect.Intersection(vis.Room.Rect);
+                        vis.Draw(rect - vis.Room.Rect.TopLeft, Position.Zero, attribs);
+                    }
                 }
                 Display.Refresh();
             }, null, 0, 125);
+
+            ReadVisibleLevelState();
             
             Console.ReadKey(true);
         }
