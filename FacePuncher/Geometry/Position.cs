@@ -5,19 +5,19 @@
     /// </summary>
     struct Position
     {
-        public const Position Zero = new Position(0, 0);
-        public const Position UnitX = new Position(1, 0);
-        public const Position UnitY = new Position(0, 1);
+        public static readonly Position Zero = new Position(0, 0);
+        public static readonly Position UnitX = new Position(1, 0);
+        public static readonly Position UnitY = new Position(0, 1);
 
         /// <summary>
         /// Horizontal component of the position.
         /// </summary>
-        public int X { get; set; }
+        public int X;
 
         /// <summary>
         /// Vertical component of the position.
         /// </summary>
-        public int Y { get; set; }
+        public int Y;
 
         /// <summary>
         /// Constructs a position with the specified coordinates.
