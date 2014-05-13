@@ -87,21 +87,25 @@ namespace FacePuncher
 
         public ConsoleKey ReadInput(ConsoleKey[] validKeys)
         {
-            var stream = _socket.GetStream();
+            try {
+                var stream = _socket.GetStream();
 
-            using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, true)) {
-                writer.Write((byte) PacketType.InputRequest);
-                writer.Write((ushort) validKeys.Length);
+                using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, true)) {
+                    writer.Write((byte) PacketType.InputRequest);
+                    writer.Write((ushort) validKeys.Length);
 
-                foreach (var key in validKeys) {
-                    writer.Write((ushort) key);
+                    foreach (var key in validKeys) {
+                        writer.Write((ushort) key);
+                    }
+
+                    writer.Flush();
                 }
 
-                writer.Flush();
-            }
-
-            using (var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true)) {
-                return (ConsoleKey) reader.ReadUInt16();
+                using (var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true)) {
+                    return (ConsoleKey) reader.ReadUInt16();
+                }
+            } catch {
+                return validKeys.First();
             }
         }
     }

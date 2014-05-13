@@ -18,6 +18,8 @@ namespace FacePuncher.Entities
         {
             if (Client == null) return;
 
+            Client.SendVisibleLevelState(Level, time);
+
             var direc = Tools.MovementKeys[Client.ReadInput(Tools.MovementKeys.Keys.ToArray())];
             
             Entity.Move(Tile.GetNeighbour(direc));

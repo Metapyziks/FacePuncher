@@ -57,10 +57,6 @@ namespace FacePuncher.Server
             _listenThread.Start();
 
             while (true) {
-                foreach (var client in _clients) {
-                    client.SendVisibleLevelState(_level, _time);
-                }
-
                 if (_clients.Count > 0) {
                     _level.Think(_time++);
                 } else {
