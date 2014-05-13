@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace FacePuncher.Geometry
 {
     /// <summary>
     /// A class representing a game level as a collection of rooms.
     /// </summary>
-    class Level : IEnumerable<Room>
+    public class Level : IEnumerable<Room>
     {
         private List<Room> _rooms;
 
@@ -15,6 +16,11 @@ namespace FacePuncher.Geometry
         public Level()
         {
             _rooms = new List<Room>();
+        }
+
+        public IEnumerable<Room> GetIntersectingRooms(Rectangle rect)
+        {
+            return _rooms.Where(x => x.Rect.Intersects(rect));
         }
 
         public IEnumerator<Room> GetEnumerator()

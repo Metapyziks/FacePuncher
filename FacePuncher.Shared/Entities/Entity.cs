@@ -1,6 +1,6 @@
 ﻿namespace FacePuncher.Entities
 {
-    class Entity
+    public class Entity
     {
     }
 }

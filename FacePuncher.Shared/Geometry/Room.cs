@@ -2,7 +2,7 @@
 
 namespace FacePuncher.Geometry
 {
-    class Room : IEnumerable<Tile>
+    public class Room : IEnumerable<Tile>
     {
         public Rectangle Rect { get; private set; }
 
@@ -27,6 +27,11 @@ namespace FacePuncher.Geometry
                     _tiles[x, y] = new Tile(this, x, y);
                 }
             }
+        }
+
+        public Tile this[int relX, int relY]
+        {
+            get { return _tiles[relX, relY]; }
         }
 
         public IEnumerator<Tile> GetEnumerator()

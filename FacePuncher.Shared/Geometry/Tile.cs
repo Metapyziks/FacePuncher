@@ -4,10 +4,23 @@ using FacePuncher.Entities;
 
 namespace FacePuncher.Geometry
 {
-    class Tile : IEnumerable<Entity>
+    public enum TileState
+    {
+        Void = 0,
+        Wall = 1,
+        Floor = 2
+    }
+
+    /// <summary>
+    /// Class representing an individual tile in a room.
+    /// </summary>
+    public class Tile : IEnumerable<Entity>
     {
         private List<Entity> _entities;
 
+        /// <summary>
+        /// Parent room containing this tile.
+        /// </summary>
         public Room Room { get; private set; }
 
         /// <summary>
@@ -23,10 +36,14 @@ namespace FacePuncher.Geometry
         public int X { get { return Room.Left + RelativeX; } }
         public int Y { get { return Room.Top + RelativeY; } }
 
+        public TileState State { get; set; }
+
         public Tile(Room room, Position relPos)
         {
             Room = room;
             RelativePosition = relPos;
+
+            State = TileState.Void;
 
             _entities = new List<Entity>();
         }

@@ -3,7 +3,7 @@
     /// <summary>
     /// Structure representing a location in Cartesian coordinates.
     /// </summary>
-    struct Position
+    public struct Position
     {
         public static readonly Position Zero = new Position(0, 0);
         public static readonly Position UnitX = new Position(1, 0);

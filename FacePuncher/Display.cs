@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
-
+using FacePuncher.Geometry;
 using Microsoft.Win32.SafeHandles;
 
 namespace FacePuncher
@@ -121,8 +121,22 @@ namespace FacePuncher
         {
             if (x < 0 || y < 0 || x >= _sRect.Right || y >= _sRect.Bottom) return;
 
-            _sBuffer[x + y * _sRect.Right].Char = symbol;
-            _sBuffer[x + y * _sRect.Right].Attributes = GetAttributes(fore, back);
+            int index = x + y * _sRect.Right;
+
+            _sBuffer[index].Char = symbol;
+            _sBuffer[index].Attributes = GetAttributes(fore, back);
+        }
+
+        /// <summary>
+        /// Set a specific character in the display buffer.
+        /// </summary>
+        /// <param name="pos">Position of the character.</param>
+        /// <param name="symbol">Character to display.</param>
+        /// <param name="fore">Foreground color of the character.</param>
+        /// <param name="back">Background color of the character.</param>
+        public static void SetCell(Position pos, char symbol, ConsoleColor fore = ConsoleColor.Gray, ConsoleColor back = ConsoleColor.Black)
+        {
+            SetCell(pos.X, pos.Y, symbol, fore, back);
         }
 
         /// <summary>
