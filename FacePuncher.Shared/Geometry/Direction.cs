@@ -1,5 +1,10 @@
 ﻿namespace FacePuncher.Geometry
 {
+    /// <summary>
+    /// Enumeration of each of the eight
+    /// directions an entity may move to
+    /// a neighbouring tile.
+    /// </summary>
     public enum Direction
     {
         NorthWest = 0,
