@@ -47,8 +47,7 @@ namespace FacePuncher
 
             // Create a player entity and attach control to this client.
             Player = Entity.Create("player");
-            Player.GetComponent<PlayerControl>()
-                .SetClient(this);
+            Player.GetComponent<PlayerControl>().Client = this;
 
             // Find all rooms that the player may be placed in.
             var rooms = level
