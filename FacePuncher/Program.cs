@@ -113,40 +113,9 @@ namespace FacePuncher
 
         static void Main(string[] args)
         {
+            Definitions.Load("../../../Data/testing.xml", DefinitionsNamespace.Client);
+
             Display.Initialize(96, 32);
-
-            Entity.Register("player", ent => {
-                ent.AddComponent<StaticDrawable>()
-                    .SetLayer(DrawableLayer.Characters)
-                    .SetSymbol('@')
-                    .SetForeColor(ConsoleColor.Yellow);
-            });
-
-            Entity.Register("dust", ent => {
-                ent.AddComponent<StaticDrawable>()
-                    .SetLayer(DrawableLayer.Debris)
-                    .SetForeColor(ConsoleColor.DarkGray);
-            });
-
-            Entity.Register("dust_0", "dust", ent => {
-                ent.GetComponent<StaticDrawable>()
-                    .SetSymbol('.');
-            });
-
-            Entity.Register("dust_1", "dust", ent => {
-                ent.GetComponent<StaticDrawable>()
-                    .SetSymbol(',');
-            });
-
-            Entity.Register("dust_2", "dust", ent => {
-                ent.GetComponent<StaticDrawable>()
-                    .SetSymbol('\'');
-            });
-
-            Entity.Register("dust_3", "dust", ent => {
-                ent.GetComponent<StaticDrawable>()
-                    .SetSymbol('`');
-            });
 
             _level = new Level();
             _visibility = new List<RoomVisibility>();

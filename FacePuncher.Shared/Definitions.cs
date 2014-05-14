@@ -26,7 +26,7 @@ namespace FacePuncher
         static Definitions()
         {
             RegisterType("entity", elem => {
-                var components = new List<Type>();
+                var components = new List<Tuple<Type, XElement>>();
 
                 foreach (var sub in elem.Elements()) {
                     var typeName = String.Format("FacePuncher.Entities.{0}", sub.Name.LocalName);
@@ -34,14 +34,23 @@ namespace FacePuncher
 
                     if (type == null) continue;
 
-                    components.Add(type);
+                    components.Add(Tuple.Create(type, sub));
                 }
 
-                Entity.Register(elem.Attribute("name").Value, ent => {
+                EntityBuilderDelegate ctor = ent => {
                     foreach (var type in components) {
-                        ent.AddComponent(type);
+                        var comp = ent.GetComponentOrNull(type.Item1)
+                            ?? ent.AddComponent(type.Item1);
+                        
+                        comp.LoadFromDefinition(type.Item2);
                     }
-                });
+                };
+
+                if (elem.Attributes("base").Count() > 0) {
+                    Entity.Register(elem.Attribute("name").Value, elem.Attribute("base").Value, ctor);
+                } else {
+                    Entity.Register(elem.Attribute("name").Value, ctor);
+                }
             });
         }
 

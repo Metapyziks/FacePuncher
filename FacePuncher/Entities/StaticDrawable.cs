@@ -22,6 +22,25 @@ namespace FacePuncher.Entities
             BackColor = ConsoleColor.Black;
         }
 
+        public override void LoadFromDefinition(System.Xml.Linq.XElement elem)
+        {
+            if (elem.HasElement("Layer")) {
+                _layer = elem.Element<DrawableLayer>("Layer");
+            }
+
+            if (elem.HasElement("Symbol")) {
+                Symbol = elem.Element<char>("Symbol");
+            }
+
+            if (elem.HasElement("ForeColor")) {
+                ForeColor = elem.Element<ConsoleColor>("ForeColor");
+            }
+
+            if (elem.HasElement("BackColor")) {
+                BackColor = elem.Element<ConsoleColor>("BackColor");
+            }
+        }
+
         public StaticDrawable SetLayer(DrawableLayer layer)
         {
             _layer = layer; return this;

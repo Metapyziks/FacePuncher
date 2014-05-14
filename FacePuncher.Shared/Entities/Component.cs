@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Xml.Linq;
 
 using FacePuncher.Geometry;
 
@@ -58,6 +59,8 @@ namespace FacePuncher.Entities
         }
 
         public Entity Entity { get; private set; }
+
+        public virtual void LoadFromDefinition(XElement elem) { }
 
         public virtual void OnInitialize() { }
 
