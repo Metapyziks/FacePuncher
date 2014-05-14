@@ -202,7 +202,7 @@ namespace FacePuncher.Entities
             child.Parent = this;
 
             foreach (var comp in child) {
-                comp.OnInitialize();
+                comp.OnPlace();
             }
 
             return child;
@@ -323,7 +323,7 @@ namespace FacePuncher.Entities
             tile.AddEntity(this);
 
             foreach (var comp in _comps) {
-                comp.OnInitialize();
+                comp.OnPlace();
             }
         }
 

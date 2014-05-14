@@ -186,8 +186,8 @@ namespace FacePuncher
         /// <param name="ns"></param>
         public static void LoadFromFile(String path, DefinitionsNamespace ns)
         {
-            var server = (XNamespace) "/server";
-            var client = (XNamespace) "/client";
+            XNamespace server = "/server";
+            XNamespace client = "/client";
 
             // Wrap a root object and namespace definitions around the document.
             var xml = String.Format("<definitions xmlns:server=\"{0}\" "
