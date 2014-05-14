@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 
 using FacePuncher.Geometry;
-using FacePuncher.Graphics;
 
 namespace FacePuncher
 {

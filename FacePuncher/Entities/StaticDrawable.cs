@@ -31,7 +31,7 @@ namespace FacePuncher.Entities
             _layer = layer; return this;
         }
 
-        public override char GetSymbol(Graphics.DrawAttributes attribs)
+        public override char GetSymbol(DrawAttributes attribs)
         {
             return Symbol;
         }
@@ -41,7 +41,7 @@ namespace FacePuncher.Entities
             Symbol = symbol; return this;
         }
 
-        public override ConsoleColor GetForeColor(Graphics.DrawAttributes attribs)
+        public override ConsoleColor GetForeColor(DrawAttributes attribs)
         {
             return ForeColor;
         }
@@ -51,7 +51,7 @@ namespace FacePuncher.Entities
             ForeColor = color; return this;
         }
 
-        public override ConsoleColor GetBackColor(Graphics.DrawAttributes attribs)
+        public override ConsoleColor GetBackColor(DrawAttributes attribs)
         {
             return BackColor;
         }

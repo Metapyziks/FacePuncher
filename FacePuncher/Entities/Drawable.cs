@@ -1,7 +1,5 @@
 ﻿using System;
 
-using FacePuncher.Graphics;
-
 namespace FacePuncher.Entities
 {
     public enum DrawableLayer

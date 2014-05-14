@@ -35,9 +35,10 @@ namespace FacePuncher
     static class Rendering
     {
         /// <summary>
-        /// 
+        /// The period between cycling between different entities
+        /// when multiple entities are present within the same layer.
         /// </summary>
-        public const int EntityFlashPeriod = 8;
+        public const int EntityFlashPeriod = 6;
 
         static readonly char[] _sWallTiles = new[] {
             '\u006f', '\u006f', '\u006f', '\u00c9',
