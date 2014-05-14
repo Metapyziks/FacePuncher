@@ -46,6 +46,8 @@ namespace FacePuncher
         {
             writer.Write(ent.ID);
             writer.Write(ent.ClassName);
+
+            // TODO: Send component information?
         }
 
         public void SendVisibleLevelState(Level level, ulong time)

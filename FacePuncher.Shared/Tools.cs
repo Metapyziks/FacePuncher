@@ -10,6 +10,8 @@ namespace FacePuncher
 {
     public static class Tools
     {
+        public static readonly Random Random = new Random();
+
         public static readonly Dictionary<ConsoleKey, Direction> MovementKeys
             = new Dictionary<ConsoleKey, Direction> {
             { ConsoleKey.NumPad7, Direction.NorthWest },
@@ -18,12 +20,19 @@ namespace FacePuncher
             { ConsoleKey.NumPad9, Direction.NorthEast },
             { ConsoleKey.NumPad4, Direction.West },
             { ConsoleKey.LeftArrow, Direction.West },
+            { ConsoleKey.NumPad5, Direction.None },
             { ConsoleKey.NumPad6, Direction.East },
             { ConsoleKey.RightArrow, Direction.East },
             { ConsoleKey.NumPad1, Direction.SouthWest },
             { ConsoleKey.NumPad2, Direction.South },
             { ConsoleKey.DownArrow, Direction.South },
             { ConsoleKey.NumPad3, Direction.SouthEast }
+        };
+
+        public static readonly Direction[] Directions = new[] {
+            Direction.NorthWest, Direction.North, Direction.NorthEast,
+            Direction.West, Direction.East,
+            Direction.SouthWest, Direction.South, Direction.SouthEast
         };
 
         public static bool HasElement(this XElement elem, string name)

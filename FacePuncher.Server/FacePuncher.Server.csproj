@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="Client.cs" />
     <Compile Include="Entities\PlayerControl.cs" />
+    <Compile Include="Entities\Vermin.cs" />
     <Compile Include="Geometry\LevelGenerator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

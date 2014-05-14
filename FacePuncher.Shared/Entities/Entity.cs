@@ -76,14 +76,23 @@ namespace FacePuncher.Entities
             return Extends(_sEntBuilders[className].Base, baseName);
         }
 
-        public static IEnumerable<String> GetClassNames()
+        public static String[] GetClassNames()
         {
-            return _sEntBuilders.Select(x => x.Key);
+            return _sEntBuilders.Select(x => x.Key).ToArray();
         }
 
-        public static IEnumerable<String> GetClassNames(String baseName)
+        public static String[] GetClassNames(String baseName, bool onlyLeaves = true)
         {
-            return _sEntBuilders.Select(x => x.Key).Where(x => Extends(x, baseName));
+            var names = _sEntBuilders.Select(x => x.Key)
+                .Where(x => Extends(x, baseName));
+
+            if (onlyLeaves) {
+                return names
+                    .Where(x => !_sEntBuilders.Any(y => y.Value.Base == x))
+                    .ToArray();
+            } else {
+                return names.ToArray();
+            }
         }
 
         public static Entity Create()
@@ -338,6 +347,11 @@ namespace FacePuncher.Entities
             return dest.State == TileState.Floor;
         }
 
+        public bool CanMove(Direction dir)
+        {
+            return CanMove(Tile.GetNeighbour(dir));
+        }
+
         public void Move(Tile dest)
         {
             if (!CanMove(dest)) return;
@@ -347,6 +361,11 @@ namespace FacePuncher.Entities
 
             orig.RemoveEntity(this);
             Tile.AddEntity(this);
+        }
+
+        public void Move(Direction dir)
+        {
+            Move(Tile.GetNeighbour(dir));
         }
 
         public void Think(ulong time)

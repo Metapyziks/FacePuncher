@@ -1,0 +1,11 @@
+<entity name="vermin">
+    <client:StaticDrawable>
+        <Layer>Debris</Layer>
+        <Symbol>.</Symbol>
+        <ForeColor>Gray</ForeColor>
+    </client:StaticDrawable>
+
+    <server:Vermin>
+        <MovePeriod>75</MovePeriod>
+    </server:Vermin>
+</entity>

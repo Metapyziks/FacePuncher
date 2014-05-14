@@ -12,6 +12,8 @@ namespace FacePuncher.Geometry
 
             var level = new Level();
 
+            var debris = Entity.GetClassNames("dust");
+
             for (int i = 0; i < 4; ++i) {
                 for (int j = 0; j < 4; ++j) {
                     var room = level.CreateRoom(new Rectangle(i * 8, j * 8, 8, 8));
@@ -25,9 +27,14 @@ namespace FacePuncher.Geometry
                     if (j < 3) room.SubtractGeometry(new Rectangle(3, 7, 2, 1));
 
                     foreach (var tile in room) {
-                        if (tile.State == TileState.Floor && rand.NextDouble() < 0.125) {
-                            var dust = Entity.Create("dust_" + rand.Next(4));
-                            dust.Place(tile);
+                        if (tile.State == TileState.Floor) {
+                            if (rand.NextDouble() < 1 / 4.0) {
+                                var dust = Entity.Create(debris[rand.Next(debris.Length)]);
+                                dust.Place(tile);
+                            } else if (rand.NextDouble() < 1 / 32.0) {
+                                var vermin = Entity.Create("vermin");
+                                vermin.Place(tile);
+                            }
                         }
                     }
                 }
