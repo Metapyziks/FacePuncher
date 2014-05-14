@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Xml;
 using System.Xml.Linq;
 using FacePuncher.Entities;
 
@@ -118,7 +119,17 @@ namespace FacePuncher
                 + "xmlns:client=\"{1}\">{2}{3}{2}</definitions>",
                 server, client, Environment.NewLine, xml);
 
-            var definitions = XDocument.Parse(xml).Element("definitions");
+            XDocument doc;
+
+            using (var stream = new MemoryStream(System.Text.Encoding.Unicode.GetBytes(xml))) {
+                var settings = new XmlReaderSettings { CheckCharacters = false };
+                using (var reader = XmlReader.Create(stream, settings)) {
+                    reader.MoveToContent();
+                    doc = XDocument.Load(reader);
+                }
+            }
+
+            var definitions = doc.Element("definitions");
 
             foreach (var elem in definitions.Elements()) {
                 if (elem.Name.Namespace == server && !ns.HasFlag(DefinitionsNamespace.Server)) {
