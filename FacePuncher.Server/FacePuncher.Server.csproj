@@ -42,7 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Client.cs" />
+    <Compile Include="ClientConnection.cs" />
     <Compile Include="Entities\AgentControl.cs" />
     <Compile Include="Entities\PlayerControl.cs" />
     <Compile Include="Entities\VerminControl.cs" />

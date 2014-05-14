@@ -9,6 +9,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FacePuncher.Server", "FaceP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FacePuncher.Shared", "FacePuncher.Shared\FacePuncher.Shared.csproj", "{4E2355AF-F51D-4913-9EB0-845EB7759BB3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{5E114733-71D0-4A55-A508-2DA1B034BFDC}"
+	ProjectSection(SolutionItems) = preProject
+		Data\debris.xml = Data\debris.xml
+		Data\player.xml = Data\player.xml
+		Data\vermin.xml = Data\vermin.xml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
