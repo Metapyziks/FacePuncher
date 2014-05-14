@@ -30,8 +30,7 @@ namespace FacePuncher.Entities
     public abstract class Drawable : Component
     {
         /// <summary>
-        /// Gets or sets the layer the owning entity should be
-        /// drawn on.
+        /// Gets the layer the owning entity should be drawn on.
         /// </summary>
         public virtual DrawableLayer Layer { get { return DrawableLayer.Items; } set { } }
 
