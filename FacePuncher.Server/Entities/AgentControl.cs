@@ -19,7 +19,7 @@ namespace FacePuncher.Entities
             if (MovePeriod == 0 || !CanMove(time) || !Entity.CanMove(dir)) return;
 
             Entity.Move(dir);
-            _nextMove += MovePeriod;
+            _nextMove = time + MovePeriod;
         }
     }
 }

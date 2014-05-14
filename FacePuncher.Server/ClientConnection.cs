@@ -9,7 +9,7 @@ using FacePuncher.Geometry;
 
 namespace FacePuncher
 {
-    class Client
+    class ClientConnection
     {
         const int MaxVisibilityRange = 12;
 
@@ -18,7 +18,7 @@ namespace FacePuncher
 
         public Entity Player { get; private set; }
 
-        public Client(TcpClient socket, Level level)
+        public ClientConnection(TcpClient socket, Level level)
         {
             _socket = socket;
             _visibility = level

@@ -7,9 +7,9 @@ namespace FacePuncher.Entities
 {
     class PlayerControl : AgentControl
     {
-        public Client Client { get; private set; }
+        public ClientConnection Client { get; private set; }
 
-        public PlayerControl SetClient(Client client)
+        public PlayerControl SetClient(ClientConnection client)
         {
             Client = client; return this;
         }
