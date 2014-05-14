@@ -143,6 +143,7 @@ namespace FacePuncher
         {
             ConsoleKey[] validKeys;
 
+            // Read the list of valid keys from the server.
             var stream = _socket.GetStream();
             using (var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true)) {
                 validKeys = new ConsoleKey[reader.ReadUInt16()];
@@ -151,14 +152,16 @@ namespace FacePuncher
                 }
             }
 
-            ConsoleKey key;
-
+            // Clear any buffered key inputs.
             while (Console.KeyAvailable) Console.ReadKey(true);
 
+            // Read a valid key press.
+            ConsoleKey key;
             do {
                 key = Console.ReadKey(true).Key;
             } while (!validKeys.Contains(key));
 
+            // Send the valid key to the server.
             using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, true)) {
                 writer.Write((ushort) key);
                 writer.Flush();
