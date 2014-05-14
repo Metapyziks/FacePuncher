@@ -4,7 +4,7 @@ using System.Linq;
 using FacePuncher.Entities;
 using FacePuncher.Geometry;
 
-namespace FacePuncher.Graphics
+namespace FacePuncher
 {
     /// <summary>
     /// Structure containing information used when
