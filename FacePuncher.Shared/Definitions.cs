@@ -131,23 +131,15 @@ namespace FacePuncher
 
             var definitions = doc.Element("definitions");
 
+            if (!ns.HasFlag(DefinitionsNamespace.Server)) {
+                PurgeNamespace(definitions, server);
+            }
+
+            if (!ns.HasFlag(DefinitionsNamespace.Client)) {
+                PurgeNamespace(definitions, client);
+            }
+
             foreach (var elem in definitions.Elements()) {
-                if (elem.Name.Namespace == server && !ns.HasFlag(DefinitionsNamespace.Server)) {
-                    continue;
-                }
-
-                if (elem.Name.Namespace == client && !ns.HasFlag(DefinitionsNamespace.Client)) {
-                    continue;
-                }
-
-                if (!ns.HasFlag(DefinitionsNamespace.Server)) {
-                    PurgeNamespace(elem, server);
-                }
-
-                if (!ns.HasFlag(DefinitionsNamespace.Client)) {
-                    PurgeNamespace(elem, client);
-                }
-
                 var name = elem.Name.LocalName;
                 if (_typeHandlers.ContainsKey(name)) {
                     _typeHandlers[name](elem);
