@@ -14,7 +14,6 @@ namespace FacePuncher
             Display.Initialize(96, 32);
 
             using (var server = new ServerConnection("localhost", 14242)) {
-
                 var halfSize = new Position(Display.Width / 2, Display.Height / 2);
 
                 int flash = 0;
@@ -35,7 +34,7 @@ namespace FacePuncher
                     Display.Refresh();
                 }, null, 0, 125);
 
-                server.ProcessPackets();
+                while (server.ProcessPacket());
             }
         }
     }
