@@ -6,9 +6,20 @@ using FacePuncher.Geometry;
 
 namespace FacePuncher.Graphics
 {
+    /// <summary>
+    /// Structure containing information used when
+    /// drawing tiles and entities.
+    /// </summary>
     public struct DrawAttributes
     {
+        /// <summary>
+        /// Current game time at the time of drawing.
+        /// </summary>
         public ulong Time;
+
+        /// <summary>
+        /// Flash state for animating entities.
+        /// </summary>
         public int Flash;
 
         public DrawAttributes(ulong time, int flash)
@@ -18,8 +29,14 @@ namespace FacePuncher.Graphics
         }
     }
 
+    /// <summary>
+    /// Utility class for drawing tiles and entities.
+    /// </summary>
     static class Rendering
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public const int EntityFlashPeriod = 8;
 
         static readonly char[] _sWallTiles = new[] {
@@ -71,7 +88,7 @@ namespace FacePuncher.Graphics
                     .Where(x => x.Layer == layer)
                     .ToArray();
 
-                var drawable = drawables[EntityFlashPeriod % drawables.Length];
+                var drawable = drawables[(attribs.Flash / EntityFlashPeriod) % drawables.Length];
 
                 Display.SetCell(screenPos,
                     drawable.GetSymbol(attribs),
