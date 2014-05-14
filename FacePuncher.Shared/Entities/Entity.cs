@@ -12,44 +12,78 @@ namespace FacePuncher.Entities
     {
         private static uint _sNextID = 0;
 
-        private struct BuilderInfo
+        private class BuilderInfo
         {
             public readonly String Name;
             public readonly String Base;
             public readonly EntityBuilderDelegate Builder;
+            public readonly Type[] Components;
 
-            public BuilderInfo(String name, EntityBuilderDelegate builder)
+            public BuilderInfo(String name, EntityBuilderDelegate builder, Type[] components)
             {
                 Name = name;
                 Base = null;
                 Builder = builder;
+                Components = components;
             }
 
-            public BuilderInfo(String name, String baseName, EntityBuilderDelegate builder)
+            public BuilderInfo(String name, String baseName, EntityBuilderDelegate builder, Type[] components)
             {
                 Name = name;
                 Base = baseName;
                 Builder = builder;
+                Components = components;
             }
         }
 
         private static Dictionary<String, BuilderInfo> _sEntBuilders
             = new Dictionary<string, BuilderInfo>();
 
-        public static void Register(String name, EntityBuilderDelegate builder)
+        public static void Register(String name, EntityBuilderDelegate builder, params Type[] componentTypes)
         {
             if (!_sEntBuilders.ContainsKey(name))
-                _sEntBuilders.Add(name, new BuilderInfo(name, builder));
+                _sEntBuilders.Add(name, new BuilderInfo(name, builder, componentTypes));
             else
-                _sEntBuilders[name] = new BuilderInfo(name, builder);
+                _sEntBuilders[name] = new BuilderInfo(name, builder, componentTypes);
         }
 
-        public static void Register(String name, String baseName, EntityBuilderDelegate builder)
+        public static void Register(String name, String baseName, EntityBuilderDelegate builder, params Type[] componentTypes)
         {
             if (!_sEntBuilders.ContainsKey(name))
-                _sEntBuilders.Add(name, new BuilderInfo(name, baseName, builder));
+                _sEntBuilders.Add(name, new BuilderInfo(name, baseName, builder, componentTypes));
             else
-                _sEntBuilders[name] = new BuilderInfo(name, baseName, builder);
+                _sEntBuilders[name] = new BuilderInfo(name, baseName, builder, componentTypes);
+        }
+
+        public static String GetBase(String className)
+        {
+            return _sEntBuilders[className].Base;
+        }
+
+        public static IEnumerable<Type> GetComponentTypes(String className)
+        {
+            var info = _sEntBuilders[className];
+
+            if (info.Base == null) return info.Components;
+            else return info.Components.Union(GetComponentTypes(info.Base));
+        }
+
+        public static bool Extends(String className, String baseName)
+        {
+            if (className == null) return false;
+            if (className == baseName) return true;
+
+            return Extends(_sEntBuilders[className].Base, baseName);
+        }
+
+        public static IEnumerable<String> GetClassNames()
+        {
+            return _sEntBuilders.Select(x => x.Key);
+        }
+
+        public static IEnumerable<String> GetClassNames(String baseName)
+        {
+            return _sEntBuilders.Select(x => x.Key).Where(x => Extends(x, baseName));
         }
 
         public static Entity Create()

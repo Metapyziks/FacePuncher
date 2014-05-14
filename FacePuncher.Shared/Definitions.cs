@@ -46,10 +46,12 @@ namespace FacePuncher
                     }
                 };
 
+                var compTypes = components.Select(x => x.Item1).ToArray();
+
                 if (elem.Attributes("base").Count() > 0) {
-                    Entity.Register(elem.Attribute("name").Value, elem.Attribute("base").Value, ctor);
+                    Entity.Register(elem.Attribute("name").Value, elem.Attribute("base").Value, ctor, compTypes);
                 } else {
-                    Entity.Register(elem.Attribute("name").Value, ctor);
+                    Entity.Register(elem.Attribute("name").Value, ctor, compTypes);
                 }
             });
         }
