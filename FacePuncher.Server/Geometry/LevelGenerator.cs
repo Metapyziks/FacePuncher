@@ -33,7 +33,7 @@ namespace FacePuncher.Geometry
                             if (rand.NextDouble() < 1 / 4.0) {
                                 var dust = Entity.Create(debris[rand.Next(debris.Length)]);
                                 dust.Place(tile);
-                            } else if (rand.NextDouble() < 1 / 32.0) {
+                            } else if (rand.NextDouble() < 1 / 128.0) {
                                 var vermin = Entity.Create("vermin");
                                 vermin.Place(tile);
                             }
