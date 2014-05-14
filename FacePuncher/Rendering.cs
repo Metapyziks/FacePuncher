@@ -8,20 +8,20 @@ using FacePuncher.Geometry;
 namespace FacePuncher
 {
     /// <summary>
-    /// Structure containing information used when drawing 
+    /// Object containing information used when drawing 
     /// tiles and entities.
     /// </summary>
-    public struct DrawAttributes
+    public class DrawAttributes
     {
         /// <summary>
         /// Current game time at the time of drawing.
         /// </summary>
-        public ulong Time;
+        public ulong Time { get; private set; }
 
         /// <summary>
         /// Flash state for animating entities.
         /// </summary>
-        public int Flash;
+        public int Flash { get; private set; }
 
         /// <summary>
         /// Initializes a DrawAttributes structure.
@@ -83,7 +83,14 @@ namespace FacePuncher
             // Draw each visible tile that is within the clipping rectangle.
             foreach (var tile in vis.GetVisible(attribs.Time)) {
                 if (rect.Intersects(tile.RelativePosition)) {
-                    tile.Draw(screenPos + tile.RelativePosition, attribs);
+                    tile.Draw(screenPos + tile.RelativePosition, attribs, true);
+                }
+            }
+
+            // Draw each hidden but rememberd tile that is within the clipping rectangle.
+            foreach (var tile in vis.GetRemembered(attribs.Time)) {
+                if (rect.Intersects(tile.RelativePosition)) {
+                    tile.Draw(screenPos + tile.RelativePosition, new DrawAttributes(attribs.Time, 0), false);
                 }
             }
         }
@@ -94,9 +101,9 @@ namespace FacePuncher
         /// </summary>
         /// <param name="tile">Tile to draw.</param>
         /// <param name="screenPos">Position on the screen to draw the tile.</param>
-        /// <param name="attribs">Attributes to be used when drawing the tile
-        /// and any entities.</param>
-        public static void Draw(this Tile tile, Position screenPos, DrawAttributes attribs)
+        /// <param name="attribs">Attributes to be used when drawing the tile and any entities.</param>
+        /// <param name="visible">If true, the tile is currently within visible range.</param>
+        public static void Draw(this Tile tile, Position screenPos, DrawAttributes attribs, bool visible)
         {
             // Don't draw nothing.
             if (tile.State == TileState.Void) return;
@@ -109,7 +116,7 @@ namespace FacePuncher
                     (tile.GetNeighbour(Direction.West).State  == TileState.Wall ? 4 : 0) |
                     (tile.GetNeighbour(Direction.North).State == TileState.Wall ? 8 : 0);
 
-                Display.SetCell(screenPos, _sWallTiles[adj]);
+                Display.SetCell(screenPos, _sWallTiles[adj], visible ? ConsoleColor.Blue : ConsoleColor.DarkGray);
                 return;
             }
 
@@ -130,13 +137,14 @@ namespace FacePuncher
                     .ToArray();
 
                 // Select the drawable to draw based on the flash state.
-                var drawable = drawables[(attribs.Flash / EntityFlashPeriod) % drawables.Length];
+                int index = (attribs.Flash / EntityFlashPeriod) % drawables.Length;
+                var drawable = drawables[index];
 
                 // Draw the entity.
                 Display.SetCell(screenPos,
                     drawable.GetSymbol(attribs),
-                    drawable.GetForeColor(attribs),
-                    drawable.GetBackColor(attribs));
+                    visible ? drawable.GetForeColor(attribs) : ConsoleColor.DarkGray,
+                    visible ? drawable.GetBackColor(attribs) : ConsoleColor.Black);
 
                 return;
             }
@@ -144,7 +152,7 @@ namespace FacePuncher
             // When no drawable entities are present just draw the floor.
             // TODO: Allow multiple types of floor with different symbols,
             //       definable in definition files.
-            Display.SetCell(screenPos, '+', ConsoleColor.DarkGray);
+            Display.SetCell(screenPos, '+', visible ? ConsoleColor.DarkBlue : ConsoleColor.DarkGray);
         }
     }
 }

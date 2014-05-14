@@ -2,7 +2,7 @@
     <client:StaticDrawable>
         <Layer>Debris</Layer>
         <Symbol>.</Symbol>
-        <ForeColor>Gray</ForeColor>
+        <ForeColor>DarkYellow</ForeColor>
     </client:StaticDrawable>
 
     <server:VerminControl>

@@ -1,7 +1,7 @@
 <entity name="dust">
     <client:StaticDrawable>
         <Layer>Debris</Layer>
-        <ForeColor>DarkGray</ForeColor>
+        <ForeColor>DarkBlue</ForeColor>
     </client:StaticDrawable>
 </entity>
 

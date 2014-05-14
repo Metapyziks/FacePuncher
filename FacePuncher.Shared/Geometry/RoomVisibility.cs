@@ -61,5 +61,12 @@ namespace FacePuncher.Geometry
                 .Where(p => _mask[p.X, p.Y] >= time)
                 .Select(p => Room[p]);
         }
+
+        public IEnumerable<Tile> GetRemembered(ulong time)
+        {
+            return Room.RelativeRect.Positions
+                .Where(p => _mask[p.X, p.Y] != 0 && _mask[p.X, p.Y] < time)
+                .Select(p => Room[p]);
+        }
     }
 }
