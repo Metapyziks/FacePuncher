@@ -1,13 +1,20 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
+
 using FacePuncher.Geometry;
+
 using Microsoft.Win32.SafeHandles;
 
 namespace FacePuncher
 {
+    /// <summary>
+    /// Wrapper around console display functions.
+    /// Adapted from http://stackoverflow.com/a/2754674
+    /// </summary>
     static class Display
     {
+        #region Nasty Windows Specific Stuff
         [DllImport("Kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         static extern SafeFileHandle CreateFile(
             string fileName,
@@ -65,6 +72,7 @@ namespace FacePuncher
         {
             return (short) ((int) fore | ((int) back << 4));
         }
+        #endregion
 
         public static Rectangle Rect { get; private set; }
 
@@ -78,6 +86,9 @@ namespace FacePuncher
         /// </summary>
         public static int Height { get { return Rect.Height; } }
 
+        /// <summary>
+        /// Position of the center of the display.
+        /// </summary>
         public static Position Center { get { return new Position(Width / 2, Height / 2); } }
 
         /// <summary>
