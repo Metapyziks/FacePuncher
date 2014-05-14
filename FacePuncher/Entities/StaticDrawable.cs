@@ -26,19 +26,9 @@ namespace FacePuncher.Entities
             BackColor = ConsoleColor.Black;
         }
 
-        public StaticDrawable SetLayer(DrawableLayer layer)
-        {
-            _layer = layer; return this;
-        }
-
         public override char GetSymbol(DrawAttributes attribs)
         {
             return Symbol;
-        }
-
-        public StaticDrawable SetSymbol(char symbol)
-        {
-            Symbol = symbol; return this;
         }
 
         public override ConsoleColor GetForeColor(DrawAttributes attribs)
@@ -46,19 +36,9 @@ namespace FacePuncher.Entities
             return ForeColor;
         }
 
-        public StaticDrawable SetForeColor(ConsoleColor color)
-        {
-            ForeColor = color; return this;
-        }
-
         public override ConsoleColor GetBackColor(DrawAttributes attribs)
         {
             return BackColor;
-        }
-
-        public StaticDrawable SetBackColor(ConsoleColor color)
-        {
-            BackColor = color; return this;
         }
     }
 }
