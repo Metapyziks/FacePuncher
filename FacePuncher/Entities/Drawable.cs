@@ -13,7 +13,7 @@ namespace FacePuncher.Entities
 
     public abstract class Drawable : Component
     {
-        public virtual DrawableLayer Layer { get { return DrawableLayer.Items; } }
+        public virtual DrawableLayer Layer { get { return DrawableLayer.Items; } set { } }
 
         public virtual char GetSymbol(DrawAttributes attribs)
         {

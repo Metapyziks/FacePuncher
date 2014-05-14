@@ -6,7 +6,8 @@ namespace FacePuncher.Entities
     {
         private ulong _nextMove;
 
-        public ulong MovePeriod { get; private set; }
+        [ScriptDefinable]
+        public ulong MovePeriod { get; set; }
 
         protected bool CanMove(ulong time)
         {
@@ -19,13 +20,6 @@ namespace FacePuncher.Entities
 
             Entity.Move(dir);
             _nextMove += MovePeriod;
-        }
-
-        public override void LoadFromDefinition(System.Xml.Linq.XElement elem)
-        {
-            if (elem.HasElement("MovePeriod")) {
-                MovePeriod = elem.Element<ulong>("MovePeriod");
-            }
         }
     }
 }

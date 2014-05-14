@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using System.Xml.Linq;
 
 using FacePuncher.Geometry;
 
 namespace FacePuncher.Entities
 {
+    public class ScriptDefinableAttribute : Attribute { }
+
     public abstract class Component
     {
         public static T Create<T>(Entity ent)
@@ -60,7 +64,18 @@ namespace FacePuncher.Entities
 
         public Entity Entity { get; private set; }
 
-        public virtual void LoadFromDefinition(XElement elem) { }
+        public virtual void LoadFromDefinition(XElement elem)
+        {
+            foreach (var sub in elem.Elements()) {
+                var ident = sub.Name.LocalName;
+                var prop = GetType().GetProperty(ident);
+                
+                if (prop == null) continue;
+                if (prop.GetCustomAttributes<ScriptDefinableAttribute>().Count() == 0) return;
+
+                prop.SetValue(this, elem.Element(sub.Name, prop.PropertyType));
+            }
+        }
 
         public virtual void OnInitialize() { }
 

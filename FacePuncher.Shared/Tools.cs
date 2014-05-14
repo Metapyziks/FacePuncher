@@ -35,18 +35,23 @@ namespace FacePuncher
             Direction.SouthWest, Direction.South, Direction.SouthEast
         };
 
-        public static bool HasElement(this XElement elem, string name)
+        public static bool HasElement(this XElement elem, XName name)
         {
             return elem.Elements(name).Count() > 0;
         }
 
-        public static T Element<T>(this XElement elem, string name)
+        public static T Element<T>(this XElement elem, XName name)
             where T : struct
         {
-            if (typeof(T).IsEnum) {
-                return (T) Enum.Parse(typeof(T), elem.Element(name).Value, true);
+            return (T) elem.Element(name, typeof(T));
+        }
+
+        public static Object Element(this XElement elem, XName name, Type type)
+        {
+            if (type.IsEnum) {
+                return Enum.Parse(type, elem.Element(name).Value, true);
             } else {
-                return (T) Convert.ChangeType(elem.Element(name).Value, typeof(T));
+                return Convert.ChangeType(elem.Element(name).Value, type);
             }
         }
 
