@@ -12,5 +12,7 @@
         <ForeColor>Yellow</ForeColor>
     </client:StaticDrawable>
 
-    <server:PlayerControl />
+    <server:PlayerControl>
+        <MovePeriod>100</MovePeriod>
+    </server:PlayerControl>
 </entity>

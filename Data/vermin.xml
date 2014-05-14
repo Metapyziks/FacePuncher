@@ -5,7 +5,7 @@
         <ForeColor>Gray</ForeColor>
     </client:StaticDrawable>
 
-    <server:Vermin>
+    <server:VerminControl>
         <MovePeriod>75</MovePeriod>
-    </server:Vermin>
+    </server:VerminControl>
 </entity>

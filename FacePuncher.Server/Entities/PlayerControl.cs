@@ -5,39 +5,28 @@ using FacePuncher.Geometry;
 
 namespace FacePuncher.Entities
 {
-    class PlayerControl : Component
+    class PlayerControl : AgentControl
     {
-        private ulong _nextMovement;
-
         public Client Client { get; private set; }
-
-        public ulong MovementPeriod
-        {
-            get { return 100; }
-        }
 
         public PlayerControl SetClient(Client client)
         {
             Client = client; return this;
         }
-
+        
         public override void OnThink(ulong time)
         {
-            if (Client == null) return;
+            if (Client == null || !CanMove(time)) return;
 
-            if (time >= _nextMovement) {
-                _nextMovement += MovementPeriod;
+            Client.SendVisibleLevelState(Level, time);
 
-                Client.SendVisibleLevelState(Level, time);
+            var validKeys = Tools.MovementKeys.Keys
+                .Where(x => Entity.CanMove(Tools.MovementKeys[x]))
+                .ToArray();
 
-                var validKeys = Tools.MovementKeys.Keys
-                    .Where(x => Entity.CanMove(Tools.MovementKeys[x]))
-                    .ToArray();
+            Move(Tools.MovementKeys[Client.ReadInput(validKeys)], time);
 
-                Entity.Move(Tools.MovementKeys[Client.ReadInput(validKeys)]);
-
-                Client.SendVisibleLevelState(Level, time + 1);
-            }
+            Client.SendVisibleLevelState(Level, time + 1);
         }
     }
 }
