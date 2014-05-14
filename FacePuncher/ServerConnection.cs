@@ -52,9 +52,7 @@ namespace FacePuncher
             Level = new Level();
 
             _visibility = new List<RoomVisibility>();
-
-            _socket = new TcpClient();
-            _socket.Connect(hostname, port);
+            _socket = new TcpClient(hostname, port);
         }
 
         /// <summary>

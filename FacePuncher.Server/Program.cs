@@ -4,7 +4,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-using FacePuncher.Entities;
 using FacePuncher.Geometry;
 
 namespace FacePuncher.Server
@@ -38,8 +37,6 @@ namespace FacePuncher.Server
                     client.SendVisibleLevelState(_level, _time);
                 }
             }
-
-            _listener.Stop();
         }
 
         static void Main(string[] args)
@@ -64,8 +61,6 @@ namespace FacePuncher.Server
                     Thread.Sleep(100);
                 }
             }
-
-            _listener.Stop();
         }
     }
 }
