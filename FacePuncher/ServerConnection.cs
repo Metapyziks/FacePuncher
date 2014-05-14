@@ -93,6 +93,7 @@ namespace FacePuncher
                     // Receive a set of (partially) visible rooms.
                     int roomCount = reader.ReadInt32();
                     for (int i = 0; i < roomCount; ++i) {
+                        // Each room is identified by its rectangle.
                         var rect = reader.ReadRectangle();
 
                         var vis = _visibility.FirstOrDefault(x => x.Room.Rect == rect);
