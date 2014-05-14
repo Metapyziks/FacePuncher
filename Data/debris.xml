@@ -1,12 +1,3 @@
-<entity name="player">
-    <client:StaticDrawable>
-        <Layer>Characters</Layer>
-        <Symbol>@</Symbol>
-        <ForeColor>Yellow</ForeColor>
-    </client:StaticDrawable>
-    <server:PlayerControl />
-</entity>
-
 <entity name="dust">
     <client:StaticDrawable>
         <Layer>Debris</Layer>

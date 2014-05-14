@@ -92,7 +92,22 @@ namespace FacePuncher
             }
         }
 
-        public static void Load(String path, DefinitionsNamespace ns)
+        public static void LoadFromDirectory(String path, DefinitionsNamespace ns, bool recursive = true)
+        {
+            foreach (var file in Directory.GetFiles(path)) {
+                if (Path.GetExtension(file) != ".xml") continue;
+
+                LoadFromFile(file, ns);
+            }
+
+            if (recursive) {
+                foreach (var dir in Directory.GetDirectories(path)) {
+                    LoadFromDirectory(dir, ns, recursive);
+                }
+            }
+        }
+
+        public static void LoadFromFile(String path, DefinitionsNamespace ns)
         {
             var xml = File.ReadAllText(path);
             

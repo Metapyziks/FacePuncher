@@ -113,7 +113,7 @@ namespace FacePuncher
 
         static void Main(string[] args)
         {
-            Definitions.Load("../../../Data/testing.xml", DefinitionsNamespace.Client);
+            Definitions.LoadFromDirectory("../../../Data", DefinitionsNamespace.Client);
 
             Display.Initialize(96, 32);
 

@@ -44,7 +44,7 @@ namespace FacePuncher.Server
 
         static void Main(string[] args)
         {
-            Definitions.Load("../../../Data/testing.xml", DefinitionsNamespace.Server);
+            Definitions.LoadFromDirectory("../../../Data", DefinitionsNamespace.Server);
 
             var gen = new LevelGenerator();
             _level = gen.Generate(0);
