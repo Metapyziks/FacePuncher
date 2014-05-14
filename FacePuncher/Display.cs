@@ -78,6 +78,8 @@ namespace FacePuncher
         /// </summary>
         public static int Height { get { return Rect.Height; } }
 
+        public static Position Center { get { return new Position(Width / 2, Height / 2); } }
+
         /// <summary>
         /// Prepare the display for rendering.
         /// </summary>
