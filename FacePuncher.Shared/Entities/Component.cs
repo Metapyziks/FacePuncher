@@ -9,7 +9,11 @@ namespace FacePuncher.Entities
         public static T Create<T>(Entity ent)
             where T : Component
         {
-            var t = typeof(T);
+            return (T) Create(typeof(T), ent);
+        }
+
+        public static Component Create(Type t, Entity ent)
+        {
             var c = t.GetConstructor(new Type[0]);
 
             if (c == null) {
@@ -17,7 +21,7 @@ namespace FacePuncher.Entities
                     String.Format("Type {0} is missing a valid constructor.", t.FullName));
             }
 
-            var comp = (T) c.Invoke(new object[0]);
+            var comp = (Component) c.Invoke(new object[0]);
             comp.Entity = ent;
 
             return comp;

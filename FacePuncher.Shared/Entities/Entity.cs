@@ -179,8 +179,12 @@ namespace FacePuncher.Entities
         public T AddComponent<T>()
             where T : Component
         {
-            T comp = Component.Create<T>(this);
-            Type type = typeof(T);
+            return (T) AddComponent(typeof(T));
+        }
+
+        public Component AddComponent(Type type)
+        {
+            Component comp = Component.Create(type, this);
 
             do _compDict.Add(type, comp);
             while ((type = type.BaseType) != typeof(Component));

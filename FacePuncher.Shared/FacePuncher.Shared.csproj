@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\Component.cs" />
+    <Compile Include="Definitions.cs" />
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Geometry\Direction.cs" />
     <Compile Include="Geometry\Level.cs" />
