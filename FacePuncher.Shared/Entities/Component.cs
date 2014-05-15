@@ -46,13 +46,11 @@ namespace FacePuncher.Entities
         {
             var c = t.GetConstructor(new Type[0]);
 
-            // Complain if the constructor does not exist.
             if (c == null) {
                 throw new MissingMethodException(
                     String.Format("Type {0} is missing a valid constructor.", t.FullName));
             }
 
-            // Construct the component and attach it to the entity.
             var comp = (Component) c.Invoke(new object[0]);
             comp.Entity = ent;
 

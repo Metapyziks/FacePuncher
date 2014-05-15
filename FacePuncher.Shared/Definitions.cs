@@ -58,41 +58,29 @@ namespace FacePuncher
         /// </summary>
         static Definitions()
         {
-            // Handler for entity definitions.
             RegisterType("entity", elem => {
                 var components = new List<Tuple<Type, XElement>>();
 
-                // Find all components specified by the definition.
                 foreach (var sub in elem.Elements()) {
                     var typeName = String.Format("FacePuncher.Entities.{0}", sub.Name.LocalName);
                     var type = Assembly.GetEntryAssembly().GetType(typeName);
 
-                    // Make sure the component actually exists.
                     if (type == null) continue;
 
-                    // Record the component along with its element.
                     components.Add(Tuple.Create(type, sub));
                 }
 
-                // Entity constructor.
                 EntityConstructorDelegate ctor = ent => {
                     foreach (var type in components) {
-                        // For each component type, either get and existing
-                        // component instance or create one.
                         var comp = ent.GetComponentOrNull(type.Item1)
                             ?? ent.AddComponent(type.Item1);
                         
-                        // Initialize the component with the XML element
-                        // loaded from the definition file.
                         comp.LoadFromDefinition(type.Item2);
                     }
                 };
 
-                // Get an array of component types to be used to find entity
-                // classes that contain certain components.
                 var compTypes = components.Select(x => x.Item1).ToArray();
 
-                // Register the entity class.
                 if (elem.Attributes("base").Count() > 0) {
                     Entity.Register(elem.Attribute("name").Value, elem.Attribute("base").Value, ctor, compTypes);
                 } else {
@@ -112,13 +100,11 @@ namespace FacePuncher
         {
             _typeHandlers.Add(name, handler);
 
-            // Check to see if any unhandled elements of this type are waiting.
             if (_unhandled.ContainsKey(name)) {
                 foreach (var elem in _unhandled[name]) {
                     handler(elem);
                 }
 
-                // Clear the newly handled elements.
                 _unhandled[name].Clear();
             }
         }
@@ -131,27 +117,22 @@ namespace FacePuncher
         /// <param name="ns">Namespace to purge.</param>
         static void PurgeNamespace(XElement elem, XNamespace ns)
         {
-            // Find attributes that use the given namespace.
             var invalidAttribs = elem.Attributes()
                 .Where(x => x.Name.Namespace == ns)
                 .ToArray();
 
-            // Remove those attributes.
             foreach (var attrib in invalidAttribs) {
                 attrib.Remove();
             }
 
-            // Now find matching elements.
             var invalidElems = elem.Elements()
                 .Where(x => x.Name.Namespace == ns)
                 .ToArray();
 
-            // Kill the children.
             foreach (var subElem in invalidElems) {
                 subElem.Remove();
             }
 
-            // Now to recurse.
             foreach (var subElem in elem.Elements()) {
                 PurgeNamespace(subElem, ns);
             }
@@ -166,14 +147,12 @@ namespace FacePuncher
         /// <param name="recursive">If true, will recurse into sub-directories.</param>
         public static void LoadFromDirectory(String path, DefinitionsNamespace ns, bool recursive = true)
         {
-            // Find and load all XML files.
             foreach (var file in Directory.GetFiles(path)) {
                 if (Path.GetExtension(file) != ".xml") continue;
 
                 LoadFromFile(file, ns);
             }
 
-            // Recurse into sub-directories if required.
             if (recursive) {
                 foreach (var dir in Directory.GetDirectories(path)) {
                     LoadFromDirectory(dir, ns, recursive);
@@ -202,7 +181,6 @@ namespace FacePuncher
                 // don't check characters.
                 var settings = new XmlReaderSettings { CheckCharacters = false };
 
-                // Parse the file into a document object.
                 using (var reader = XmlReader.Create(stream, settings)) {
                     reader.MoveToContent();
                     doc = XDocument.Load(reader);
@@ -211,12 +189,10 @@ namespace FacePuncher
 
             var definitions = doc.Element("definitions");
 
-            // Remove server-specific elements if required.
             if (!ns.HasFlag(DefinitionsNamespace.Server)) {
                 PurgeNamespace(definitions, server);
             }
 
-            // Remove client-specific elements if required.
             if (!ns.HasFlag(DefinitionsNamespace.Client)) {
                 PurgeNamespace(definitions, client);
             }
@@ -224,12 +200,8 @@ namespace FacePuncher
             foreach (var elem in definitions.Elements()) {
                 var name = elem.Name.LocalName;
 
-                // If an existing handler exists for this element type,
-                // invoke it on the element.
                 if (_typeHandlers.ContainsKey(name)) {
                     _typeHandlers[name](elem);
-
-                // Otherwise, buffer it for handling later.
                 } else {
                     if (!_unhandled.ContainsKey(name)) {
                         _unhandled.Add(name, new List<XElement>());
