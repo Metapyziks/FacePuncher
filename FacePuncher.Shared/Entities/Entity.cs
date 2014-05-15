@@ -6,53 +6,102 @@ using FacePuncher.Geometry;
 
 namespace FacePuncher.Entities
 {
-    public delegate void EntityBuilderDelegate(Entity ent);
+    /// <summary>
+    /// Delegate for entity constructors.
+    /// </summary>
+    /// <param name="ent"></param>
+    public delegate void EntityConstructorDelegate(Entity ent);
 
+    /// <summary>
+    /// Represents a game object, with functionality defined
+    /// by a collection of components.
+    /// </summary>
     public sealed class Entity : IEnumerable<Component>
     {
         private static uint _sNextID = 0;
 
-        private class BuilderInfo
+        /// <summary>
+        /// Holds information to be used when constructing an
+        /// entity of a registered class, or to find entity
+        /// classes with certain components.
+        /// </summary>
+        private sealed class ClassInfo
         {
-            public readonly String Name;
-            public readonly String Base;
-            public readonly EntityBuilderDelegate Builder;
-            public readonly Type[] Components;
+            /// <summary>
+            /// Class name for this type of entity.
+            /// </summary>
+            public String Name { get; private set; }
 
-            public BuilderInfo(String name, EntityBuilderDelegate builder, Type[] components)
+            /// <summary>
+            /// Class name for the base class of this entity,
+            /// or null if this entity has no base class.
+            /// </summary>
+            public String Base { get; private set; }
+
+            /// <summary>
+            /// Constructor for this entity class.
+            /// </summary>
+            public EntityConstructorDelegate Constructor { get; private set; }
+
+            /// <summary>
+            /// A list of components this entity class is expected to
+            /// possess by default, for use in finding entity classes
+            /// with a specified set of components.
+            /// </summary>
+            public Type[] Components { get; private set; }
+
+            /// <summary>
+            /// Constructs a new Entity.ClassInfo with no specified
+            /// base class.
+            /// </summary>
+            /// <param name="name">Class name for this type of entity.</param>
+            /// <param name="ctor">Constructor for this entity class.</param>
+            /// <param name="components">Components this class contains by
+            /// default.</param>
+            public ClassInfo(String name, EntityConstructorDelegate ctor, Type[] components)
             {
                 Name = name;
                 Base = null;
-                Builder = builder;
+                Constructor = ctor;
                 Components = components;
             }
 
-            public BuilderInfo(String name, String baseName, EntityBuilderDelegate builder, Type[] components)
+            /// <summary>
+            /// Constructs a new Entity.ClassInfo with a specified
+            /// base class.
+            /// </summary>
+            /// <param name="name">Class name for this type of entity.</param>
+            /// <param name="baseName">Class name for the base class for this
+            /// type of entity.</param>
+            /// <param name="ctor">Constructor for this entity class.</param>
+            /// <param name="components">Components this class contains by
+            /// default.</param>
+            public ClassInfo(String name, String baseName, EntityConstructorDelegate ctor, Type[] components)
             {
                 Name = name;
                 Base = baseName;
-                Builder = builder;
+                Constructor = ctor;
                 Components = components;
             }
         }
 
-        private static Dictionary<String, BuilderInfo> _sEntBuilders
-            = new Dictionary<string, BuilderInfo>();
+        private static Dictionary<String, ClassInfo> _sEntBuilders
+            = new Dictionary<string, ClassInfo>();
 
-        public static void Register(String name, EntityBuilderDelegate builder, params Type[] componentTypes)
+        public static void Register(String name, EntityConstructorDelegate ctor, params Type[] componentTypes)
         {
             if (!_sEntBuilders.ContainsKey(name))
-                _sEntBuilders.Add(name, new BuilderInfo(name, builder, componentTypes));
+                _sEntBuilders.Add(name, new ClassInfo(name, ctor, componentTypes));
             else
-                _sEntBuilders[name] = new BuilderInfo(name, builder, componentTypes);
+                _sEntBuilders[name] = new ClassInfo(name, ctor, componentTypes);
         }
 
-        public static void Register(String name, String baseName, EntityBuilderDelegate builder, params Type[] componentTypes)
+        public static void Register(String name, String baseName, EntityConstructorDelegate ctor, params Type[] componentTypes)
         {
             if (!_sEntBuilders.ContainsKey(name))
-                _sEntBuilders.Add(name, new BuilderInfo(name, baseName, builder, componentTypes));
+                _sEntBuilders.Add(name, new ClassInfo(name, baseName, ctor, componentTypes));
             else
-                _sEntBuilders[name] = new BuilderInfo(name, baseName, builder, componentTypes);
+                _sEntBuilders[name] = new ClassInfo(name, baseName, ctor, componentTypes);
         }
 
         public static String GetBase(String className)
@@ -102,10 +151,10 @@ namespace FacePuncher.Entities
 
         public static Entity Create(String type)
         {
-            BuilderInfo info = _sEntBuilders[type];
+            ClassInfo info = _sEntBuilders[type];
             Entity ent = (info.Base != null ? Create(info.Base) : Create());
             ent.PushClassName(type);
-            info.Builder(ent);
+            info.Constructor(ent);
             return ent;
         }
 
@@ -116,10 +165,10 @@ namespace FacePuncher.Entities
 
         public static Entity Create(uint id, String type)
         {
-            BuilderInfo info = _sEntBuilders[type];
+            ClassInfo info = _sEntBuilders[type];
             Entity ent = (info.Base != null ? Create(id, info.Base) : Create(id));
             ent.PushClassName(type);
-            info.Builder(ent);
+            info.Constructor(ent);
             return ent;
         }
 

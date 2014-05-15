@@ -33,6 +33,8 @@ namespace FacePuncher
         Shared = 3
     }
 
+    public delegate void DefinitionHandlerDelegate(XElement elem);
+
     /// <summary>
     /// Utility class for loading and handling definitions
     /// loaded from XML files.
@@ -42,8 +44,8 @@ namespace FacePuncher
         /// <summary>
         /// Dictionary of definition type names mapped to their handlers.
         /// </summary>
-        private static Dictionary<String, Action<XElement>> _typeHandlers
-            = new Dictionary<string, Action<XElement>>();
+        private static Dictionary<String, DefinitionHandlerDelegate> _typeHandlers
+            = new Dictionary<string, DefinitionHandlerDelegate>();
 
         /// <summary>
         /// Buffer for unhandled definitions.
@@ -73,7 +75,7 @@ namespace FacePuncher
                 }
 
                 // Entity constructor.
-                EntityBuilderDelegate ctor = ent => {
+                EntityConstructorDelegate ctor = ent => {
                     foreach (var type in components) {
                         // For each component type, either get and existing
                         // component instance or create one.
@@ -106,7 +108,7 @@ namespace FacePuncher
         /// <param name="name">Definition type name to register.</param>
         /// <param name="handler">Hander to be invoked on elements of
         /// the specified type.</param>
-        public static void RegisterType(String name, Action<XElement> handler)
+        public static void RegisterType(String name, DefinitionHandlerDelegate handler)
         {
             _typeHandlers.Add(name, handler);
 
