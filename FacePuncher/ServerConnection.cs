@@ -6,15 +6,16 @@ using System.Net.Sockets;
 
 using FacePuncher.Entities;
 using FacePuncher.Geometry;
+using System.Threading.Tasks;
+using FacePuncher.Network;
 
 namespace FacePuncher
 {
     /// <summary>
     /// Handles communication with a game server.
     /// </summary>
-    class ServerConnection : IDisposable
+    class ServerConnection : Connection, IDisposable
     {
-        private TcpClient _socket;
         private List<RoomVisibility> _visibility;
 
         private uint _playerID;
@@ -41,18 +42,18 @@ namespace FacePuncher
         /// currently visible or have been seen in the past.
         /// </summary>
         public IEnumerable<RoomVisibility> Visibility { get { return _visibility; } }
-        
+
         /// <summary>
         /// Creates a new connection to the specified host and port.
         /// </summary>
         /// <param name="hostname">Hostname of the desired server.</param>
         /// <param name="port">Port number of the desired server.</param>
         public ServerConnection(String hostname, int port)
+            : base(new TcpClient(hostname, port))
         {
             Level = new Level();
 
             _visibility = new List<RoomVisibility>();
-            _socket = new TcpClient(hostname, port);
         }
 
         /// <summary>
@@ -60,12 +61,13 @@ namespace FacePuncher
         /// </summary>
         /// <param name="reader">Reader to read the entity from.</param>
         /// <returns>An entity received from the server.</returns>
-        private Entity ReadEntity(BinaryReader reader)
+        private async Task<Entity> ReadEntity(NetworkStream stream)
         {
-            uint id = reader.ReadUInt32();
-            string className = reader.ReadString();
+            uint id = await stream.ReadUInt32();
+            string className = await stream.ReadString();
 
-            if (id == _playerID && Player != null) {
+            if (id == _playerID && Player != null)
+            {
                 return Player;
             }
 
@@ -80,109 +82,86 @@ namespace FacePuncher
         /// <summary>
         /// Reads a partially observable level state update from the server.
         /// </summary>
-        private void ReadVisibleLevelState()
+        private async Task ReadVisibleLevelState(NetworkStream stream)
         {
-            var stream = _socket.GetStream();
-            using (var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true)) {
-                Time = reader.ReadUInt64();
-                _playerID = reader.ReadUInt32();
+            Time = await stream.ReadUInt64();
+            _playerID = await stream.ReadUInt32();
 
-                lock (Level) {
-                    int roomCount = reader.ReadInt32();
-                    for (int i = 0; i < roomCount; ++i) {
-                        // Each room is identified by its rectangle.
-                        var rect = reader.ReadRectangle();
+            // removed Level lock
+            {
+                int roomCount = await stream.ReadInt32();
+                for (int i = 0; i < roomCount; ++i)
+                {
+                    // Each room is identified by its rectangle.
+                    var rect = await stream.ReadRectangle();
 
-                        var vis = _visibility.FirstOrDefault(x => x.Room.Rect == rect);
+                    var vis = _visibility.FirstOrDefault(x => x.Room.Rect == rect);
 
-                        if (vis == null) {
-                            var room = Level.CreateRoom(rect);
-                            vis = new RoomVisibility(room);
+                    if (vis == null)
+                    {
+                        var room = Level.CreateRoom(rect);
+                        vis = new RoomVisibility(room);
 
-                            _visibility.Add(vis);
+                        _visibility.Add(vis);
+                    }
+
+                    int tileCount = await stream.ReadInt32();
+                    for (int j = 0; j < tileCount; ++j)
+                    {
+                        var pos = await stream.ReadPosition();
+                        var state = (TileState)await stream.ReadByteAsync();
+                        var tile = vis.Room[pos];
+
+                        vis.Reveal(pos, Time);
+                        tile.State = state;
+
+                        // The fact that this here mutates is seriously annoying.
+                        var ents = tile.ToArray();
+                        foreach (var ent in ents)
+                        {
+                            ent.Remove();
                         }
 
-                        int tileCount = reader.ReadInt32();
-                        for (int j = 0; j < tileCount; ++j) {
-                            var pos = reader.ReadPosition();
-                            var state = (TileState) reader.ReadByte();
-                            var tile = vis.Room[pos];
-
-                            vis.Reveal(pos, Time);
-                            tile.State = state;
-
-                            var ents = tile.ToArray();
-                            foreach (var ent in ents) {
-                                ent.Remove();
-                            }
-
-                            var entCount = reader.ReadUInt16();
-                            for (int k = 0; k < entCount; ++k) {
-                                var ent = ReadEntity(reader);
-                                ent.Place(tile);
-                            }
+                        var entCount = await stream.ReadUInt16();
+                        for (int k = 0; k < entCount; ++k)
+                        {
+                            var ent = await ReadEntity(stream);
+                            ent.Place(tile);
                         }
                     }
                 }
             }
-        }
 
-        /// <summary>
-        /// Fulfills a key input request from the server using console input.
-        /// </summary>
-        private void SendInput()
-        {
-            ConsoleKey[] validKeys;
+            Program.Draw(this);
 
-            var stream = _socket.GetStream();
-            using (var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true)) {
-                validKeys = new ConsoleKey[reader.ReadUInt16()];
-                for (int i = 0; i < validKeys.Length; ++i) {
-                    validKeys[i] = (ConsoleKey) reader.ReadUInt16();
-                }
-            }
-
-            // Clear any buffered key inputs.
-            while (Console.KeyAvailable) Console.ReadKey(true);
-
-            ConsoleKey key;
-            do {
-                key = Console.ReadKey(true).Key;
-            } while (!validKeys.Contains(key));
-
-            using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, true)) {
-                writer.Write((ushort) key);
-                writer.Flush();
-            }
+            Console.CursorTop = 0;
+            Console.CursorLeft = 0;
+            Console.Write(Time);
         }
 
         /// <summary>
         /// Processes a single packet incident from the server.
         /// </summary>
-        /// <returns>True if further packets may be accepted, false otherwise.</returns>
-        public bool ProcessPacket()
+        protected override async Task HandlePushedPacket()
         {
-            var stream = _socket.GetStream();
-            var packetType = (PacketType) stream.ReadByte();
+            var packetType = (ServerPacketType)await _stream.ReadByteAsync();
 
-            switch (packetType) {
-                case PacketType.LevelState:
-                    ReadVisibleLevelState(); break;
-                case PacketType.InputRequest:
-                    SendInput(); break;
+            switch (packetType)
+            {
+                case ServerPacketType.LevelState:
+                    await ReadVisibleLevelState(_stream);
+                    break;
                 default:
                     throw new Exception("Unexpected packet type");
             }
-
-            return _socket.Connected;
         }
 
-        /// <summary>
-        /// Disposes of any unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        internal void SendIntent(Intent intent)
         {
-            _socket.Close();
+            _stream.Write((byte)0); // Pushed packet
+            _stream.Write((byte)ClientPacketType.PlayerIntent);
+            _stream.WriteProtoBuf(intent);
+            _stream.Flush();
         }
     }
 }

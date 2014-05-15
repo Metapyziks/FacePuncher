@@ -24,11 +24,9 @@ namespace FacePuncher.Entities
 
         public override void OnThink(ulong time)
         {
-            // Make sure the client is up-to-date with the world before
-            // they choose to act.
-            Client.SendVisibleLevelState(Level, time);
-
             Intent.HandleIntent(ref _intent, (MoveIntent mi) => HandleMove(mi, time)); // This isn't quite optimal
+
+            Client.SendVisibleLevelState(Level, time);
         }
 
         private bool HandleMove(MoveIntent intent, ulong time)

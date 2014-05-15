@@ -5,6 +5,9 @@ using System.Linq;
 using System.Xml.Linq;
 
 using FacePuncher.Geometry;
+using FacePuncher.Network;
+using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace FacePuncher
 {
@@ -60,34 +63,34 @@ namespace FacePuncher
             return val < min ? min : val > max ? max : val;
         }
 
-        public static void Write(this BinaryWriter writer, Position pos)
+        public static void Write(this NetworkStream stream, Position pos)
         {
-            writer.Write(pos.X);
-            writer.Write(pos.Y);
+            stream.Write(pos.X);
+            stream.Write(pos.Y);
         }
 
-        public static Position ReadPosition(this BinaryReader reader)
+        public static async Task<Position> ReadPosition(this NetworkStream stream)
         {
             return new Position(
-                reader.ReadInt32(),
-                reader.ReadInt32());
+                await stream.ReadInt32(),
+                await stream.ReadInt32());
         }
 
-        public static void Write(this BinaryWriter writer, Rectangle rect)
+        public static void Write(this NetworkStream stream, Rectangle rect)
         {
-            writer.Write(rect.Left);
-            writer.Write(rect.Top);
-            writer.Write(rect.Width);
-            writer.Write(rect.Height);
+            stream.Write(rect.Left);
+            stream.Write(rect.Top);
+            stream.Write(rect.Width);
+            stream.Write(rect.Height);
         }
 
-        public static Rectangle ReadRectangle(this BinaryReader reader)
+        public static async Task<Rectangle> ReadRectangle(this NetworkStream stream)
         {
             return new Rectangle(
-                reader.ReadInt32(),
-                reader.ReadInt32(),
-                reader.ReadInt32(),
-                reader.ReadInt32());
+                await stream.ReadInt32(),
+                await stream.ReadInt32(),
+                await stream.ReadInt32(),
+                await stream.ReadInt32());
         }
     }
 }

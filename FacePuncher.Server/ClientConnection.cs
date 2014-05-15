@@ -6,13 +6,15 @@ using System.Net.Sockets;
 
 using FacePuncher.Entities;
 using FacePuncher.Geometry;
+using FacePuncher.Network;
+using System.Threading.Tasks;
 
 namespace FacePuncher
 {
     /// <summary>
     /// Handles communication with an individual client.
     /// </summary>
-    class ClientConnection
+    class ClientConnection : Connection
     {
         /// <summary>
         /// Maximum range of a clients visibility.
@@ -37,6 +39,7 @@ namespace FacePuncher
         /// <param name="socket">Socket connected to the client.</param>
         /// <param name="level">Level to create a player in.</param>
         public ClientConnection(TcpClient socket, Level level)
+            : base(socket)
         {
             _socket = socket;
 
@@ -51,7 +54,7 @@ namespace FacePuncher
                 .Where(x => x.Any(y => y.State == TileState.Floor))
                 .ToArray();
 
-            var room = rooms[(int) (DateTime.Now.Ticks % rooms.Length)];
+            var room = rooms[(int)(DateTime.Now.Ticks % rooms.Length)];
 
             var tiles = room
                 .Where(x => x.State == TileState.Floor)
@@ -65,10 +68,10 @@ namespace FacePuncher
         /// </summary>
         /// <param name="writer">Writer to write the entity to.</param>
         /// <param name="ent">Entity to send to the client.</param>
-        private void SendEntity(BinaryWriter writer, Entity ent)
+        private void SendEntity(Entity ent)
         {
-            writer.Write(ent.ID);
-            writer.Write(ent.ClassName);
+            _stream.Write(ent.ID);
+            _stream.Write(ent.ClassName);
 
             // TODO: Send component information?
         }
@@ -80,80 +83,52 @@ namespace FacePuncher
         /// <param name="time">Current game time.</param>
         public void SendVisibleLevelState(Level level, ulong time)
         {
-            try {
-                var stream = _socket.GetStream();
-                using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, true)) {
-                    writer.Write((byte) PacketType.LevelState);
+            _stream.Write((byte)0); // Pushed packet
+            _stream.Write((byte)ServerPacketType.LevelState);
 
-                    writer.Write(time);
-                    writer.Write(Player.ID);
+            _stream.Write(time);
+            _stream.Write(Player.ID);
 
-                    lock (level) {
-                        var visibleRooms = _visibility
-                            .Where(x => x.UpdateVisibility(Player.Position, MaxVisibilityRange, time))
-                            .ToArray();
+            lock (level)
+            {
+                var visibleRooms = _visibility
+                    .Where(x => x.UpdateVisibility(Player.Position, MaxVisibilityRange, time))
+                    .ToArray();
 
-                        writer.Write(visibleRooms.Length);
-                        foreach (var vis in visibleRooms) {
-                            writer.Write(vis.Room.Rect);
+                _stream.Write(visibleRooms.Length);
+                foreach (var vis in visibleRooms)
+                {
+                    _stream.Write(vis.Room.Rect);
 
-                            var visibleTiles = vis.GetVisible(time).ToArray();
+                    var visibleTiles = vis.GetVisible(time).ToArray();
 
-                            writer.Write(visibleTiles.Length);
-                            foreach (var tile in visibleTiles) {
-                                writer.Write(tile.RelativePosition);
-                                writer.Write((byte) tile.State);
+                    _stream.Write(visibleTiles.Length);
+                    foreach (var tile in visibleTiles)
+                    {
+                        _stream.Write(tile.RelativePosition);
+                        _stream.Write((byte)tile.State);
 
-                                writer.Write((ushort) tile.EntityCount);
-                                foreach (var ent in tile) {
-                                    SendEntity(writer, ent);
-                                }
-                            }
+                        _stream.Write((ushort)tile.EntityCount);
+                        foreach (var ent in tile)
+                        {
+                            SendEntity(ent);
                         }
                     }
-
-                    writer.Flush();
                 }
+            }
 
-            // TODO: Forcibly kick the client or something.
-            } catch { }
+            _stream.Flush();
         }
 
-        /// <summary>
-        /// Sends a request for a key input and returns the response.
-        /// </summary>
-        /// <param name="validKeys">A set of valid keys that may be used.</param>
-        /// <returns>A key entered by the client.</returns>
-        public ConsoleKey ReadInput(ConsoleKey[] validKeys)
+        protected override async Task HandlePushedPacket()
         {
-            try {
-                var stream = _socket.GetStream();
-
-                using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, true)) {
-                    writer.Write((byte) PacketType.InputRequest);
-
-                    writer.Write((ushort) validKeys.Length);
-                    foreach (var key in validKeys) {
-                        writer.Write((ushort) key);
-                    }
-
-                    writer.Flush();
-                }
-
-                ConsoleKey response;
-
-                using (var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true)) {
-                    response = (ConsoleKey) reader.ReadUInt16();
-                }
-
-                if (!validKeys.Contains(response)) {
-                    throw new Exception("Invalid key sent by client");
-                }
-
-                return response;
-            } catch {
-                // TODO: This is pretty nasty. Don't do this.
-                return validKeys.First();
+            switch ((ClientPacketType)await _stream.ReadByteAsync())
+            {
+                case ClientPacketType.PlayerIntent:
+                    Player.GetComponent<PlayerControl>().Intent = await _stream.ReadProtoBuf<Intent>();
+                    break;
+                default:
+                    break;
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using FacePuncher.Geometry;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace FacePuncher
 {
-    [Serializable]
+    [ProtoContract]
+    [ProtoInclude(1, typeof(MoveIntent))]
     public abstract class Intent
     {
         public static void HandleIntent<THandled>(ref Intent intent, Func<THandled, bool> handler) where THandled : Intent
@@ -21,10 +23,12 @@ namespace FacePuncher
         }
     }
 
-    [Serializable]
+    [ProtoContract]
     public class MoveIntent : Intent
     {
+        [ProtoMember(1)]
         public Direction Direction { get; set; }
+        public MoveIntent() : this(Direction.None) { }
         public MoveIntent(Direction direction)
         { Direction = direction; }
     }
