@@ -31,12 +31,6 @@ namespace FacePuncher
         public Entity Player { get; private set; }
 
         /// <summary>
-        /// Gets the server time corresponding to the most recent game
-        /// state update.
-        /// </summary>
-        public ulong Time { get; private set; }
-
-        /// <summary>
         /// Gets a set of visibility masks for rooms that are either
         /// currently visible or have been seen in the past.
         /// </summary>
@@ -84,7 +78,7 @@ namespace FacePuncher
         {
             var stream = _socket.GetStream();
             using (var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true)) {
-                Time = reader.ReadUInt64();
+                Level.Time = reader.ReadUInt64();
                 _playerID = reader.ReadUInt32();
 
                 lock (Level) {
@@ -108,7 +102,7 @@ namespace FacePuncher
                             var state = (TileState) reader.ReadByte();
                             var tile = vis.Room[pos];
 
-                            vis.Reveal(pos, Time);
+                            vis.Reveal(pos, Level.Time);
                             tile.State = state;
 
                             var ents = tile.ToArray();

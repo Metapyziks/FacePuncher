@@ -15,19 +15,19 @@ namespace FacePuncher.Entities
         /// </summary>
         public ClientConnection Client { get; set; }
 
-        public override void OnThink(ulong time)
+        public override void OnThink()
         {
-            if (Client == null || !CanMove(time)) return;
+            if (Client == null || !CanMove) return;
 
-            Client.SendVisibleLevelState(Level, time);
+            Client.SendVisibleLevelState(Level);
 
             var validKeys = Tools.MovementKeys.Keys
                 .Where(x => Entity.CanMove(Tools.MovementKeys[x]))
                 .ToArray();
 
-            Move(Tools.MovementKeys[Client.ReadInput(validKeys)], time);
+            Move(Tools.MovementKeys[Client.ReadInput(validKeys)]);
 
-            Client.SendVisibleLevelState(Level, time + 1);
+            Client.SendVisibleLevelState(Level, 1);
         }
     }
 }

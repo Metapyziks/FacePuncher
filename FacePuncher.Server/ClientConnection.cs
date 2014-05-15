@@ -76,10 +76,13 @@ namespace FacePuncher
         /// <summary>
         /// Sends a partially observable level state update to the client.
         /// </summary>
+        /// <param name="timeOffset">How far into the future the level time
+        /// sent should be offset.</param>
         /// <param name="level">Level to send.</param>
-        /// <param name="time">Current game time.</param>
-        public void SendVisibleLevelState(Level level, ulong time)
+        public void SendVisibleLevelState(Level level, ulong timeOffset = 0)
         {
+            var time = level.Time + timeOffset;
+
             try {
                 var stream = _socket.GetStream();
                 using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, true)) {

@@ -10,14 +10,25 @@ namespace FacePuncher.Geometry
     {
         private List<Room> _rooms;
 
+        public ulong Time { get; set; }
+
         /// <summary>
         /// Constructs an empty level.
         /// </summary>
         public Level()
         {
             _rooms = new List<Room>();
+
+            Time = 1;
         }
 
+        /// <summary>
+        /// Creates a new room with the specified rectangle and
+        /// adds it to the level.
+        /// </summary>
+        /// <param name="rect">Rectangle that specifies the location
+        /// and dimensions of the new room.</param>
+        /// <returns>A newly created room.</returns>
         public Room CreateRoom(Rectangle rect)
         {
             var room = new Room(this, rect);
@@ -51,11 +62,13 @@ namespace FacePuncher.Geometry
             }
         }
 
-        public void Think(ulong time)
+        public void Think()
         {
             foreach (var room in _rooms) {
-                room.Think(time);
+                room.Think();
             }
+
+            ++Time;
         }
 
         public IEnumerator<Room> GetEnumerator()

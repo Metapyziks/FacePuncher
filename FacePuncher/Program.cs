@@ -34,7 +34,7 @@ namespace FacePuncher
                     Display.Clear();
 
                     lock (server.Level) {
-                        var attribs = new DrawAttributes(server.Time, flash++);
+                        var attribs = new DrawAttributes(flash++);
                         var rect = Display.Rect + server.Player.Position - Display.Center;
 
                         foreach (var vis in server.Visibility) {

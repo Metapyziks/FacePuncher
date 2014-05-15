@@ -87,10 +87,10 @@ namespace FacePuncher.Geometry
             return GetNeighbour(new Position(((int) dir) % 3 - 1, ((int) dir) / 3 - 1));
         }
 
-        public void Think(ulong time)
+        public void Think()
         {
             for (int i = _entities.Count - 1; i >= 0; --i) {
-                _entities[i].Think(time);
+                _entities[i].Think();
             }
         }
 

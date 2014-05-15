@@ -8,29 +8,22 @@ using FacePuncher.Geometry;
 namespace FacePuncher
 {
     /// <summary>
-    /// Object containing information used when drawing 
+    /// Structure containing information used when drawing 
     /// tiles and entities.
     /// </summary>
-    public class DrawAttributes
+    public struct DrawAttributes
     {
-        /// <summary>
-        /// Current game time at the time of drawing.
-        /// </summary>
-        public ulong Time { get; private set; }
-
         /// <summary>
         /// Flash state for animating entities.
         /// </summary>
-        public int Flash { get; private set; }
+        public readonly int Flash;
 
         /// <summary>
         /// Initializes a DrawAttributes structure.
         /// </summary>
-        /// <param name="time">Current game time at the time of drawing.</param>
         /// <param name="flash">Flash state for animating entities.</param>
-        public DrawAttributes(ulong time, int flash)
+        public DrawAttributes(int flash)
         {
-            Time = time;
             Flash = flash;
         }
     }
@@ -80,15 +73,15 @@ namespace FacePuncher
             screenPos += roomPos - rect.TopLeft;
             rect = subRect - roomPos;
 
-            foreach (var tile in vis.GetVisible(attribs.Time)) {
+            foreach (var tile in vis.GetVisible(vis.Room.Level.Time)) {
                 if (rect.Intersects(tile.RelativePosition)) {
                     tile.Draw(screenPos + tile.RelativePosition, attribs, true);
                 }
             }
 
-            foreach (var tile in vis.GetRemembered(attribs.Time)) {
+            foreach (var tile in vis.GetRemembered(vis.Room.Level.Time)) {
                 if (rect.Intersects(tile.RelativePosition)) {
-                    tile.Draw(screenPos + tile.RelativePosition, new DrawAttributes(attribs.Time, 0), false);
+                    tile.Draw(screenPos + tile.RelativePosition, new DrawAttributes(0), false);
                 }
             }
         }

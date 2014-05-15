@@ -681,19 +681,18 @@ namespace FacePuncher.Entities
         /// actions, while also recursively invoking this method on any child
         /// entities.
         /// </summary>
-        /// <param name="time">Current game time.</param>
-        public void Think(ulong time)
+        public void Think()
         {
-            if (!CanThink || _lastThink >= time) return;
+            if (!CanThink || _lastThink >= Level.Time) return;
 
-            _lastThink = time;
+            _lastThink = Level.Time;
 
             UpdateComponents();
 
             for (int i = _comps.Count - 1; i >= 0; --i)
-                _comps[i].OnThink(time);
+                _comps[i].OnThink();
 
-            foreach (var child in _children) child.Think(time);
+            foreach (var child in _children) child.Think();
         }
 
         /// <summary>

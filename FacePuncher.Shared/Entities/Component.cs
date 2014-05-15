@@ -92,6 +92,14 @@ namespace FacePuncher.Entities
         }
 
         /// <summary>
+        /// Gets the current game time in ticks.
+        /// </summary>
+        protected ulong Time
+        {
+            get { return Level.Time; }
+        }
+
+        /// <summary>
         /// Gets the position of the host entity relative to its
         /// contatining room.
         /// </summary>
@@ -155,8 +163,7 @@ namespace FacePuncher.Entities
         /// <summary>
         /// Called once per game step.
         /// </summary>
-        /// <param name="time">Current game time.</param>
-        public virtual void OnThink(ulong time) { }
+        public virtual void OnThink() { }
 
         /// <summary>
         /// Called when either the component is removed from its

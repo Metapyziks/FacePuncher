@@ -20,7 +20,7 @@ namespace FacePuncher.Geometry
         
         private Tile[,] _tiles;
 
-        public Room(Level level, Rectangle rect)
+        internal Room(Level level, Rectangle rect)
         {
             Level = level;
             Rect = rect;
@@ -75,10 +75,10 @@ namespace FacePuncher.Geometry
             }
         }
 
-        public void Think(ulong time)
+        public void Think()
         {
             foreach (var tile in _tiles) {
-                tile.Think(time);
+                tile.Think();
             }
         }
 

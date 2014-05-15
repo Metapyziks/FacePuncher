@@ -21,8 +21,6 @@ namespace FacePuncher.Server
         static Level _level;
         static List<ClientConnection> _clients;
 
-        static ulong _time;
-
         /// <summary>
         /// Main loop for the thread that accepts new clients.
         /// </summary>
@@ -41,7 +39,7 @@ namespace FacePuncher.Server
                     Console.WriteLine("New client connected from {0}.", socket.Client.RemoteEndPoint);
                     
                     _clients.Add(client);
-                    client.SendVisibleLevelState(_level, _time);
+                    client.SendVisibleLevelState(_level);
                 }
             }
         }
@@ -60,7 +58,6 @@ namespace FacePuncher.Server
             _level = gen.Generate(0);
 
             _capacity = 16;
-            _time = 1;
 
             _clients = new List<ClientConnection>();
 
@@ -69,7 +66,7 @@ namespace FacePuncher.Server
 
             while (true) {
                 if (_clients.Count > 0) {
-                    _level.Think(_time++);
+                    _level.Think();
                 } else {
                     Thread.Sleep(100);
                 }
