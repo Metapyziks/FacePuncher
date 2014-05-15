@@ -14,27 +14,34 @@ namespace FacePuncher.Entities
         /// Gets or sets the client that dictates the actions of this entity.
         /// </summary>
         public ClientConnection Client { get; set; }
+        private Intent _intent;
+
+        public Intent Intent
+        {
+            get { return _intent; }
+            set { _intent = value; }
+        }
 
         public override void OnThink(ulong time)
         {
-            // Check to see if no client is attached or the entity can't move.
-            if (Client == null || !CanMove(time)) return;
-
             // Make sure the client is up-to-date with the world before
             // they choose to act.
             Client.SendVisibleLevelState(Level, time);
 
-            // Find the movement keys corresponding to the directions this
-            // entity can move.
-            var validKeys = Tools.MovementKeys.Keys
-                .Where(x => Entity.CanMove(Tools.MovementKeys[x]))
-                .ToArray();
+            Intent.HandleIntent(ref _intent, (MoveIntent mi) => HandleMove(mi, time)); // This isn't quite optimal
+        }
 
-            // Move in the direction the client specifies.
-            Move(Tools.MovementKeys[Client.ReadInput(validKeys)], time);
+        private bool HandleMove(MoveIntent intent, ulong time)
+        {
+            var success = Move(intent.Direction, time);
 
-            // Let the client know what they can see in their new position.
-            Client.SendVisibleLevelState(Level, time + 1);
+            if (success)
+            {
+                // Let the client know what they can see in their new position.
+                Client.SendVisibleLevelState(Level, time + 1);
+            }
+
+            return success;
         }
     }
 }
