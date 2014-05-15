@@ -256,6 +256,7 @@ namespace FacePuncher.Entities
         private List<Entity> _children;
         private bool _compsChanged;
         private ulong _lastThink;
+        private Component _thinkProbe;
 
         /// <summary>
         /// Gets the numeric identifier for this entity.
@@ -309,6 +310,14 @@ namespace FacePuncher.Entities
         public bool IsValid
         {
             get { return (HasParent && Parent.IsValid) || (Tile != null && Tile.Contains(this)); }
+        }
+
+        /// <summary>
+        /// If true, this entity contains a component that overrides OnThink().
+        /// </summary>
+        public bool CanThink
+        {
+            get { return _thinkProbe != null || _children.Any(x => x.CanThink); }
         }
 
         /// <summary>
@@ -374,6 +383,8 @@ namespace FacePuncher.Entities
 
             child.Parent = this;
 
+            child.UpdateComponents();
+
             foreach (var comp in child) {
                 comp.OnPlace();
             }
@@ -404,6 +415,10 @@ namespace FacePuncher.Entities
         /// <returns>The component, for convenience.</returns>
         private Component AddComponent(Component comp, Type type)
         {
+            if (_thinkProbe == null && !type.GetMethod("OnThink").IsAbstract) {
+                _thinkProbe = comp;
+            }
+
             do _compDict.Add(type, comp);
             while ((type = type.BaseType) != typeof(Component));
 
@@ -435,12 +450,14 @@ namespace FacePuncher.Entities
             return AddComponent(Component.Create(type, this), type);
         }
 
-        public Entity RemoveComponent<T>()
-            where T : Component
+        /// <summary>
+        /// Removes the specified component from this entity's component
+        /// list and dictionary.
+        /// </summary>
+        /// <param name="comp">Component to remove.</param>
+        /// <param name="type">Type of the component.</param>
+        private void RemoveComponent(Component comp, Type type)
         {
-            T comp = GetComponent<T>();
-            Type type = typeof(T);
-
             comp.OnRemove();
 
             do _compDict.Remove(type);
@@ -448,36 +465,75 @@ namespace FacePuncher.Entities
 
             _comps.Remove(comp);
 
+            if (_thinkProbe == comp) {
+                _thinkProbe = _comps.FirstOrDefault(x => !x.GetType().GetMethod("OnThink").IsAbstract);
+            }
+
             _compsChanged = true;
-
-            return this;
         }
 
-        public TNew SwapComponent<TOld, TNew>()
-            where TOld : Component
-            where TNew : Component, new()
+        /// <summary>
+        /// Removes a component from this entity.
+        /// </summary>
+        /// <typeparam name="T">Type of the component to remove.</typeparam>
+        public void RemoveComponent<T>()
+            where T : Component
         {
-            RemoveComponent<TOld>();
-            return AddComponent<TNew>();
+            RemoveComponent(GetComponent<T>(), typeof(T));
         }
 
+        /// <summary>
+        /// Removes a component from this entity.
+        /// </summary>
+        /// <param name="type">Type of the component to remove.</param>
+        public void RemoveComponent(Type type)
+        {
+            RemoveComponent(GetComponent(type), type);
+        }
+
+        /// <summary>
+        /// Tests to see whether a component instance of the
+        /// specified type is currently used by this entity.
+        /// </summary>
+        /// <typeparam name="T">Type of the component to look for.</typeparam>
+        /// <returns>True if this entity contains a component of
+        /// the specified type, and false otherwise.</returns>
         public bool HasComponent<T>()
             where T : Component
         {
             return _compDict.ContainsKey(typeof(T));
         }
 
-        public bool HasComponent(Type t)
+        /// <summary>
+        /// Tests to see whether a component instance of the
+        /// specified type is currently used by this entity.
+        /// </summary>
+        /// <param name="type">Type of the component to look for.</param>
+        /// <returns>True if this entity contains a component of
+        /// the specified type, and false otherwise.</returns>
+        public bool HasComponent(Type type)
         {
-            return _compDict.ContainsKey(t);
+            return _compDict.ContainsKey(type);
         }
 
+        /// <summary>
+        /// Gets a component of the specified type used by this entity.
+        /// </summary>
+        /// <typeparam name="T">Type of the component to look for.</typeparam>
+        /// <returns>A component instance of the specified type.</returns>
         public T GetComponent<T>()
             where T : Component
         {
             return (T) _compDict[typeof(T)];
         }
 
+        /// <summary>
+        /// Gets a component of the specified type used by this entity if one
+        /// exists, and otherwise returns null.
+        /// </summary>
+        /// <typeparam name="T">Type of the component to look for.</typeparam>
+        /// <returns>A component instance of the specified type if one is
+        /// found, and otherwise null.</returns>
         public T GetComponentOrNull<T>()
             where T : Component
         {
@@ -488,22 +544,40 @@ namespace FacePuncher.Entities
             }
         }
 
-        public Component GetComponent(Type t)
+        /// <summary>
+        /// Gets a component of the specified type used by this entity.
+        /// </summary>
+        /// <param name="type">Type of the component to look for.</param>
+        /// <returns>A component instance of the specified type.</returns>
+        public Component GetComponent(Type type)
         {
-            return _compDict[t];
+            return _compDict[type];
         }
 
-        public Component GetComponentOrNull(Type t)
+        /// <summary>
+        /// Gets a component of the specified type used by this entity if one
+        /// exists, and otherwise returns null.
+        /// </summary>
+        /// <param name="type">Type of the component to look for.</param>
+        /// <returns>A component instance of the specified type if one is
+        /// found, and otherwise null.</returns>
+        public Component GetComponentOrNull(Type type)
         {
-            if (_compDict.ContainsKey(t)) {
-                return _compDict[t];
+            if (_compDict.ContainsKey(type)) {
+                return _compDict[type];
             } else {
                 return null;
             }
         }
         
+        /// <summary>
+        /// Lets each component know that some components have recently
+        /// been added or removed from this entity.
+        /// </summary>
         private void UpdateComponents()
         {
+            if (!_compsChanged) return;
+
             foreach (var other in _comps) {
                 other.OnUpdateComponents();
             }
@@ -511,6 +585,11 @@ namespace FacePuncher.Entities
             _compsChanged = false;
         }
 
+        /// <summary>
+        /// Places the entity on a tile, while removing it from an
+        /// existing tile or parent entity if applicable.
+        /// </summary>
+        /// <param name="tile">Destination tile to place this entity on.</param>
         public void Place(Tile tile)
         {
             Remove();
@@ -518,16 +597,31 @@ namespace FacePuncher.Entities
             _tile = tile;
             tile.AddEntity(this);
 
+            UpdateComponents();
+
             foreach (var comp in _comps) {
                 comp.OnPlace();
             }
         }
 
+        /// <summary>
+        /// Tells each component of this entity that it is about to be removed
+        /// from the world, and recursively tells each child too.
+        /// </summary>
+        private void OnRemove()
+        {
+            foreach (var comp in this) comp.OnRemove();
+            foreach (var child in _children) child.OnRemove();
+        }
+
+        /// <summary>
+        /// Removes this entity from either the tile it is placed on
+        /// or its parent entity.
+        /// </summary>
         public void Remove()
         {
             if (IsValid) {
-                foreach (var comp in this) comp.OnRemove();
-                foreach (var child in _children) child.Remove();
+                OnRemove();
 
                 if (HasParent) {
                     Parent.RemoveChild(this);
@@ -538,16 +632,30 @@ namespace FacePuncher.Entities
             }
         }
 
+        /// <summary>
+        /// Tests to see whether this entity can move to the specified tile.
+        /// </summary>
+        /// <param name="dest">Destination tile to move to.</param>
+        /// <returns>True if the entity can move, and false otherwise.</returns>
         public bool CanMove(Tile dest)
         {
             return !HasParent && dest.State == TileState.Floor;
         }
 
+        /// <summary>
+        /// Tests to see whether this entity can move one tile in the specified direction.
+        /// </summary>
+        /// <param name="dir">Direction to move in.</param>
+        /// <returns>True if the entity can move, and false otherwise.</returns>
         public bool CanMove(Direction dir)
         {
             return CanMove(Tile.GetNeighbour(dir));
         }
 
+        /// <summary>
+        /// Attempts to move this entity to the specified tile.
+        /// </summary>
+        /// <param name="dest">Destination tile to move to.</param>
         public void Move(Tile dest)
         {
             if (!CanMove(dest)) return;
@@ -559,17 +667,30 @@ namespace FacePuncher.Entities
             Tile.AddEntity(this);
         }
 
+        /// <summary>
+        /// Attempts to move this entity one tile in the specified direction.
+        /// </summary>
+        /// <param name="dir">Direction to move in.</param>
         public void Move(Direction dir)
         {
             Move(Tile.GetNeighbour(dir));
         }
 
+        /// <summary>
+        /// Gives each component of this entity an opportunity to perform some
+        /// actions, while also recursively invoking this method on any child
+        /// entities.
+        /// </summary>
+        /// <param name="time">Current game time.</param>
         public void Think(ulong time)
         {
+            // May as well save ourselves some time.
+            if (!CanThink) return;
+
             if (_lastThink >= time) return;
             _lastThink = time;
 
-            if (_compsChanged) UpdateComponents();
+            UpdateComponents();
 
             for (int i = _comps.Count - 1; i >= 0; --i)
                 _comps[i].OnThink(time);
@@ -577,16 +698,28 @@ namespace FacePuncher.Entities
             foreach (var child in _children) child.Think(time);
         }
 
+        /// <summary>
+        /// Gets an enumerator that iterates through each component in this entity.
+        /// </summary>
+        /// <returns>An enumerator to iterate through each component.</returns>
         public IEnumerator<Component> GetEnumerator()
         {
             return _comps.GetEnumerator();
         }
 
+        /// <summary>
+        /// Gets an enumerator that iterates through each component in this entity.
+        /// </summary>
+        /// <returns>An enumerator to iterate through each component.</returns>
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
+        /// <summary>
+        /// Returns a string that represents this entity.
+        /// </summary>
+        /// <returns>A string that represents this entity.</returns>
         public override string ToString()
         {
             return ClassName ?? "entity";
