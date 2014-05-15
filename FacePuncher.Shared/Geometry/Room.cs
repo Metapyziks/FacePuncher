@@ -124,7 +124,7 @@ namespace FacePuncher.Geometry
         /// Sets each tile within the specified rectangle to be a wall.
         /// </summary>
         /// <param name="rect">Region to add walls to.</param>
-        public void AddWalls(Rectangle rect)
+        public void CreateWall(Rectangle rect)
         {
             foreach (var pos in rect.Intersection(RelativeRect).Positions) {
                 this[pos].State = TileState.Wall;
@@ -134,8 +134,8 @@ namespace FacePuncher.Geometry
         /// <summary>
         /// Sets each tile within the specified rectangle to be a floor.
         /// </summary>
-        /// <param name="rect">Region to add walls to.</param>
-        public void AddFloors(Rectangle rect)
+        /// <param name="rect">Region to add floors to.</param>
+        public void CreateFloor(Rectangle rect)
         {
             foreach (var pos in rect.Intersection(RelativeRect).Positions) {
                 this[pos].State = TileState.Floor;
