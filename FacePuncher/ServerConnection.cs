@@ -65,12 +65,11 @@ namespace FacePuncher
             uint id = reader.ReadUInt32();
             string className = reader.ReadString();
 
-            // Re-use the player entity.
             if (id == _playerID && Player != null) {
                 return Player;
             }
 
-            // Temporary, should cache entities.
+            // TODO: Temporary, should cache entities.
             var ent = Entity.Create(id, className);
 
             if (id == _playerID) Player = ent;
@@ -85,12 +84,10 @@ namespace FacePuncher
         {
             var stream = _socket.GetStream();
             using (var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true)) {
-                // Receive general game info.
                 Time = reader.ReadUInt64();
                 _playerID = reader.ReadUInt32();
 
                 lock (Level) {
-                    // Receive a set of (partially) visible rooms.
                     int roomCount = reader.ReadInt32();
                     for (int i = 0; i < roomCount; ++i) {
                         // Each room is identified by its rectangle.
@@ -98,7 +95,6 @@ namespace FacePuncher
 
                         var vis = _visibility.FirstOrDefault(x => x.Room.Rect == rect);
 
-                        // If this is visibility info for a new room, add it to the level.
                         if (vis == null) {
                             var room = Level.CreateRoom(rect);
                             vis = new RoomVisibility(room);
@@ -106,24 +102,20 @@ namespace FacePuncher
                             _visibility.Add(vis);
                         }
 
-                        // Read visible tiles in the room.
                         int tileCount = reader.ReadInt32();
                         for (int j = 0; j < tileCount; ++j) {
                             var pos = reader.ReadPosition();
                             var state = (TileState) reader.ReadByte();
                             var tile = vis.Room[pos];
 
-                            // Update tile visibility and state.
                             vis.Reveal(pos, Time);
                             tile.State = state;
 
-                            // Clear existing entities from the tile.
                             var ents = tile.ToArray();
                             foreach (var ent in ents) {
                                 ent.Remove();
                             }
 
-                            // Read entities to place on the tile.
                             var entCount = reader.ReadUInt16();
                             for (int k = 0; k < entCount; ++k) {
                                 var ent = ReadEntity(reader);
@@ -142,7 +134,6 @@ namespace FacePuncher
         {
             ConsoleKey[] validKeys;
 
-            // Read the list of valid keys from the server.
             var stream = _socket.GetStream();
             using (var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true)) {
                 validKeys = new ConsoleKey[reader.ReadUInt16()];
@@ -154,13 +145,11 @@ namespace FacePuncher
             // Clear any buffered key inputs.
             while (Console.KeyAvailable) Console.ReadKey(true);
 
-            // Read a valid key press.
             ConsoleKey key;
             do {
                 key = Console.ReadKey(true).Key;
             } while (!validKeys.Contains(key));
 
-            // Send the valid key to the server.
             using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, true)) {
                 writer.Write((ushort) key);
                 writer.Flush();

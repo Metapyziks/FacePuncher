@@ -37,13 +37,10 @@ namespace FacePuncher.Entities
         /// <returns>Whether the move was successful.</returns>
         protected bool Move(Direction dir, ulong time)
         {
-            // Check to see if we can move.
             if (MovePeriod == 0 || !CanMove(time) || !Entity.CanMove(dir)) return false;
 
-            // Move and update the movement cooldown.
             Entity.Move(dir);
             _nextMove = time + MovePeriod;
-
             return true;
         }
     }
