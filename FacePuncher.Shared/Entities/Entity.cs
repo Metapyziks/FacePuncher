@@ -175,8 +175,8 @@ namespace FacePuncher.Entities
 
         /// <summary>
         /// Gets the names of all registered entity classes that extend
-        /// the specified base class. Can optionally filter to only classes
-        /// that have no extending classes of their own.
+        /// the specified base class. Can optionally filter to only return
+        /// classes that have no extending classes of their own.
         /// </summary>
         /// <param name="baseName">Base name to find extending classes of.</param>
         /// <param name="onlyLeaves">If true, will only return classes with no
@@ -250,6 +250,7 @@ namespace FacePuncher.Entities
             return ent;
         }
 
+        private Tile _tile;
         private List<Component> _comps;
         private Dictionary<Type, Component> _compDict;
         private List<Entity> _children;
@@ -257,25 +258,40 @@ namespace FacePuncher.Entities
         private ulong _lastThink;
 
         /// <summary>
-        /// Numeric identifier for this entity.
+        /// Gets the numeric identifier for this entity.
         /// </summary>
         public uint ID { get; private set; }
 
         /// <summary>
-        /// Name of the lowest-level class this entity is an instance of.
+        /// Gets the name of the lowest-level class this entity is an
+        /// instance of.
         /// </summary>
         public String ClassName { get; private set; }
 
+        /// <summary>
+        /// Gets the parent instance of this entity if it has one, and
+        /// null otherwise.
+        /// </summary>
         public Entity Parent { get; private set; }
 
+        /// <summary>
+        /// Get the set of entities attached to this one.
+        /// </summary>
         public IEnumerable<Entity> Children { get { return _children; } }
 
+        /// <summary>
+        /// Gets whether this entity is attached to a parent.
+        /// </summary>
         public bool HasParent
         {
             get { return Parent != null; }
         }
 
-        public Tile Tile { get; private set; }
+        /// <summary>
+        /// Gets the tile this entity is currently placed on, or the
+        /// tile this entity's parent resides on if applicable.
+        /// </summary>
+        public Tile Tile { get { return HasParent ? Parent.Tile : _tile; } }
 
         public Room Room { get { return Tile.Room; } }
 
@@ -443,7 +459,7 @@ namespace FacePuncher.Entities
         {
             Remove();
 
-            Tile = tile;
+            _tile = tile;
             tile.AddEntity(this);
 
             foreach (var comp in _comps) {
@@ -460,7 +476,7 @@ namespace FacePuncher.Entities
                 if (HasParent) {
                     Parent.RemoveChild(this);
                 } else {
-                    var tile = Tile; Tile = null;
+                    var tile = Tile; _tile = null;
                     tile.RemoveEntity(this);
                 }
             }
@@ -468,7 +484,7 @@ namespace FacePuncher.Entities
 
         public bool CanMove(Tile dest)
         {
-            return dest.State == TileState.Floor;
+            return !HasParent && dest.State == TileState.Floor;
         }
 
         public bool CanMove(Direction dir)
@@ -481,7 +497,7 @@ namespace FacePuncher.Entities
             if (!CanMove(dest)) return;
 
             var orig = Tile;
-            Tile = dest;
+            _tile = dest;
 
             orig.RemoveEntity(this);
             Tile.AddEntity(this);
