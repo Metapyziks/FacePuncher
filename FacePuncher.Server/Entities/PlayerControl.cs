@@ -19,7 +19,7 @@ namespace FacePuncher.Entities
         {
             if (Client == null || !CanMove) return;
 
-            Client.SendVisibleLevelState(Level);
+            Client.SendVisibleLevelState();
 
             var validKeys = Tools.MovementKeys.Keys
                 .Where(x => Entity.CanMove(Tools.MovementKeys[x]))
@@ -27,7 +27,7 @@ namespace FacePuncher.Entities
 
             Move(Tools.MovementKeys[Client.ReadInput(validKeys)]);
 
-            Client.SendVisibleLevelState(Level, 1);
+            Client.SendVisibleLevelState(1);
         }
     }
 }

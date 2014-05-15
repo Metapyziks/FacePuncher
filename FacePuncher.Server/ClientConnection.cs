@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
@@ -30,6 +29,11 @@ namespace FacePuncher
         public Entity Player { get; private set; }
 
         /// <summary>
+        /// The current level the player is within.
+        /// </summary>
+        public Level Level { get; private set; }
+
+        /// <summary>
         /// Creates a new ClientConnection instance using a socket,
         /// additionally creating a player entity for the client in
         /// the specified level.
@@ -39,6 +43,7 @@ namespace FacePuncher
         public ClientConnection(TcpClient socket, Level level)
         {
             _socket = socket;
+            Level = level;
 
             _visibility = level
                 .Select(x => new RoomVisibility(x))
@@ -79,9 +84,9 @@ namespace FacePuncher
         /// <param name="timeOffset">How far into the future the level time
         /// sent should be offset.</param>
         /// <param name="level">Level to send.</param>
-        public void SendVisibleLevelState(Level level, ulong timeOffset = 0)
+        public void SendVisibleLevelState(ulong timeOffset = 0)
         {
-            var time = level.Time + timeOffset;
+            var time = Level.Time + timeOffset;
 
             try {
                 var stream = _socket.GetStream();
@@ -91,7 +96,7 @@ namespace FacePuncher
                     writer.Write(time);
                     writer.Write(Player.ID);
 
-                    lock (level) {
+                    lock (Level) {
                         var visibleRooms = _visibility
                             .Where(x => x.UpdateVisibility(Player.Position, MaxVisibilityRange, time))
                             .ToArray();
