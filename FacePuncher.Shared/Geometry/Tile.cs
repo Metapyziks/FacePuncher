@@ -46,7 +46,9 @@ namespace FacePuncher.Geometry
             get { return _state; }
             set
             {
-                if (value == TileState.Void) _entities.Clear();
+                if (value == TileState.Void && _entities != null) {
+                    _entities.Clear();
+                }
 
                 _state = value;
             }
