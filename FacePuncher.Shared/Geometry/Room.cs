@@ -143,7 +143,7 @@ namespace FacePuncher.Geometry
         }
 
         /// <summary>
-        /// Instruct each entity within the room to perform a single think step.
+        /// Instructs each entity within the room to perform a single think step.
         /// </summary>
         public void Think()
         {

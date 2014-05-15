@@ -35,6 +35,11 @@ namespace FacePuncher
             Direction.SouthWest, Direction.South, Direction.SouthEast
         };
 
+        public static Position GetOffset(this Direction dir)
+        {
+            return new Position(((int) dir) % 3 - 1, ((int) dir) / 3 - 1);
+        }
+
         public static bool HasElement(this XElement elem, XName name)
         {
             return elem.Elements(name).Count() > 0;
