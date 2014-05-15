@@ -6,6 +6,9 @@ using FacePuncher.Entities;
 
 namespace FacePuncher.Geometry
 {
+    /// <summary>
+    /// Enumeration of the possible solidity states of a tile.
+    /// </summary>
     public enum TileState
     {
         Void = 0,
