@@ -14,7 +14,7 @@ namespace FacePuncher.Geometry
 
             var level = new Level();
 
-            var debris = Entity.GetClassNames("dust");
+            var debris = Entity.GetClassNames("dust", true);
 
             for (int i = 0; i < 4; ++i) {
                 for (int j = 0; j < 4; ++j) {

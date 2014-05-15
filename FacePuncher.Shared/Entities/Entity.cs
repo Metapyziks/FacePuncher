@@ -85,94 +85,170 @@ namespace FacePuncher.Entities
             }
         }
 
-        private static Dictionary<String, ClassInfo> _sEntBuilders
+        private static Dictionary<String, ClassInfo> _sEntCtors
             = new Dictionary<string, ClassInfo>();
 
+        /// <summary>
+        /// Register an entity class.
+        /// </summary>
+        /// <param name="name">Entity class name to register.</param>
+        /// <param name="ctor">Constructor to be invoked on new
+        /// instances of the class.</param>
+        /// <param name="componentTypes">Types of components this entity
+        /// is expected to contain, to be used to find entity classes with
+        /// certain components. Not required.</param>
         public static void Register(String name, EntityConstructorDelegate ctor, params Type[] componentTypes)
         {
-            if (!_sEntBuilders.ContainsKey(name))
-                _sEntBuilders.Add(name, new ClassInfo(name, ctor, componentTypes));
-            else
-                _sEntBuilders[name] = new ClassInfo(name, ctor, componentTypes);
+            _sEntCtors.Add(name, new ClassInfo(name, ctor, componentTypes));
         }
 
+        /// <summary>
+        /// Register an entity class that extends a named base class.
+        /// </summary>
+        /// <param name="name">Entity class name to register.</param>
+        /// <param name="baseName">Base class name to extend.</param>
+        /// <param name="ctor">Constructor to be invoked on new
+        /// instances of the class.</param>
+        /// <param name="componentTypes">Types of components this entity
+        /// is expected to contain, to be used to find entity classes with
+        /// certain components. Not required.</param>
         public static void Register(String name, String baseName, EntityConstructorDelegate ctor, params Type[] componentTypes)
         {
-            if (!_sEntBuilders.ContainsKey(name))
-                _sEntBuilders.Add(name, new ClassInfo(name, baseName, ctor, componentTypes));
-            else
-                _sEntBuilders[name] = new ClassInfo(name, baseName, ctor, componentTypes);
+            _sEntCtors.Add(name, new ClassInfo(name, baseName, ctor, componentTypes));
         }
 
-        public static String GetBase(String className)
+        /// <summary>
+        /// Gets the base class name of an existing specified entity class,
+        /// or null if that entity class has no base.
+        /// </summary>
+        /// <param name="className">Name of the entity class to find the
+        /// base class of.</param>
+        /// <returns>Base class name if one exists, otherwise null.</returns>
+        public static String GetBaseName(String className)
         {
-            return _sEntBuilders[className].Base;
+            return _sEntCtors[className].Base;
         }
 
-        public static IEnumerable<Type> GetComponentTypes(String className)
+        /// <summary>
+        /// Gets a set of component types for the specified entity class.
+        /// </summary>
+        /// <param name="className">Name of the class to find component
+        /// types for.</param>
+        /// <returns>An array of component types.</returns>
+        public static Type[] GetComponentTypes(String className)
         {
-            var info = _sEntBuilders[className];
+            var info = _sEntCtors[className];
 
             if (info.Base == null) return info.Components;
-            else return info.Components.Union(GetComponentTypes(info.Base));
+
+            // This will be quite inefficient, maybe consider caching
+            // if performance is an issue.
+            else return info.Components
+                .Union(GetComponentTypes(info.Base))
+                .ToArray();
         }
 
+        /// <summary>
+        /// Tests to see if the given class extends or is equal to the
+        /// specified base class.
+        /// </summary>
+        /// <param name="className">Name of the class to test the inheritance of.</param>
+        /// <param name="baseName">Name of the prospective base class.</param>
+        /// <returns>True if the given class either extends or is equal to
+        /// the specified base class, and false otherwise.</returns>
         public static bool Extends(String className, String baseName)
         {
             if (className == null) return false;
             if (className == baseName) return true;
 
-            return Extends(_sEntBuilders[className].Base, baseName);
+            return Extends(_sEntCtors[className].Base, baseName);
         }
 
+        /// <summary>
+        /// Gets the names of all registered entity classes.
+        /// </summary>
+        /// <returns></returns>
         public static String[] GetClassNames()
         {
-            return _sEntBuilders.Select(x => x.Key).ToArray();
+            return _sEntCtors.Select(x => x.Key).ToArray();
         }
 
-        public static String[] GetClassNames(String baseName, bool onlyLeaves = true)
+        /// <summary>
+        /// Gets the names of all registered entity classes that extend
+        /// the specified base class. Can optionally filter to only classes
+        /// that have no extending classes of their own.
+        /// </summary>
+        /// <param name="baseName">Base name to find extending classes of.</param>
+        /// <param name="onlyLeaves">If true, will only return classes with no
+        /// extending classes of their own.</param>
+        /// <returns>An array of class names.</returns>
+        public static String[] GetClassNames(String baseName, bool onlyLeaves)
         {
-            var names = _sEntBuilders.Select(x => x.Key)
+            var names = _sEntCtors.Select(x => x.Key)
                 .Where(x => Extends(x, baseName));
 
             if (onlyLeaves) {
                 return names
-                    .Where(x => !_sEntBuilders.Any(y => y.Value.Base == x))
+                    .Where(x => !_sEntCtors.Any(y => y.Value.Base == x))
                     .ToArray();
             } else {
                 return names.ToArray();
             }
         }
 
+        /// <summary>
+        /// Creates a basic entity, upon which components may be
+        /// attached to flesh out functionality.
+        /// </summary>
+        /// <returns>An empty entity.</returns>
         public static Entity Create()
         {
             return new Entity(_sNextID++);
         }
 
+        /// <summary>
+        /// Creates an entity as an instance of a named entity class.
+        /// </summary>
+        /// <param name="type">Class name of the entity.</param>
+        /// <returns>An entity instance of the specified class.</returns>
         public static Entity Create(String type)
         {
-            ClassInfo info = _sEntBuilders[type];
+            ClassInfo info = _sEntCtors[type];
             Entity ent = (info.Base != null ? Create(info.Base) : Create());
-            ent.PushClassName(type);
+            ent.ClassName = info.Name;
             info.Constructor(ent);
             return ent;
         }
 
+        /// <summary>
+        /// Creates a basic entity, upon which components may be
+        /// attached to flesh out functionality. The entity uses a
+        /// specified ID rather than automatically aquiring one.
+        /// </summary>
+        /// <param name="id">Numeric identifier for this entity.</param>
+        /// <returns>An empty entity using the specified ID.</returns>
         public static Entity Create(uint id)
         {
             return new Entity(id);
         }
 
+        /// <summary>
+        /// Creates an entity as an instance of a named entity class.
+        /// The entity uses a specified ID rather than automatically
+        /// aquiring one.
+        /// </summary>
+        /// <param name="id">Numeric identifier for this entity.</param>
+        /// <param name="type">Class name of the entity.</param>
+        /// <returns>An entity instance of the specified class using a
+        /// given ID.</returns>
         public static Entity Create(uint id, String type)
         {
-            ClassInfo info = _sEntBuilders[type];
+            ClassInfo info = _sEntCtors[type];
             Entity ent = (info.Base != null ? Create(id, info.Base) : Create(id));
-            ent.PushClassName(type);
+            ent.ClassName = info.Name;
             info.Constructor(ent);
             return ent;
         }
-
-        private Stack<String> _classNames;
 
         private List<Component> _comps;
         private Dictionary<Type, Component> _compDict;
@@ -180,9 +256,15 @@ namespace FacePuncher.Entities
         private bool _compsChanged;
         private ulong _lastThink;
 
-        public readonly uint ID;
+        /// <summary>
+        /// Numeric identifier for this entity.
+        /// </summary>
+        public uint ID { get; private set; }
 
-        public String ClassName { get { return _classNames.FirstOrDefault(); } }
+        /// <summary>
+        /// Name of the lowest-level class this entity is an instance of.
+        /// </summary>
+        public String ClassName { get; private set; }
 
         public Entity Parent { get; private set; }
 
@@ -218,8 +300,6 @@ namespace FacePuncher.Entities
         {
             ID = id;
 
-            _classNames = new Stack<string>();
-
             _comps = new List<Component>();
             _compDict = new Dictionary<Type, Component>();
 
@@ -228,14 +308,9 @@ namespace FacePuncher.Entities
             _compsChanged = false;
         }
 
-        private void PushClassName(String className)
+        public bool IsOfClass(String baseName)
         {
-            _classNames.Push(className);
-        }
-
-        public bool IsOfClass(String className)
-        {
-            return _classNames.Contains(className);
+            return Extends(ClassName, baseName);
         }
 
         public Entity AddChild(Entity child)
