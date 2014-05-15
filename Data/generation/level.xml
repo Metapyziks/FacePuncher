@@ -1,7 +1,39 @@
 <server:level name="test">
-    <generator>Default</generator>
+    <RoomPlacer>Default</RoomPlacer>
 
-    <room type="test" min="1" max="4" weight="1">
-
-    </room>
+    <Room class="test">
+        <Quota>10</Quota>
+        <Freq>1</Freq>
+    </Room>
 </server:level>
+
+<server:room name="test">
+    <Layout class="Default">
+        <MinimumWidth>8</MinimumWidth>
+        <MinimumHeight>8</MinimumHeight>
+        <MaximumWidth>16</MaximumWidth>
+        <MaximumHeight>16</MaximumHeight>
+    </Layout>
+    <ItemPlacement class="Default">
+        <Item class="dust_0">
+            <Type>debris</Type>
+            <Freq>25</Freq>
+        </Item>
+        <Item class="dust_1">
+            <Type>debris</Type>
+            <Freq>25</Freq>
+        </Item>
+        <Item class="dust_2">
+            <Type>debris</Type>
+            <Freq>25</Freq>
+        </Item>
+        <Item class="dust_3">
+            <Type>debris</Type>
+            <Freq>25</Freq>
+        </Item>
+        <Item class="vermin">
+            <Type>debris</Type>
+            <Freq>1</Freq>
+        </Item>
+    </ItemPlacement>
+</server:room>
