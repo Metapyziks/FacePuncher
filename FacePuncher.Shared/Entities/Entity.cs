@@ -284,7 +284,7 @@ namespace FacePuncher.Entities
         /// </summary>
         public bool HasParent
         {
-            get { return Parent != null; }
+            get { return Parent != null && Parent.Children.Contains(this); }
         }
 
         /// <summary>
@@ -293,25 +293,47 @@ namespace FacePuncher.Entities
         /// </summary>
         public Tile Tile { get { return HasParent ? Parent.Tile : _tile; } }
 
+        /// <summary>
+        /// Gets the room this entity currently resides in.
+        /// </summary>
         public Room Room { get { return Tile.Room; } }
 
+        /// <summary>
+        /// Gets the level this entity currently resides in.
+        /// </summary>
         public Level Level { get { return Room.Level; } }
 
+        /// <summary>
+        /// If true, the entity currently exists in the world.
+        /// </summary>
         public bool IsValid
         {
-            get { return Tile != null && Tile.Contains(this); }
+            get { return (HasParent && Parent.IsValid) || (Tile != null && Tile.Contains(this)); }
         }
 
+        /// <summary>
+        /// Gets the position of this entity relative to its
+        /// containing room.
+        /// </summary>
         public Position RelativePosition
         {
             get { return Tile.RelativePosition; }
         }
 
+        /// <summary>
+        /// Gets the position of this entity relative to the
+        /// level origin.
+        /// </summary>
         public Position Position
         {
             get { return Tile.Position; }
         }
 
+        /// <summary>
+        /// Constructs an empty entity instance with the
+        /// specified numeric identifier.
+        /// </summary>
+        /// <param name="id">Numeric identifier for this instance.</param>
         private Entity(uint id)
         {
             ID = id;
@@ -324,18 +346,29 @@ namespace FacePuncher.Entities
             _compsChanged = false;
         }
 
+        /// <summary>
+        /// Tests to see if this entity's class extends or is
+        /// equal to the specified base class.
+        /// </summary>
+        /// <param name="baseName">Prospective base class to test.</param>
+        /// <returns>True if this entity is an instance of the specified
+        /// class, false otherwise.</returns>
         public bool IsOfClass(String baseName)
         {
             return Extends(ClassName, baseName);
         }
 
+        /// <summary>
+        /// Attaches a child entity to this one.
+        /// </summary>
+        /// <param name="child">Entity to adopt.</param>
+        /// <returns>The adopted entity for convenience.</returns>
         public Entity AddChild(Entity child)
         {
             if (_children.Contains(child)) return child;
 
-            if (child.IsValid) {
-                child.Remove();
-            }
+            // Make sure the child doesn't have two parents.
+            if (child.IsValid) child.Remove();
 
             _children.Add(child);
 
@@ -345,30 +378,32 @@ namespace FacePuncher.Entities
                 comp.OnPlace();
             }
 
+            // For convenience.
             return child;
         }
 
-        private Entity RemoveChild(Entity child)
+        /// <summary>
+        /// Removes a child entity that was previously parented to this one.
+        /// </summary>
+        /// <param name="child">Child to disown.</param>
+        private void RemoveChild(Entity child)
         {
-            if (!_children.Contains(child)) return child;
+            if (!_children.Contains(child)) return;
 
             _children.Remove(child);
 
             child.Parent = null;
-
-            return child;
         }
 
-        public T AddComponent<T>()
-            where T : Component
+        /// <summary>
+        /// Adds a newly created component to this entity's component
+        /// list and dictionary.
+        /// </summary>
+        /// <param name="comp">Component to add.</param>
+        /// <param name="type">Type of the component.</param>
+        /// <returns>The component, for convenience.</returns>
+        private Component AddComponent(Component comp, Type type)
         {
-            return (T) AddComponent(typeof(T));
-        }
-
-        public Component AddComponent(Type type)
-        {
-            Component comp = Component.Create(type, this);
-
             do _compDict.Add(type, comp);
             while ((type = type.BaseType) != typeof(Component));
 
@@ -377,6 +412,27 @@ namespace FacePuncher.Entities
             _compsChanged = true;
 
             return comp;
+        }
+
+        /// <summary>
+        /// Add a component of the specified type to this entity.
+        /// </summary>
+        /// <typeparam name="T">Type of the component to add.</typeparam>
+        /// <returns>The newly added component.</returns>
+        public T AddComponent<T>()
+            where T : Component, new()
+        {
+            return (T) AddComponent(Component.Create<T>(this), typeof(T));
+        }
+
+        /// <summary>
+        /// Add a component of the specified type to this entity.
+        /// </summary>
+        /// <param name="type">Type of the component.</param>
+        /// <returns>The newly added component.</returns>
+        public Component AddComponent(Type type)
+        {
+            return AddComponent(Component.Create(type, this), type);
         }
 
         public Entity RemoveComponent<T>()
@@ -399,7 +455,7 @@ namespace FacePuncher.Entities
 
         public TNew SwapComponent<TOld, TNew>()
             where TOld : Component
-            where TNew : Component
+            where TNew : Component, new()
         {
             RemoveComponent<TOld>();
             return AddComponent<TNew>();

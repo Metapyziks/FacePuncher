@@ -94,7 +94,8 @@ namespace FacePuncher.Entities
         }
 
         /// <summary>
-        /// Gets the position of the host entity relative to its room.
+        /// Gets the position of the host entity relative to its
+        /// contatining room.
         /// </summary>
         protected Position RelativePosition
         {
@@ -102,7 +103,8 @@ namespace FacePuncher.Entities
         }
 
         /// <summary>
-        /// Gets the global position of the host entity.
+        /// Gets the position of the host entity relative to the
+        /// level origin.
         /// </summary>
         protected Position Position
         {
