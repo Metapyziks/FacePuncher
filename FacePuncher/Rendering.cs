@@ -80,14 +80,12 @@ namespace FacePuncher
             screenPos += roomPos - rect.TopLeft;
             rect = subRect - roomPos;
 
-            // Draw each visible tile that is within the clipping rectangle.
             foreach (var tile in vis.GetVisible(attribs.Time)) {
                 if (rect.Intersects(tile.RelativePosition)) {
                     tile.Draw(screenPos + tile.RelativePosition, attribs, true);
                 }
             }
 
-            // Draw each hidden but rememberd tile that is within the clipping rectangle.
             foreach (var tile in vis.GetRemembered(attribs.Time)) {
                 if (rect.Intersects(tile.RelativePosition)) {
                     tile.Draw(screenPos + tile.RelativePosition, new DrawAttributes(attribs.Time, 0), false);
@@ -105,10 +103,10 @@ namespace FacePuncher
         /// <param name="visible">If true, the tile is currently within visible range.</param>
         public static void Draw(this Tile tile, Position screenPos, DrawAttributes attribs, bool visible)
         {
-            // Don't draw nothing.
             if (tile.State == TileState.Void) return;
 
-            // If the tile is a wall, find which character to use.
+            // TODO: Allow multiple types of wall with different symbols,
+            //       definable in definition files.
             if (tile.State == TileState.Wall) {
                 int adj = 
                     (tile.GetNeighbour(Direction.East).State  == TileState.Wall ? 1 : 0) |
@@ -120,27 +118,21 @@ namespace FacePuncher
                 return;
             }
 
-            // Get an array of all entities that may be drawn.
             var drawables = tile.Entities
                 .Where(x => x.HasComponent<Drawable>())
                 .Select(x => x.GetComponent<Drawable>())
                 .ToArray();
             
-            // If there's something to draw...
             if (drawables.Length > 0) {
-                // Find which layer is the upper-most.
                 var layer = (DrawableLayer) drawables.Max(x => x.Layer);
 
-                // Find all drawables that are on that layer.
                 drawables = drawables
                     .Where(x => x.Layer == layer)
                     .ToArray();
 
-                // Select the drawable to draw based on the flash state.
                 int index = (attribs.Flash / EntityFlashPeriod) % drawables.Length;
                 var drawable = drawables[index];
 
-                // Draw the entity.
                 Display.SetCell(screenPos,
                     drawable.GetSymbol(attribs),
                     visible ? drawable.GetForeColor(attribs) : ConsoleColor.DarkGray,
@@ -149,7 +141,6 @@ namespace FacePuncher
                 return;
             }
 
-            // When no drawable entities are present just draw the floor.
             // TODO: Allow multiple types of floor with different symbols,
             //       definable in definition files.
             Display.SetCell(screenPos, '+', visible ? ConsoleColor.DarkBlue : ConsoleColor.DarkGray);
