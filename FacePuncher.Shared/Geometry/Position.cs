@@ -43,10 +43,10 @@ namespace FacePuncher.Geometry
         }
 
         /// <summary>
-        /// Constructs a position with the specified coordinates.
+        /// Initializes a new position structure with the given coordinates.
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
+        /// <param name="x">Horizontal component of the position.</param>
+        /// <param name="y">Vertical component of the position.</param>
         public Position(int x, int y)
         {
             X = x;
