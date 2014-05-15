@@ -684,10 +684,8 @@ namespace FacePuncher.Entities
         /// <param name="time">Current game time.</param>
         public void Think(ulong time)
         {
-            // May as well save ourselves some time.
-            if (!CanThink) return;
+            if (!CanThink || _lastThink >= time) return;
 
-            if (_lastThink >= time) return;
             _lastThink = time;
 
             UpdateComponents();
