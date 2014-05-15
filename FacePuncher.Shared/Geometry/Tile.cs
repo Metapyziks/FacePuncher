@@ -20,6 +20,7 @@ namespace FacePuncher.Geometry
     {
         public static readonly Tile Default = new Tile(null, 0, 0);
 
+        private TileState _state;
         private List<Entity> _entities;
 
         /// <summary>
@@ -40,7 +41,16 @@ namespace FacePuncher.Geometry
         public int X { get { return Room.Left + RelativeX; } }
         public int Y { get { return Room.Top + RelativeY; } }
 
-        public TileState State { get; set; }
+        public TileState State
+        {
+            get { return _state; }
+            set
+            {
+                if (value == TileState.Void) _entities.Clear();
+
+                _state = value;
+            }
+        }
 
         public IEnumerable<Entity> Entities { get { return _entities; } }
 
