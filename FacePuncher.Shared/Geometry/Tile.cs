@@ -74,9 +74,7 @@ namespace FacePuncher.Geometry
             set
             {
                 if (value == TileState.Void && _entities != null) {
-                    while (_entities.Count > 0) {
-                        _entities.Last().Remove();
-                    }
+                    RemoveEntities();
                 }
 
                 _state = value;
@@ -146,6 +144,16 @@ namespace FacePuncher.Geometry
             if (!_entities.Contains(ent)) return;
 
             _entities.Remove(ent);
+        }
+
+        /// <summary>
+        /// Removes all entities from this tile.
+        /// </summary>
+        public void RemoveEntities()
+        {
+            while (_entities.Count > 0) {
+                _entities.Last().Remove();
+            }
         }
 
         /// <summary>

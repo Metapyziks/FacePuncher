@@ -105,10 +105,7 @@ namespace FacePuncher
                             vis.Reveal(pos, Level.Time);
                             tile.State = state;
 
-                            var ents = tile.ToArray();
-                            foreach (var ent in ents) {
-                                ent.Remove();
-                            }
+                            tile.RemoveEntities();
 
                             var entCount = reader.ReadUInt16();
                             for (int k = 0; k < entCount; ++k) {
