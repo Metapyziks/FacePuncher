@@ -41,23 +41,30 @@ namespace FacePuncher
                     await Task.Delay(100);
                     continue;
                 }
-                var key = Console.ReadKey(intercept: true);
-                switch (key.Key)
+                if (Console.KeyAvailable)
                 {
-                    case ConsoleKey.UpArrow:
-                        server.SendIntent(new MoveIntent(Direction.North));
-                        break;
-                    case ConsoleKey.DownArrow:
-                        server.SendIntent(new MoveIntent(Direction.South));
-                        break;
-                    case ConsoleKey.LeftArrow:
-                        server.SendIntent(new MoveIntent(Direction.West));
-                        break;
-                    case ConsoleKey.RightArrow:
-                        server.SendIntent(new MoveIntent(Direction.East));
-                        break;
-                    default:
-                        break;
+                    var key = Console.ReadKey(intercept: true);
+                    switch (key.Key)
+                    {
+                        case ConsoleKey.UpArrow:
+                            server.SendIntent(new MoveIntent(Direction.North));
+                            break;
+                        case ConsoleKey.DownArrow:
+                            server.SendIntent(new MoveIntent(Direction.South));
+                            break;
+                        case ConsoleKey.LeftArrow:
+                            server.SendIntent(new MoveIntent(Direction.West));
+                            break;
+                        case ConsoleKey.RightArrow:
+                            server.SendIntent(new MoveIntent(Direction.East));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
+                    await Task.Delay(100);
                 }
             }
         }
