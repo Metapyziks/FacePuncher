@@ -7,13 +7,8 @@ namespace FacePuncher.GUI
     {
         public string Text { get; set; }
 
-        public Label(Position pos, string text)
-            : base(pos, 0, 0)
-        {
-            this.Text = text;
-        }
-
-        public Label(Position pos, string text, ConsoleColor fc, ConsoleColor bc)
+        public Label(Position pos, string text,
+            ConsoleColor fc = ConsoleColor.Gray, ConsoleColor bc = ConsoleColor.Black)
             : base(pos, 0, 0, fc, bc)
         {
             this.Text = text;

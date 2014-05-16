@@ -10,17 +10,13 @@ namespace FacePuncher.GUI
         public ConsoleColor ForegroundColor { get; set; }
         public ConsoleColor BackgroundColor { get; set; }
 
-        public Widget(Position pos, int width, int height, ConsoleColor fc, ConsoleColor bc)
+        public Widget(Position pos, int width, int height,
+            ConsoleColor fc = ConsoleColor.Gray, ConsoleColor bc = ConsoleColor.Black)
         {
             this.rectangle = new Rectangle(pos, new Position(pos.X + width, pos.Y + height));
 
             this.ForegroundColor = fc;
             this.BackgroundColor = bc;
-        }
-
-        public Widget(Position pos, int width, int height)
-            : this(pos, width, height, ConsoleColor.Gray, ConsoleColor.Black)
-        {
         }
 
         public Position Position

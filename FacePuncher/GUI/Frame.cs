@@ -11,15 +11,10 @@ namespace FacePuncher.GUI
             (char)200, (char)188  // down-left, down-right
         };
 
-        public Frame(Position pos, int width, int height)
-            : base(pos, width, height)
-        {
-        }
-
-        public Frame(Position pos, int width, int height, ConsoleColor fc, ConsoleColor bc)
+        public Frame(Position pos, int width, int height,
+            ConsoleColor fc = ConsoleColor.Gray, ConsoleColor bc = ConsoleColor.Black)
             : base(pos, width, height, fc, bc)
-        {
-        }
+        { }
 
         public override void Draw()
         {
