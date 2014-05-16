@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using FacePuncher.Entities;
 using FacePuncher.Geometry;
 
-namespace FacePuncher
+namespace FacePuncher.Graphics
 {
     /// <summary>
     /// Structure containing information used when drawing 

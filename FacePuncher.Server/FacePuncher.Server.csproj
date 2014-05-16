@@ -53,6 +53,7 @@
     <Compile Include="Geometry\Level.cs" />
     <Compile Include="Geometry\LevelGenerator.cs" />
     <Compile Include="Geometry\Room.cs" />
+    <Compile Include="Geometry\RoomVisibility.cs" />
     <Compile Include="Geometry\Tile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
