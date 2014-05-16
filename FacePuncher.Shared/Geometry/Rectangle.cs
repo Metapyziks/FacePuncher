@@ -90,6 +90,14 @@ namespace FacePuncher.Geometry
         }
 
         /// <summary>
+        /// Area of the rectangle.
+        /// </summary>
+        public int Area
+        {
+            get { return Width * Height; }
+        }
+
+        /// <summary>
         /// Initializes a new rectangle structure based on the
         /// positions of its upper left and lower right vertices.
         /// </summary>

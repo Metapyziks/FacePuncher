@@ -1,39 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace FacePuncher.Geometry
 {
-    class RoomGenerator
+    class RoomGenerator : Generator<RoomGenerator>
     {
-        class RoomGeneratorInfo : GeneratorInfo
+        static GeneratorCollection<RoomGenerator> _generators;
+
+        static RoomGenerator()
         {
-            private RoomLayout _roomLayout;
+            _generators = new GeneratorCollection<RoomGenerator>();
 
-            public RoomGeneratorInfo Base
-            {
-                get { return HasBase ? _generators[BaseName] : null; }
-            }
-
-            public RoomLayout RoomLayout
-            {
-                get { return _roomLayout ?? Base.RoomLayout; }
-            }
-
-            protected override void OnLoadFromDefinition(XElement elem)
-            {
-                throw new NotImplementedException();
-            }
+            Definitions.RegisterType("room", _generators.Add);
         }
 
-        static Dictionary<String, RoomGeneratorInfo> _generators;
-
-        public static IEnumerable<Room> Generate(String type, Level level, Rectangle rect, Random rand)
+        public static IEnumerable<Room> Generate(String type, Level level, Rectangle rect, Rectangle[] doors, Random rand)
         {
+            var generator = _generators[type];
+
             throw new NotImplementedException();
+        }
+
+        public RoomLayout RoomLayout { get; set; }
+
+        public ItemPlacement ItemPlacement { get; set; }
+
+        protected override void OnLoadFromDefinition(XElement elem)
+        {
+            RoomLayout = LoadWorkerFromDefinition<RoomLayout>(elem,
+                RoomLayout ?? new RoomLayouts.Default());
+
+            ItemPlacement = LoadWorkerFromDefinition<ItemPlacement>(elem,
+                ItemPlacement ?? new ItemPlacements.Default());
         }
     }
 }

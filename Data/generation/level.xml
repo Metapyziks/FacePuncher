@@ -9,12 +9,7 @@
 </server:level>
 
 <server:room name="test">
-    <RoomLayout class="Default">
-        <MinimumWidth>8</MinimumWidth>
-        <MinimumHeight>8</MinimumHeight>
-        <MaximumWidth>16</MaximumWidth>
-        <MaximumHeight>16</MaximumHeight>
-    </RoomLayout>
+    <RoomLayout class="Default" />
     <ItemPlacement class="Default">
         <Debris>debris</Debris>
     </ItemPlacement>

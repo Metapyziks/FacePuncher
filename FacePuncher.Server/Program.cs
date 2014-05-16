@@ -54,8 +54,7 @@ namespace FacePuncher.Server
             Definitions.LoadFromDirectory("../../../Data", DefinitionsNamespace.Server);
 
             // TODO: Implement saving / loading levels here.
-            var gen = new LevelGenerator();
-            _level = gen.Generate(0);
+            _level = LevelGenerator.Generate("test");
 
             _capacity = 16;
 

@@ -3,13 +3,8 @@ using System.Xml.Linq;
 
 namespace FacePuncher.Geometry
 {
-    abstract class RoomPlacement
+    abstract class RoomPlacement : GenerationWorker
     {
-        public virtual void LoadFromDefinition(XElement elem)
-        {
-            Definitions.LoadProperties(this, elem);
-        }
-
         public abstract void PlaceRooms(Level level, Random rand);
     }
 }

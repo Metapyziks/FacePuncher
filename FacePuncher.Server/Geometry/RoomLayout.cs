@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace FacePuncher.Geometry
 {
-    abstract class RoomLayout
+    abstract class RoomLayout : GenerationWorker
     {
+
     }
 }

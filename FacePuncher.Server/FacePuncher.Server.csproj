@@ -52,7 +52,7 @@
     <Compile Include="Entities\VerminControl.cs" />
     <Compile Include="Geometry\EntitySelector.cs" />
     <Compile Include="Geometry\EntitySelectors\Default.cs" />
-    <Compile Include="Geometry\GeneratorInfo.cs" />
+    <Compile Include="Generator.cs" />
     <Compile Include="Geometry\ItemGenerator.cs" />
     <Compile Include="Geometry\ItemPlacement.cs" />
     <Compile Include="Geometry\ItemPlacements\Default.cs" />
