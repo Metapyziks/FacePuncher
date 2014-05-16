@@ -8,12 +8,6 @@ using FacePuncher.Geometry;
 namespace FacePuncher.Entities
 {
     /// <summary>
-    /// Used to specify properties that may be set in definition files.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Property)]
-    public class ScriptDefinableAttribute : Attribute { }
-
-    /// <summary>
     /// Base class for entity components.
     /// </summary>
     public abstract class Component
@@ -129,17 +123,7 @@ namespace FacePuncher.Entities
         /// the component.</param>
         public virtual void LoadFromDefinition(XElement elem)
         {
-            // As a default implementation, use reflection to
-            // set properties marked as ScriptDefinable.
-            foreach (var sub in elem.Elements()) {
-                var ident = sub.Name.LocalName;
-                var prop = GetType().GetProperty(ident);
-                
-                if (prop == null) continue;
-                if (prop.GetCustomAttributes<ScriptDefinableAttribute>().Count() == 0) return;
-
-                prop.SetValue(this, elem.Element(sub.Name, prop.PropertyType));
-            }
+            Definitions.LoadProperties(this, elem);
         }
 
         /// <summary>

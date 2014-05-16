@@ -9,7 +9,7 @@ namespace FacePuncher.Entities
     /// <summary>
     /// Delegate for entity constructors.
     /// </summary>
-    /// <param name="ent"></param>
+    /// <param name="ent">Entity to construct.</param>
     public delegate void EntityConstructorDelegate(Entity ent);
 
     /// <summary>
