@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using FacePuncher.Entities;
+using FacePuncher.Graphics;
 
 namespace FacePuncher.Geometry
 {
@@ -29,6 +30,8 @@ namespace FacePuncher.Geometry
 
         private TileState _state;
         private List<Entity> _entities;
+        private TileAppearance _appearance;
+        private ulong _lastAppearance;
 
         /// <summary>
         /// Parent room containing this tile.
@@ -90,6 +93,21 @@ namespace FacePuncher.Geometry
         /// Gets the number of entities currently on this tile.
         /// </summary>
         public int EntityCount { get { return _entities.Count; } }
+
+        /// <summary>
+        /// Gets the appearance of this tile that should be sent to clients.
+        /// </summary>
+        public TileAppearance Appearance
+        {
+            get
+            {
+                if (_lastAppearance < Room.Level.Time) {
+                    UpdateAppearance();
+                }
+
+                return _appearance;
+            }
+        }
         
         /// <summary>
         /// Constructs a new tile instance within the specified room
@@ -106,6 +124,7 @@ namespace FacePuncher.Geometry
             State = TileState.Void;
 
             _entities = new List<Entity>();
+            _appearance = new TileAppearance(RelativePosition);
         }
 
         /// <summary>
@@ -208,6 +227,62 @@ namespace FacePuncher.Geometry
 
             return pos.BresenhamLine(Position)
                 .All(x => x == Position || Room[x].State == TileState.Floor);
+        }
+
+        static readonly char[] _sWallTiles = new[] {
+            '\u006f', '\u006f', '\u006f', '\u00c9',
+            '\u006f', '\u00cd', '\u00bb', '\u00cb',
+            '\u006f', '\u00c8', '\u00ba', '\u00cc',
+            '\u00bc', '\u00ca', '\u00b9', '\u00ce'
+        };
+
+        /// <summary>
+        /// Updates the appearance of this tile.
+        /// </summary>
+        private void UpdateAppearance()
+        {
+            if (_lastAppearance >= Room.Level.Time) return;
+            _lastAppearance = Room.Level.Time;
+
+            switch (State) {
+                case TileState.Void:
+                    _appearance.Symbol = ' ';
+                    _appearance.ForeColor = _appearance.BackColor = ConsoleColor.Black;
+                    _appearance.Entities = new EntityAppearance[0];
+                    return;
+                case TileState.Wall:
+                    int adj = 
+                        (GetNeighbour(Direction.East).State == TileState.Wall ? 1 : 0) |
+                        (GetNeighbour(Direction.South).State == TileState.Wall ? 2 : 0) |
+                        (GetNeighbour(Direction.West).State == TileState.Wall ? 4 : 0) |
+                        (GetNeighbour(Direction.North).State == TileState.Wall ? 8 : 0);
+
+                    _appearance.Symbol = _sWallTiles[adj];
+                    _appearance.ForeColor = ConsoleColor.Blue;
+                    _appearance.BackColor = ConsoleColor.Black;
+                    break;
+                case TileState.Floor:
+                    _appearance.Symbol = '+';
+                    _appearance.ForeColor = ConsoleColor.DarkBlue;
+                    _appearance.BackColor = ConsoleColor.Black;
+                    break;
+            }
+
+            var drawables = _entities
+                .Where(x => x.HasComponent<Drawable>())
+                .Select(x => x.GetComponent<Drawable>())
+                .ToArray();
+
+            if (drawables.Length > 0) {
+                var layer = (DrawableLayer) drawables.Max(x => x.GetLayer());
+
+                _appearance.Entities = drawables
+                    .Where(x => x.GetLayer() == layer)
+                    .Select(x => x.GetAppearance())
+                    .ToArray();
+            } else if (_appearance.EntityCount > 0) {
+                _appearance.Entities = new EntityAppearance[0];
+            }
         }
 
         /// <summary>

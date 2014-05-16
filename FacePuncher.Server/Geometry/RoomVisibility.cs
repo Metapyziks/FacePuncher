@@ -95,18 +95,5 @@ namespace FacePuncher.Geometry
                 .Where(p => _mask[p.X, p.Y] >= time)
                 .Select(p => Room[p]);
         }
-
-        /// <summary>
-        /// Gets a set of all tiles within the room that were not visible at
-        /// the specified time but have been seen in the past.
-        /// </summary>
-        /// <param name="time">Time at which to compare visibility.</param>
-        /// <returns>A set of previously seen tiles.</returns>
-        public IEnumerable<Tile> GetRemembered(ulong time)
-        {
-            return Room.RelativeRect.Positions
-                .Where(p => _mask[p.X, p.Y] != 0 && _mask[p.X, p.Y] < time)
-                .Select(p => Room[p]);
-        }
     }
 }

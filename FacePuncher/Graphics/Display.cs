@@ -6,7 +6,7 @@ using FacePuncher.Geometry;
 
 using Microsoft.Win32.SafeHandles;
 
-namespace FacePuncher
+namespace FacePuncher.Graphics
 {
     /// <summary>
     /// Wrapper around console display functions.

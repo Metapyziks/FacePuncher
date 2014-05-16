@@ -6,6 +6,7 @@
     /// </summary>
     public enum PacketType : byte
     {
+        Void = 0,
         LevelState = 1,
         InputRequest = 2
     }

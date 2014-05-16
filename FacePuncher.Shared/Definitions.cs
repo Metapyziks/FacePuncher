@@ -6,8 +6,6 @@ using System.Reflection;
 using System.Xml;
 using System.Xml.Linq;
 
-using FacePuncher.Entities;
-
 namespace FacePuncher
 {
     /// <summary>

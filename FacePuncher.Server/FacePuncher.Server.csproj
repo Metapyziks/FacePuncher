@@ -44,7 +44,11 @@
   <ItemGroup>
     <Compile Include="ClientConnection.cs" />
     <Compile Include="Entities\AgentControl.cs" />
+    <Compile Include="Entities\Component.cs" />
+    <Compile Include="Entities\Drawable.cs" />
+    <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\PlayerControl.cs" />
+    <Compile Include="Entities\StaticDrawable.cs" />
     <Compile Include="Entities\VerminControl.cs" />
     <Compile Include="Geometry\EntitySelector.cs" />
     <Compile Include="Geometry\EntitySelectors\Default.cs" />
@@ -52,12 +56,16 @@
     <Compile Include="Geometry\ItemGenerator.cs" />
     <Compile Include="Geometry\ItemPlacement.cs" />
     <Compile Include="Geometry\ItemPlacements\Default.cs" />
+    <Compile Include="Geometry\Level.cs" />
     <Compile Include="Geometry\LevelGenerator.cs" />
+    <Compile Include="Geometry\Room.cs" />
     <Compile Include="Geometry\RoomGenerator.cs" />
     <Compile Include="Geometry\RoomLayout.cs" />
     <Compile Include="Geometry\RoomLayouts\Default.cs" />
     <Compile Include="Geometry\RoomPlacement.cs" />
     <Compile Include="Geometry\RoomPlacements\Default.cs" />
+    <Compile Include="Geometry\RoomVisibility.cs" />
+    <Compile Include="Geometry\Tile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -70,7 +78,6 @@
       <Name>FacePuncher.Shared</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -99,5 +99,22 @@ namespace FacePuncher
                 reader.ReadInt32(),
                 reader.ReadInt32());
         }
+
+        public static void WriteAppearance(this Stream stream, char symbol, ConsoleColor foreColor, ConsoleColor backColor)
+        {
+            stream.WriteByte((byte) (symbol >> 8));
+            stream.WriteByte((byte) symbol);
+            stream.WriteByte((byte) ((byte) foreColor | ((byte) backColor << 4)));
+        }
+
+        public static void ReadAppearance(this Stream stream, out char symbol, out ConsoleColor foreColor, out ConsoleColor backColor)
+        {
+            symbol = (char) (stream.ReadByte() << 8 | stream.ReadByte());
+
+            int color = stream.ReadByte();
+
+            foreColor = (ConsoleColor) (color & 0xf);
+            backColor = (ConsoleColor) (color >> 4);
+        }
     }
 }

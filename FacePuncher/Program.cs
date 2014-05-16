@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 
 using FacePuncher.Geometry;
+using FacePuncher.Graphics;
 
 namespace FacePuncher
 {
@@ -29,16 +30,16 @@ namespace FacePuncher
                 int flash = 0;
 
                 var renderTimer = new Timer(state => {
-                    if (server.Player == null) return;
+                    if (!server.LoadedLevel) return;
 
                     Display.Clear();
 
-                    lock (server.Level) {
+                    lock (server.Visibility) {
                         var attribs = new DrawAttributes(flash++);
-                        var rect = Display.Rect + server.Player.Position - Display.Center;
+                        var rect = Display.Rect + server.PlayerPosition - Display.Center;
 
                         foreach (var vis in server.Visibility) {
-                            vis.Draw(rect, Position.Zero, attribs);
+                            vis.Draw(rect, Position.Zero, attribs, server.Time);
                         }
                     }
 

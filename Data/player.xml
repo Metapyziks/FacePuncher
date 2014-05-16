@@ -1,18 +1,18 @@
-<entity name="character">
-    <client:StaticDrawable>
+<server:entity name="character">
+    <StaticDrawable>
         <Layer>Characters</Layer>
         <Symbol>&#0001;</Symbol>
         <ForeColor>White</ForeColor>
-    </client:StaticDrawable>
-</entity>
+    </StaticDrawable>
+</server:entity>
 
-<entity name="player" base="character">
-    <client:StaticDrawable>
+<server:entity name="player" base="character">
+    <StaticDrawable>
         <Symbol>@</Symbol>
         <ForeColor>Yellow</ForeColor>
-    </client:StaticDrawable>
+    </StaticDrawable>
 
-    <server:PlayerControl>
+    <PlayerControl>
         <MovePeriod>100</MovePeriod>
-    </server:PlayerControl>
-</entity>
+    </PlayerControl>
+</server:entity>
