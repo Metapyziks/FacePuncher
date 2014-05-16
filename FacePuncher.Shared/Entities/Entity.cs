@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Xml.Linq;
 
 using FacePuncher.Geometry;
 
@@ -87,6 +89,42 @@ namespace FacePuncher.Entities
 
         private static Dictionary<String, ClassInfo> _sEntCtors
             = new Dictionary<string, ClassInfo>();
+
+        /// <summary>
+        /// Static constructor for Entity.
+        /// </summary>
+        static Entity()
+        {
+            Definitions.RegisterType("entity", elem => {
+                var components = new List<Tuple<Type, XElement>>();
+
+                foreach (var sub in elem.Elements()) {
+                    var typeName = String.Format("FacePuncher.Entities.{0}", sub.Name.LocalName);
+                    var type = Assembly.GetEntryAssembly().GetType(typeName);
+
+                    if (type == null) continue;
+
+                    components.Add(Tuple.Create(type, sub));
+                }
+
+                EntityConstructorDelegate ctor = ent => {
+                    foreach (var type in components) {
+                        var comp = ent.GetComponentOrNull(type.Item1)
+                            ?? ent.AddComponent(type.Item1);
+
+                        comp.LoadFromDefinition(type.Item2);
+                    }
+                };
+
+                var compTypes = components.Select(x => x.Item1).ToArray();
+
+                if (elem.Attributes("base").Count() > 0) {
+                    Entity.Register(elem.Attribute("name").Value, elem.Attribute("base").Value, ctor, compTypes);
+                } else {
+                    Entity.Register(elem.Attribute("name").Value, ctor, compTypes);
+                }
+            });
+        }
 
         /// <summary>
         /// Register an entity class.

@@ -45,6 +45,11 @@ namespace FacePuncher
             return elem.Elements(name).Count() > 0;
         }
 
+        public static bool HasAttribute(this XElement elem, XName name)
+        {
+            return elem.Attributes(name).Count() > 0;
+        }
+
         public static T Element<T>(this XElement elem, XName name)
             where T : struct
         {

@@ -1,6 +1,10 @@
 <server:level name="test">
     <RoomPlacement class="Default">
-        <Room class="test" quota="10" freq="1" />
+        <MinimumArea>1000</MinimumArea>
+        <MaximumArea>4000</MaximumArea>
+        <Room class="test">
+            <Frequency>1</Frequency>
+        </Room>
     </RoomPlacement>
 </server:level>
 
@@ -12,10 +16,15 @@
         <MaximumHeight>16</MaximumHeight>
     </RoomLayout>
     <ItemPlacement class="Default">
-        <Item class="dust_0" freq="25" />
-        <Item class="dust_1" freq="25" />
-        <Item class="dust_2" freq="25" />
-        <Item class="dust_3" freq="25" />
-        <Item class="vermin" freq="1" />
+        <Debris>debris</Debris>
     </ItemPlacement>
 </server:room>
+
+<server:item name="debris">
+    <EntitySelector class="Default">
+        <Entity class="dust_0" freq="25" />
+        <Entity class="dust_1" freq="25" />
+        <Entity class="dust_2" freq="25" />
+        <Entity class="dust_3" freq="25" />
+    </EntitySelector>
+</server:item>

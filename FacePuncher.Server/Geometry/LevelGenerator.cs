@@ -1,49 +1,69 @@
 ﻿using System;
-
+using System.Collections.Generic;
+using System.Reflection;
+using System.Xml.Linq;
 using FacePuncher.Entities;
 
 namespace FacePuncher.Geometry
 {
-    class LevelGenerator
+    static class LevelGenerator
     {
-        static LevelGenerator()
+        class LevelGeneratorInfo : GeneratorInfo
         {
+            private RoomPlacement _roomPlacement;
 
-        }
+            public LevelGeneratorInfo Base
+            {
+                get { return HasBase ? _generators[BaseName] : null; }
+            }
 
-        public Level Generate(int seed)
-        {
-            var rand = new Random(seed == 0 ? (int) (DateTime.Now.Ticks & 0x7fffffff) : seed);
+            public RoomPlacement RoomPlacement
+            {
+                get { return _roomPlacement ?? Base.RoomPlacement; }
+            }
 
-            var level = new Level();
+            protected override void LoadFromDefinition(XElement elem)
+            {
+                if (elem.HasElement("RoomPlacement")) {
+                    var sub = elem.Element("RoomPlacement");
+                    var name = sub.Attribute("class").Value;
+                    var typeName = String.Format("FacePuncher.Geometry.RoomPlacements.{0}", name);
 
-            var debris = Entity.GetClassNames("dust", true);
+                    var type = Assembly.GetEntryAssembly().GetType(typeName);
+                    if (type == null) throw new Exception("Invalid RoomPlacement type specified.");
 
-            for (int i = 0; i < 4; ++i) {
-                for (int j = 0; j < 4; ++j) {
-                    var room = level.CreateRoom(new Rectangle(i * 8, j * 8, 8, 8));
-                    
-                    room.CreateWall(new Rectangle(0, 0, room.Width, room.Height));
-                    room.CreateFloor(new Rectangle(1, 1, room.Width - 2, room.Height - 2));
+                    var ctor = type.GetConstructor(new Type[0]);
+                    if (ctor == null) throw new Exception(String.Format("RoomPlacement type {0} has no valid constructor.", name));
 
-                    if (i > 0) room.CreateFloor(new Rectangle(0, 3, 1, 2));
-                    if (j > 0) room.CreateFloor(new Rectangle(3, 0, 2, 1));
-                    if (i < 3) room.CreateFloor(new Rectangle(7, 3, 1, 2));
-                    if (j < 3) room.CreateFloor(new Rectangle(3, 7, 2, 1));
-
-                    foreach (var tile in room) {
-                        if (tile.State == TileState.Floor) {
-                            if (rand.NextDouble() < 1 / 4.0) {
-                                var dust = Entity.Create(debris[rand.Next(debris.Length)]);
-                                dust.Place(tile);
-                            } else if (rand.NextDouble() < 1 / 128.0) {
-                                var vermin = Entity.Create("vermin");
-                                vermin.Place(tile);
-                            }
-                        }
-                    }
+                    _roomPlacement = (RoomPlacement) ctor.Invoke(new Object[0]);
+                    _roomPlacement.LoadFromDefinition(sub);
+                } else if (!HasBase) {
+                    throw new Exception("No RoomPlacement specified in definition.");
                 }
             }
+        }
+
+        static Dictionary<String, LevelGeneratorInfo> _generators;
+
+        static LevelGenerator()
+        {
+            _generators = new Dictionary<string, LevelGeneratorInfo>();
+
+            Definitions.RegisterType("level", elem => {
+                var info = new LevelGeneratorInfo();
+                info.Initialize(elem);
+
+                _generators.Add(info.Name, info);
+            });
+        }
+
+        public static Level Generate(String type, int seed = 0)
+        {
+            var info = _generators[type];
+            var rand = seed == 0 ? new Random() : new Random(seed);
+
+            var level = new Level();
+            info.RoomPlacement.PlaceRooms(level, rand);
 
             return level;
         }
