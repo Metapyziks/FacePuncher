@@ -17,7 +17,7 @@ namespace FacePuncher.Geometry
         /// <summary>
         /// Region of the level this visibility instance is representing.
         /// </summary>
-        public Rectangle Rectangle { get; private set; }
+        public Rectangle Rect { get; private set; }
 
         /// <summary>
         /// Gets the latest time any tile within the room was seen.
@@ -31,11 +31,11 @@ namespace FacePuncher.Geometry
         /// <param name="room">Room to track the visibility of.</param>
         public RoomVisibility(Rectangle rect)
         {
-            Rectangle = rect;
+            Rect = rect;
             LastVisibleTime = 0;
 
-            _mask = new ulong[Rectangle.Width, Rectangle.Height];
-            _tiles = new TileAppearance[Rectangle.Width, Rectangle.Height];
+            _mask = new ulong[Rect.Width, Rect.Height];
+            _tiles = new TileAppearance[Rect.Width, Rect.Height];
         }
         
         /// <summary>
@@ -64,7 +64,7 @@ namespace FacePuncher.Geometry
         {
             if (LastVisibleTime < time) return Enumerable.Empty<TileAppearance>();
 
-            return Rectangle.Positions
+            return (Rect - Rect.TopLeft).Positions
                 .Where(p => _mask[p.X, p.Y] >= time)
                 .Select(p => _tiles[p.X, p.Y]);
         }
@@ -79,7 +79,7 @@ namespace FacePuncher.Geometry
         {
             if (LastVisibleTime == 0) return Enumerable.Empty<TileAppearance>();
 
-            return Rectangle.Positions
+            return (Rect - Rect.TopLeft).Positions
                 .Where(p => _mask[p.X, p.Y] != 0 && _mask[p.X, p.Y] < time)
                 .Select(p => _tiles[p.X, p.Y]);
         }

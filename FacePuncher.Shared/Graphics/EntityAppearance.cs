@@ -61,9 +61,9 @@ namespace FacePuncher.Graphics
         }
 
         public EntityAppearance(Stream stream)
+            : this()
         {
             int count = stream.ReadByte();
-
             for (int i = 0; i < count; ++i) {
                 _frames.Add(new Frame(stream));
             }

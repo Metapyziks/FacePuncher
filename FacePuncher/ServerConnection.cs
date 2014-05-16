@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 
-using FacePuncher.Entities;
 using FacePuncher.Geometry;
+using FacePuncher.Graphics;
 
 namespace FacePuncher
 {
@@ -17,18 +17,11 @@ namespace FacePuncher
         private TcpClient _socket;
         private List<RoomVisibility> _visibility;
 
-        private uint _playerID;
+        public Position PlayerPosition { get; private set; }
 
-        /// <summary>
-        /// Gets the partially observed state of the current level
-        /// the local player is within.
-        /// </summary>
-        public Level Level { get; private set; }
+        public bool LoadedLevel { get; private set; }
 
-        /// <summary>
-        /// Gets the local player's entity.
-        /// </summary>
-        public Entity Player { get; private set; }
+        public ulong Time { get; private set; }
 
         /// <summary>
         /// Gets a set of visibility masks for rooms that are either
@@ -43,32 +36,8 @@ namespace FacePuncher
         /// <param name="port">Port number of the desired server.</param>
         public ServerConnection(String hostname, int port)
         {
-            Level = new Level();
-
             _visibility = new List<RoomVisibility>();
             _socket = new TcpClient(hostname, port);
-        }
-
-        /// <summary>
-        /// Reads a single entity from the server.
-        /// </summary>
-        /// <param name="reader">Reader to read the entity from.</param>
-        /// <returns>An entity received from the server.</returns>
-        private Entity ReadEntity(BinaryReader reader)
-        {
-            uint id = reader.ReadUInt32();
-            string className = reader.ReadString();
-
-            if (id == _playerID && Player != null) {
-                return Player;
-            }
-
-            // TODO: Temporary, should cache entities.
-            var ent = Entity.Create(id, className);
-
-            if (id == _playerID) Player = ent;
-
-            return ent;
         }
 
         /// <summary>
@@ -78,45 +47,30 @@ namespace FacePuncher
         {
             var stream = _socket.GetStream();
             using (var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true)) {
-                Level.Time = reader.ReadUInt64();
-                _playerID = reader.ReadUInt32();
+                Time = reader.ReadUInt64();
+                PlayerPosition = reader.ReadPosition();
 
-                lock (Level) {
+                lock (_visibility) {
                     int roomCount = reader.ReadInt32();
                     for (int i = 0; i < roomCount; ++i) {
                         // Each room is identified by its rectangle.
                         var rect = reader.ReadRectangle();
 
-                        var vis = _visibility.FirstOrDefault(x => x.Room.Rect == rect);
+                        var vis = _visibility.FirstOrDefault(x => x.Rect == rect);
 
                         if (vis == null) {
-                            var room = Level.CreateRoom(rect);
-                            vis = new RoomVisibility(room);
-
+                            vis = new RoomVisibility(rect);
                             _visibility.Add(vis);
                         }
 
                         int tileCount = reader.ReadInt32();
                         for (int j = 0; j < tileCount; ++j) {
                             var pos = reader.ReadPosition();
-                            var state = (TileState) reader.ReadByte();
-                            var tile = vis.Room[pos];
-
-                            vis.Reveal(pos, Level.Time);
-                            tile.State = state;
-
-                            var ents = tile.ToArray();
-                            foreach (var ent in ents) {
-                                ent.Remove();
-                            }
-
-                            var entCount = reader.ReadUInt16();
-                            for (int k = 0; k < entCount; ++k) {
-                                var ent = ReadEntity(reader);
-                                ent.Place(tile);
-                            }
+                            vis.Reveal(pos, new TileAppearance(pos, stream), Time);
                         }
                     }
+
+                    LoadedLevel = true;
                 }
             }
         }
@@ -168,7 +122,7 @@ namespace FacePuncher
                     throw new Exception("Unexpected packet type");
             }
 
-            return _socket.Connected;
+            return true;
         }
 
         /// <summary>

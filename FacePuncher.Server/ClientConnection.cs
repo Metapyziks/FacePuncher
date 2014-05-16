@@ -64,20 +64,7 @@ namespace FacePuncher
 
             Player.Place(tiles[Tools.Random.Next(tiles.Length)]);
         }
-
-        /// <summary>
-        /// Sends a single entity to the client.
-        /// </summary>
-        /// <param name="writer">Writer to write the entity to.</param>
-        /// <param name="ent">Entity to send to the client.</param>
-        private void SendEntity(BinaryWriter writer, Entity ent)
-        {
-            writer.Write(ent.ID);
-            writer.Write(ent.ClassName);
-
-            // TODO: Send component information?
-        }
-
+        
         /// <summary>
         /// Sends a partially observable level state update to the client.
         /// </summary>
@@ -88,43 +75,34 @@ namespace FacePuncher
         {
             var time = Level.Time + timeOffset;
 
-            try {
-                var stream = _socket.GetStream();
-                using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, true)) {
-                    writer.Write((byte) PacketType.LevelState);
+            var stream = _socket.GetStream();
+            using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, true)) {
+                writer.Write((byte) PacketType.LevelState);
 
-                    writer.Write(time);
-                    writer.Write(Player.ID);
+                writer.Write(time);
+                writer.Write(Player.Position);
 
-                    lock (Level) {
-                        var visibleRooms = _visibility
-                            .Where(x => x.UpdateVisibility(Player.Position, MaxVisibilityRange, time))
-                            .ToArray();
+                lock (Level) {
+                    var visibleRooms = _visibility
+                        .Where(x => x.UpdateVisibility(Player.Position, MaxVisibilityRange, time))
+                        .ToArray();
 
-                        writer.Write(visibleRooms.Length);
-                        foreach (var vis in visibleRooms) {
-                            writer.Write(vis.Room.Rect);
+                    writer.Write(visibleRooms.Length);
+                    foreach (var vis in visibleRooms) {
+                        writer.Write(vis.Room.Rect);
 
-                            var visibleTiles = vis.GetVisible(time).ToArray();
+                        var visibleTiles = vis.GetVisible(time).ToArray();
 
-                            writer.Write(visibleTiles.Length);
-                            foreach (var tile in visibleTiles) {
-                                writer.Write(tile.RelativePosition);
-                                writer.Write((byte) tile.State);
-
-                                writer.Write((ushort) tile.EntityCount);
-                                foreach (var ent in tile) {
-                                    SendEntity(writer, ent);
-                                }
-                            }
+                        writer.Write(visibleTiles.Length);
+                        foreach (var tile in visibleTiles) {
+                            writer.Write(tile.RelativePosition);
+                            tile.Appearance.WriteToStream(stream);
                         }
                     }
-
-                    writer.Flush();
                 }
 
-            // TODO: Forcibly kick the client or something.
-            } catch { }
+                writer.Flush();
+            }
         }
 
         /// <summary>
@@ -134,35 +112,30 @@ namespace FacePuncher
         /// <returns>A key entered by the client.</returns>
         public ConsoleKey ReadInput(ConsoleKey[] validKeys)
         {
-            try {
-                var stream = _socket.GetStream();
+            var stream = _socket.GetStream();
 
-                using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, true)) {
-                    writer.Write((byte) PacketType.InputRequest);
+            using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, true)) {
+                writer.Write((byte) PacketType.InputRequest);
 
-                    writer.Write((ushort) validKeys.Length);
-                    foreach (var key in validKeys) {
-                        writer.Write((ushort) key);
-                    }
-
-                    writer.Flush();
+                writer.Write((ushort) validKeys.Length);
+                foreach (var key in validKeys) {
+                    writer.Write((ushort) key);
                 }
 
-                ConsoleKey response;
-
-                using (var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true)) {
-                    response = (ConsoleKey) reader.ReadUInt16();
-                }
-
-                if (!validKeys.Contains(response)) {
-                    throw new Exception("Invalid key sent by client");
-                }
-
-                return response;
-            } catch {
-                // TODO: This is pretty nasty. Don't do this.
-                return validKeys.First();
+                writer.Flush();
             }
+
+            ConsoleKey response;
+
+            using (var reader = new BinaryReader(stream, System.Text.Encoding.UTF8, true)) {
+                response = (ConsoleKey) reader.ReadUInt16();
+            }
+
+            if (!validKeys.Contains(response)) {
+                throw new Exception("Invalid key sent by client");
+            }
+
+            return response;
         }
     }
 }

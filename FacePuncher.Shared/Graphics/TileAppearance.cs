@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using FacePuncher.Geometry;
+
 namespace FacePuncher.Graphics
 {
     public class TileAppearance : IEnumerable<EntityAppearance>
     {
-        private EntityAppearance[] _ents;
+        public Position Position { get; private set; }
 
         public char Symbol { get; set; }
 
@@ -19,16 +21,25 @@ namespace FacePuncher.Graphics
 
         public int EntityCount { get { return Entities.Length; } }
         
-        public TileAppearance(char symbol, ConsoleColor foreColor, ConsoleColor backColor, EntityAppearance[] ents)
+        public EntityAppearance this[int index]
         {
-            Symbol = symbol;
-            ForeColor = foreColor;
-            BackColor = backColor;
-            Entities = ents;
+            get { return Entities[index]; }
         }
 
-        public TileAppearance(Stream stream)
+        public TileAppearance(Position pos)
         {
+            Position = pos;
+
+            Symbol = '?';
+            ForeColor = ConsoleColor.Gray;
+            BackColor = ConsoleColor.Black;
+            Entities = new EntityAppearance[0];
+        }
+
+        public TileAppearance(Position pos, Stream stream)
+        {
+            Position = pos;
+
             char symbol; ConsoleColor foreColor, backColor;
 
             stream.ReadAppearance(out symbol, out foreColor, out backColor);
@@ -61,12 +72,12 @@ namespace FacePuncher.Graphics
 
         public IEnumerator<EntityAppearance> GetEnumerator()
         {
-            return _ents.AsEnumerable<EntityAppearance>().GetEnumerator();
+            return Entities.AsEnumerable<EntityAppearance>().GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return _ents.GetEnumerator();
+            return Entities.GetEnumerator();
         }
     }
 }

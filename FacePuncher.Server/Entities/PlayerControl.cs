@@ -26,8 +26,6 @@ namespace FacePuncher.Entities
                 .ToArray();
 
             Move(Tools.MovementKeys[Client.ReadInput(validKeys)]);
-
-            Client.SendVisibleLevelState(1);
         }
     }
 }
