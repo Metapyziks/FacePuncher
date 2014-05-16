@@ -6,10 +6,13 @@ namespace FacePuncher.Geometry
 {
     class LevelGenerator
     {
+        static LevelGenerator()
+        {
+
+        }
+
         public Level Generate(int seed)
         {
-            // TODO: Temporary generator, will be gutted and replaced soon.
-
             var rand = new Random(seed == 0 ? (int) (DateTime.Now.Ticks & 0x7fffffff) : seed);
 
             var level = new Level();
