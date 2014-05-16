@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace FacePuncher.Entities
+namespace FacePuncher.Graphics
 {
     public class EntityAppearance : IEnumerable<EntityAppearance.Frame>
     {
@@ -30,21 +30,14 @@ namespace FacePuncher.Entities
 
             public Frame(Stream stream)
             {
-                Symbol = (char) (stream.ReadByte() << 8 | stream.ReadByte());
-
-                int color = stream.ReadByte();
-
-                ForeColor = (ConsoleColor) (color & 0xf);
-                BackColor = (ConsoleColor) (color >> 4);
+                stream.ReadAppearance(out Symbol, out ForeColor, out BackColor);
 
                 Duration = stream.ReadByte();
             }
 
-            public void Write(Stream stream)
+            public void WriteToStream(Stream stream)
             {
-                stream.WriteByte((byte) (Symbol >> 8));
-                stream.WriteByte((byte) Symbol);
-                stream.WriteByte((byte) ((byte) ForeColor | ((byte) ForeColor << 4)));
+                stream.WriteAppearance(Symbol, ForeColor, BackColor);
                 stream.WriteByte((byte) Duration);
             }
         }
@@ -54,6 +47,7 @@ namespace FacePuncher.Entities
         public Frame this[int frame]
         {
             get { return _frames[frame]; }
+            set { _frames[frame] = value; }
         }
 
         public int FrameCount
@@ -97,12 +91,17 @@ namespace FacePuncher.Entities
             Add(new Frame(symbol, foreColor, backColor, duration));
         }
 
-        public void Write(Stream stream)
+        public void Add(char symbol)
+        {
+            Add(symbol, 1);
+        }
+
+        public void WriteToStream(Stream stream)
         {
             stream.WriteByte((byte) FrameCount);
 
             foreach (var frame in this) {
-                frame.Write(stream);
+                frame.WriteToStream(stream);
             }
         }
 

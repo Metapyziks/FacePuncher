@@ -44,9 +44,16 @@
   <ItemGroup>
     <Compile Include="ClientConnection.cs" />
     <Compile Include="Entities\AgentControl.cs" />
+    <Compile Include="Entities\Component.cs" />
+    <Compile Include="Entities\Drawable.cs" />
+    <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\PlayerControl.cs" />
+    <Compile Include="Entities\StaticDrawable.cs" />
     <Compile Include="Entities\VerminControl.cs" />
+    <Compile Include="Geometry\Level.cs" />
     <Compile Include="Geometry\LevelGenerator.cs" />
+    <Compile Include="Geometry\Room.cs" />
+    <Compile Include="Geometry\Tile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
