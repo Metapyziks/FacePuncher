@@ -57,7 +57,6 @@ namespace FacePuncher.Server
                     Console.WriteLine("New client connected from {0}.", socket.Client.RemoteEndPoint);
                     
                     _clients.Add(client);
-                    client.SendVisibleLevelState();
                 }
             }
         }
