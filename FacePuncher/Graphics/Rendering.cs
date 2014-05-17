@@ -62,6 +62,8 @@ namespace FacePuncher.Graphics
             var subRect = vis.Rect.Intersection(rect);
             var roomPos = vis.Rect.TopLeft;
 
+            if (subRect.Width * subRect.Height <= 0) return;
+
             // Move the screen position and clipping rectangle to room-space.
             screenPos += roomPos - rect.TopLeft;
             rect = subRect - roomPos;

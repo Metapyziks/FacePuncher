@@ -453,7 +453,7 @@ namespace FacePuncher.Entities
         /// <returns>The component, for convenience.</returns>
         private Component AddComponent(Component comp, Type type)
         {
-            if (_thinkProbe == null && !type.GetMethod("OnThink").IsAbstract) {
+            if (_thinkProbe == null && comp.CanThink) {
                 _thinkProbe = comp;
             }
 
@@ -504,7 +504,7 @@ namespace FacePuncher.Entities
             _comps.Remove(comp);
 
             if (_thinkProbe == comp) {
-                _thinkProbe = _comps.FirstOrDefault(x => !x.GetType().GetMethod("OnThink").IsAbstract);
+                _thinkProbe = _comps.FirstOrDefault(x => x.CanThink);
             }
 
             _compsChanged = true;
@@ -620,6 +620,8 @@ namespace FacePuncher.Entities
                 other.OnUpdateComponents();
             }
 
+            Room.UpdateThinkProbe(this);
+
             _compsChanged = false;
         }
 
@@ -640,6 +642,8 @@ namespace FacePuncher.Entities
             foreach (var comp in _comps) {
                 comp.OnPlace();
             }
+
+            Room.UpdateThinkProbe(this);
         }
 
         /// <summary>
@@ -648,6 +652,8 @@ namespace FacePuncher.Entities
         /// </summary>
         private void OnRemove()
         {
+            Room.UpdateThinkProbe(this);
+
             foreach (var comp in this) comp.OnRemove();
             foreach (var child in _children) child.OnRemove();
         }
@@ -701,8 +707,16 @@ namespace FacePuncher.Entities
             var orig = Tile;
             _tile = dest;
 
+            if (dest.Room != orig.Room) {
+                Room.UpdateThinkProbe(this);
+            }
+
             orig.RemoveEntity(this);
             Tile.AddEntity(this);
+            
+            if (dest.Room != orig.Room) {
+                Room.UpdateThinkProbe(this);
+            }
         }
 
         /// <summary>

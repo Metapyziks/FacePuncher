@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+
+using FacePuncher.Entities;
 
 namespace FacePuncher.Geometry
 {
@@ -55,6 +58,7 @@ namespace FacePuncher.Geometry
         public int Height { get { return Rect.Height; } }
         
         private Tile[,] _tiles;
+        private Entity _thinkProbe;
 
         /// <summary>
         /// Constructs a new room instance within the given
@@ -74,6 +78,8 @@ namespace FacePuncher.Geometry
                     _tiles[x, y] = new Tile(this, x, y);
                 }
             }
+
+            _thinkProbe = null;
         }
 
         /// <summary>
@@ -142,11 +148,32 @@ namespace FacePuncher.Geometry
             }
         }
 
+        private bool IsAcceptableThinkProbe(Entity ent)
+        {
+            return ent != null
+                && ent.IsValid
+                && ent.Room == this
+                && ent.CanThink;
+        }
+
+        internal void UpdateThinkProbe(Entity ent)
+        {
+            if (_thinkProbe != ent && !IsAcceptableThinkProbe(_thinkProbe) && IsAcceptableThinkProbe(ent)) {
+                _thinkProbe = ent;
+            } else if (_thinkProbe == ent && !IsAcceptableThinkProbe(ent)) {
+                _thinkProbe = this
+                    .SelectMany(x => x)
+                    .FirstOrDefault(x => IsAcceptableThinkProbe(x));
+            }
+        }
+
         /// <summary>
         /// Instructs each entity within the room to perform a single think step.
         /// </summary>
         public void Think()
         {
+            if (!IsAcceptableThinkProbe(_thinkProbe)) return;
+
             foreach (var tile in _tiles) {
                 tile.Think();
             }
