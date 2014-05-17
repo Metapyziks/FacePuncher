@@ -215,7 +215,7 @@ namespace FacePuncher.Geometry.RoomPlacements
 
             var rects = new List<RoomInfo>();
 
-            int range = (int) Math.Sqrt(destArea / 2);
+            int range = (int) Math.Sqrt(destArea);
             var hubs = new Hub[Math.Max(1, rand.Next(MinHubs, MaxHubs + 1))];
 
             for (int i = 0; i < hubs.Length; ++i) {
