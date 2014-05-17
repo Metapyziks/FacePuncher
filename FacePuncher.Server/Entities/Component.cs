@@ -17,6 +17,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
@@ -30,6 +31,9 @@ namespace FacePuncher.Entities
     /// </summary>
     public abstract class Component
     {
+        private static Dictionary<Type, bool> _sThinkingTypes
+            = new Dictionary<Type, bool>();
+
         /// <summary>
         /// Creates a component for the specified entity.
         /// </summary>
@@ -61,6 +65,10 @@ namespace FacePuncher.Entities
             if (c == null) {
                 throw new MissingMethodException(
                     String.Format("Type {0} is missing a valid constructor.", t.FullName));
+            }
+
+            if (!_sThinkingTypes.ContainsKey(t)) {
+                _sThinkingTypes.Add(t, t.GetMethod("OnThink").DeclaringType != typeof(Component));
             }
 
             var comp = (Component) c.Invoke(new object[0]);
@@ -132,18 +140,13 @@ namespace FacePuncher.Entities
         /// <summary>
         /// Tests to see if this component has overridden the OnThink method.
         /// </summary>
-        public bool CanThink { get; private set; }
+        public bool CanThink { get { return _sThinkingTypes[GetType()]; } }
 
         /// <summary>
         /// Gets the host entity.
         /// </summary>
         public Entity Entity { get; private set; }
-
-        public Component()
-        {
-            CanThink = GetType().GetMethod("OnThink").DeclaringType != typeof(Component);
-        }
-
+        
         /// <summary>
         /// Loads state information from an XML definition.
         /// </summary>
