@@ -25,9 +25,9 @@ namespace FacePuncher.Geometry
 
             return level;
         }
-
+                    
         public RoomPlacement RoomPlacement { get; private set; }
-            
+
         protected override void OnLoadFromDefinition(XElement elem)
         {
             RoomPlacement = LoadWorkerFromDefinition<RoomPlacement>(elem,

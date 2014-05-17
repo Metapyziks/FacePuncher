@@ -112,6 +112,14 @@ namespace FacePuncher.Entities
         }
 
         /// <summary>
+        /// Tests to see if this component has overridden the OnThink method.
+        /// </summary>
+        public bool CanThink
+        {
+            get { return GetType().GetMethod("OnThink").DeclaringType != typeof(Component); }
+        }
+
+        /// <summary>
         /// Gets the host entity.
         /// </summary>
         public Entity Entity { get; private set; }

@@ -78,9 +78,9 @@ namespace FacePuncher
 
         public static Position ReadPosition(this BinaryReader reader)
         {
-            return new Position(
-                reader.ReadInt32(),
-                reader.ReadInt32());
+            int x = reader.ReadInt32();
+            int y = reader.ReadInt32();
+            return new Position(x, y);
         }
 
         public static void Write(this BinaryWriter writer, Rectangle rect)
@@ -93,11 +93,12 @@ namespace FacePuncher
 
         public static Rectangle ReadRectangle(this BinaryReader reader)
         {
-            return new Rectangle(
-                reader.ReadInt32(),
-                reader.ReadInt32(),
-                reader.ReadInt32(),
-                reader.ReadInt32());
+            int x = reader.ReadInt32();
+            int y = reader.ReadInt32();
+            int w = reader.ReadInt32();
+            int h = reader.ReadInt32();
+
+            return new Rectangle(x, y, w, h);
         }
 
         public static void WriteAppearance(this Stream stream, char symbol, ConsoleColor foreColor, ConsoleColor backColor)
