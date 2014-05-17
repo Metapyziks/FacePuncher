@@ -22,6 +22,27 @@ namespace FacePuncher.Geometry.RoomPlacements
             }
         }
 
+        private class RoomInfo
+        {
+            public Rectangle Rect { get; private set; }
+
+            public String Type { get; private set; }
+
+            public Dictionary<RoomInfo, Rectangle> Doors { get; private set; }
+
+            public RoomInfo(Rectangle rect, String type)
+            {
+                Rect = rect;
+                Type = type;
+                Doors = new Dictionary<RoomInfo, Rectangle>();
+            }
+
+            public void AddDoor(RoomInfo room, Rectangle rect)
+            {
+                Doors.Add(room, rect.Intersection(Rect));
+            }
+        }
+
         private List<RoomGeneratorInfo> _roomGenerators;
 
         [ScriptDefinable]
@@ -66,7 +87,7 @@ namespace FacePuncher.Geometry.RoomPlacements
             return _roomGenerators.First(x => (index -= x.Frequency) < 0).ClassName;
         }
 
-        private Rectangle RandomAdjacentRect(Rectangle a, Rectangle b, Random rand)
+        private Rectangle GenerateAdjacentRect(Rectangle a, Rectangle b, Random rand)
         {
             var dir = Position.Zero;
             int diff = 0, min, max;
@@ -100,11 +121,58 @@ namespace FacePuncher.Geometry.RoomPlacements
             return b + dir * rand.Next(min, max + 1);
         }
 
+        private Rectangle GenerateDoor(Rectangle a, Rectangle b, Random rand)
+        {
+            int min, max;
+            var start = Position.Zero;
+            var depth = Position.Zero;
+            var direc = Position.Zero;
+
+            if (a.Right == b.Left) {
+                min = Math.Max(a.Top, b.Top) + 1;
+                max = Math.Min(a.Bottom, b.Bottom) - 1;
+                start = new Position(a.Right - 1, min);
+                depth = Position.UnitX * 2; direc = Position.UnitY;
+            } else if (a.Bottom == b.Top) {
+                min = Math.Max(a.Left, b.Left) + 1;
+                max = Math.Min(a.Right, b.Right) - 1;
+                start = new Position(min, a.Bottom - 1);
+                depth = Position.UnitY * 2; direc = Position.UnitX;
+            } else if (a.Left == b.Right) {
+                min = Math.Max(a.Top, b.Top) + 1;
+                max = Math.Min(a.Bottom, b.Bottom) - 1;
+                start = new Position(b.Right - 1, min);
+                depth = Position.UnitX * 2; direc = Position.UnitY;
+            } else if (a.Top == b.Bottom) {
+                min = Math.Max(a.Left, b.Left) + 1;
+                max = Math.Min(a.Right, b.Right) - 1;
+                start = new Position(min, b.Bottom - 1);
+                depth = Position.UnitY * 2; direc = Position.UnitX;
+            } else {
+                throw new Exception("Could not generate door.");
+            }
+
+            int size = max - min;
+
+            if (size <= 2 || rand.NextDouble() < 0.25) {
+                return new Rectangle(start, start + depth + direc * size);
+            } else if (size == 3 || rand.NextDouble() < 0.5) {
+                min = 1 + rand.Next(size - 2);
+                max = min + 1;
+            } else {
+                min = 1 + rand.Next(size - 3);
+                max = min + 2;
+            }
+
+
+            return new Rectangle(start + direc * min, start + depth + direc * max);
+        }
+
         public override void PlaceRooms(Level level, Random rand)
         {
             int destArea = rand.Next(MinimumArea, MaximumArea);
 
-            var rects = new List<Tuple<Rectangle, String>>();
+            var rects = new List<RoomInfo>();
 
             var hubs = new Position[rand.Next(MinimumHubs, MaximumHubs + 1)];
 
@@ -120,68 +188,52 @@ namespace FacePuncher.Geometry.RoomPlacements
                 var hub = hubs.Length > 0 ? hubs[rand.Next(hubs.Length)] : Position.Zero;
 
                 var best = Rectangle.Zero;
+                RoomInfo neighbour = null;
 
                 if (rects.Count > 0) {
                     int bestDist = 0;
+
                     int tries = 0;
                     while (best == Rectangle.Zero || ++tries <= 256) {
-                        var othr = rects[rand.Next(rects.Count)].Item1;
-                        var rect = RandomAdjacentRect(othr, size, rand);
+                        var othr = rects[rand.Next(rects.Count)];
+                        var rect = GenerateAdjacentRect(othr.Rect, size, rand);
 
-                        if (rects.Any(x => x.Item1.Intersects(rect))) continue;
+                        if (rects.Any(x => x.Rect.Intersects(rect))) continue;
 
                         int dist = (rect.NearestPosition(hub) - hub).LengthSquared;
                         if (best != Rectangle.Zero && dist >= bestDist) continue;
 
                         best = rect;
                         bestDist = dist;
+                        neighbour = othr;
+
                         tries = 0;
                     }
                 } else {
                     best = new Rectangle(-size.Width / 2, -size.Height / 2, size.Width, size.Height);
                 }
 
-                rects.Add(Tuple.Create(best, name));
+                var info = new RoomInfo(best, name);
+                if (neighbour != null) {
+                    var door = GenerateDoor(info.Rect, neighbour.Rect, rand);
+
+                    info.AddDoor(neighbour, door);
+                    neighbour.AddDoor(info, door);
+                }
+
+                rects.Add(info);
                 destArea -= best.Area;
             }
 
             foreach (var info in rects) {
-                var rect = info.Item1;
+                var rect = info.Rect;
                 var room = level.CreateRoom(rect);
 
                 room.CreateWall(rect - rect.TopLeft);
                 room.CreateFloor(new Rectangle(1, 1, rect.Width - 2, rect.Height - 2));
 
-                foreach (var neighbour in rects.Where(x => x.Item1.Right == rect.Left)) {
-                    var a = Math.Max(neighbour.Item1.Top, rect.Top) + 1;
-                    var b = Math.Min(neighbour.Item1.Bottom, rect.Bottom) - 1;
-                    if (b - a >= 2) {
-                        room.CreateFloor(new Rectangle(0, a - rect.Top, 1, b - a));
-                    }
-                }
-
-                foreach (var neighbour in rects.Where(x => x.Item1.Bottom == rect.Top)) {
-                    var a = Math.Max(neighbour.Item1.Left, rect.Left) + 1;
-                    var b = Math.Min(neighbour.Item1.Right, rect.Right) - 1;
-                    if (b - a >= 2) {
-                        room.CreateFloor(new Rectangle(a - rect.Left, 0, b - a, 1));
-                    }
-                }
-
-                foreach (var neighbour in rects.Where(x => x.Item1.Left == rect.Right)) {
-                    var a = Math.Max(neighbour.Item1.Top, rect.Top) + 1;
-                    var b = Math.Min(neighbour.Item1.Bottom, rect.Bottom) - 1;
-                    if (b - a >= 2) {
-                        room.CreateFloor(new Rectangle(rect.Width - 1, a - rect.Top, 1, b - a));
-                    }
-                }
-
-                foreach (var neighbour in rects.Where(x => x.Item1.Top == rect.Bottom)) {
-                    var a = Math.Max(neighbour.Item1.Left, rect.Left) + 1;
-                    var b = Math.Min(neighbour.Item1.Right, rect.Right) - 1;
-                    if (b - a >= 2) {
-                        room.CreateFloor(new Rectangle(a - rect.Left, rect.Height - 1, b - a, 1));
-                    }
+                foreach (var door in info.Doors.Values) {
+                    room.CreateFloor(door - rect.TopLeft);
                 }
             }
         }
