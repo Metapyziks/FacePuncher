@@ -1,4 +1,5 @@
 /* Copyright (C) 2014 James King (metapyziks@gmail.com)
+ * Copyright (C) 2014 Tamme Schichler (tammeschichler@googlemail.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,10 +23,17 @@ namespace FacePuncher
     /// Used to specify the nature of the following packet
     /// during communication between the server and client.
     /// </summary>
-    public enum PacketType : byte
+    public enum ServerPacketType : byte
     {
-        Void = 0,
-        LevelState = 1,
-        InputRequest = 2
+        LevelState = 1
+    }
+
+    /// <summary>
+    /// Used to specify the nature of the following packet
+    /// during communication between the client and server.
+    /// </summary>
+    public enum ClientPacketType : byte
+    {
+        PlayerIntent = 1
     }
 }

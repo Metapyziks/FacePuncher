@@ -1,4 +1,5 @@
 /* Copyright (C) 2014 James King (metapyziks@gmail.com)
+ * Copyright (C) 2014 Tamme Schichler (tammeschichler@googlemail.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +24,9 @@ using System.Linq;
 using System.Xml.Linq;
 
 using FacePuncher.Geometry;
+using FacePuncher.Network;
+using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace FacePuncher
 {
@@ -88,52 +92,54 @@ namespace FacePuncher
             return val < min ? min : val > max ? max : val;
         }
 
-        public static void Write(this BinaryWriter writer, Position pos)
+        public static void Write(this NetworkStream stream, Position pos)
         {
-            writer.Write(pos.X);
-            writer.Write(pos.Y);
+            stream.Write(pos.X);
+            stream.Write(pos.Y);
         }
 
-        public static Position ReadPosition(this BinaryReader reader)
+        public static async Task<Position> ReadPosition(this NetworkStream stream)
         {
-            int x = reader.ReadInt32();
-            int y = reader.ReadInt32();
-            return new Position(x, y);
+            return new Position(
+                x: await stream.ReadInt32(),
+                y: await stream.ReadInt32());
         }
 
-        public static void Write(this BinaryWriter writer, Rectangle rect)
+        public static void Write(this NetworkStream stream, Rectangle rect)
         {
-            writer.Write(rect.Left);
-            writer.Write(rect.Top);
-            writer.Write(rect.Width);
-            writer.Write(rect.Height);
+            stream.Write(rect.Left);
+            stream.Write(rect.Top);
+            stream.Write(rect.Width);
+            stream.Write(rect.Height);
         }
 
-        public static Rectangle ReadRectangle(this BinaryReader reader)
+        public static async Task<Rectangle> ReadRectangle(this NetworkStream stream)
         {
-            int x = reader.ReadInt32();
-            int y = reader.ReadInt32();
-            int w = reader.ReadInt32();
-            int h = reader.ReadInt32();
-
-            return new Rectangle(x, y, w, h);
+            return new Rectangle(
+                x: await stream.ReadInt32(),
+                y: await stream.ReadInt32(),
+                w: await stream.ReadInt32(),
+                h: await stream.ReadInt32());
         }
 
         public static void WriteAppearance(this Stream stream, char symbol, ConsoleColor foreColor, ConsoleColor backColor)
         {
-            stream.WriteByte((byte) (symbol >> 8));
-            stream.WriteByte((byte) symbol);
-            stream.WriteByte((byte) ((byte) foreColor | ((byte) backColor << 4)));
+            stream.WriteByte((byte)(symbol >> 8));
+            stream.WriteByte(unchecked((byte)symbol));
+            stream.WriteByte((byte)((byte)foreColor | ((byte)backColor << 4)));
         }
 
-        public static void ReadAppearance(this Stream stream, out char symbol, out ConsoleColor foreColor, out ConsoleColor backColor)
+        // TODO: split this method
+        public static async Task<Tuple<char, ConsoleColor, ConsoleColor>> ReadAppearance(this NetworkStream stream)
         {
-            symbol = (char) (stream.ReadByte() << 8 | stream.ReadByte());
+            var symbol = (char)(await stream.ReadByteAsync() << 8 | await stream.ReadByteAsync());
 
-            int color = stream.ReadByte();
+            int color = await stream.ReadByteAsync();
 
-            foreColor = (ConsoleColor) (color & 0xf);
-            backColor = (ConsoleColor) (color >> 4);
+            var foreColor = (ConsoleColor)(color & 0xf);
+            var backColor = (ConsoleColor)(color >> 4);
+
+            return Tuple.Create(symbol, foreColor, backColor);
         }
 
         public static float NextFloat(this Random rand)

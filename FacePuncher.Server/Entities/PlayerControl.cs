@@ -1,4 +1,5 @@
 /* Copyright (C) 2014 James King (metapyziks@gmail.com)
+ * Copyright (C) 2014 Tamme Schichler (tammeschichler@googlemail.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,18 +33,32 @@ namespace FacePuncher.Entities
         /// Gets or sets the client that dictates the actions of this entity.
         /// </summary>
         public ClientConnection Client { get; set; }
+        private Intent _intent;
+
+        public Intent Intent
+        {
+            get { return _intent; }
+            set { _intent = value; }
+        }
 
         public override void OnThink()
         {
-            if (Client == null || !CanMove) return;
+            Intent.HandleIntent(ref _intent, (MoveIntent mi) => HandleMove(mi)); // This isn't quite optimal
 
             Client.SendVisibleLevelState();
+        }
 
-            var validKeys = Tools.MovementKeys.Keys
-                .Where(x => Entity.CanMove(Tools.MovementKeys[x]))
-                .ToArray();
+        private bool HandleMove(MoveIntent intent)
+        {
+            var success = Move(intent.Direction);
 
-            Move(Tools.MovementKeys[Client.ReadInput(validKeys)]);
+            if (success)
+            {
+                // Let the client know what they can see in their new position.
+                Client.SendVisibleLevelState(timeOffset: 1);
+            }
+
+            return success;
         }
     }
 }
