@@ -59,22 +59,8 @@ namespace FacePuncher
                 if (Console.KeyAvailable)
                 {
                     var key = Console.ReadKey(intercept: true);
-                    switch (key.Key)
-                    {
-                        case ConsoleKey.UpArrow:
-                            server.SendIntent(new MoveIntent(Direction.North));
-                            break;
-                        case ConsoleKey.DownArrow:
-                            server.SendIntent(new MoveIntent(Direction.South));
-                            break;
-                        case ConsoleKey.LeftArrow:
-                            server.SendIntent(new MoveIntent(Direction.West));
-                            break;
-                        case ConsoleKey.RightArrow:
-                            server.SendIntent(new MoveIntent(Direction.East));
-                            break;
-                        default:
-                            break;
+                    if (Tools.MovementKeys.ContainsKey(key.Key)) {
+                        server.SendIntent(new MoveIntent(Tools.MovementKeys[key.Key]));
                     }
                 }
                 else
