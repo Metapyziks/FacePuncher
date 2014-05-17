@@ -116,5 +116,20 @@ namespace FacePuncher
             foreColor = (ConsoleColor) (color & 0xf);
             backColor = (ConsoleColor) (color >> 4);
         }
+
+        public static float NextFloat(this Random rand)
+        {
+            return (float) rand.NextDouble();
+        }
+
+        public static float NextFloat(this Random rand, float max)
+        {
+            return (float) rand.NextDouble() * max;
+        }
+
+        public static float NextFloat(this Random rand, float min, float max)
+        {
+            return min + (float) rand.NextDouble() * (max - min);
+        }
     }
 }

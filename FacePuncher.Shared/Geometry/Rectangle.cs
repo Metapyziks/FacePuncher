@@ -127,6 +127,12 @@ namespace FacePuncher.Geometry
             Height = h;
         }
 
+        public bool IsAdjacent(Rectangle rect)
+        {
+            return (this.Left == rect.Right || rect.Left == this.Right)
+                != (this.Top == rect.Bottom || rect.Top == this.Bottom);
+        }
+
         /// <summary>
         /// Tests to see if the given position is within the bounds
         /// of this rectangle.
@@ -164,7 +170,7 @@ namespace FacePuncher.Geometry
         /// otherwise the zero rectangle.</returns>
         public Rectangle Intersection(Rectangle rect)
         {
-            if (!Intersects(rect)) return Rectangle.Zero;
+            if (!Intersects(rect) && !IsAdjacent(rect)) return Rectangle.Zero;
 
             var tl = new Position(
                 Math.Max(this.Left, rect.Left),

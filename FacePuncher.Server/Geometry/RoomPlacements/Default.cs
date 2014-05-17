@@ -24,14 +24,17 @@ namespace FacePuncher.Geometry.RoomPlacements
 
         private class RoomInfo
         {
+            public int Index { get; private set; }
+
             public Rectangle Rect { get; private set; }
 
             public String Type { get; private set; }
 
             public Dictionary<RoomInfo, Rectangle> Doors { get; private set; }
 
-            public RoomInfo(Rectangle rect, String type)
+            public RoomInfo(Rectangle rect, String type, int index)
             {
+                Index = index;
                 Rect = rect;
                 Type = type;
                 Doors = new Dictionary<RoomInfo, Rectangle>();
@@ -41,29 +44,43 @@ namespace FacePuncher.Geometry.RoomPlacements
             {
                 Doors.Add(room, rect.Intersection(Rect));
             }
+
+            public override string ToString()
+            {
+                return String.Format("{0} : {1}", Rect.ToString(), Type);
+            }
         }
 
         private List<RoomGeneratorInfo> _roomGenerators;
 
         [ScriptDefinable]
-        public int MinimumArea { get; set; }
+        public int MinArea { get; set; }
 
         [ScriptDefinable]
-        public int MaximumArea { get; set; }
+        public int MaxArea { get; set; }
 
         [ScriptDefinable]
-        public int MinimumHubs { get; set; }
+        public int MinHubs { get; set; }
 
         [ScriptDefinable]
-        public int MaximumHubs { get; set; }
+        public int MaxHubs { get; set; }
+
+        [ScriptDefinable]
+        public float MinConnectivity { get; set; }
+
+        [ScriptDefinable]
+        public float MaxConnectivity { get; set; }
 
         public Default()
         {
-            MinimumArea = 1000;
-            MaximumArea = 1000;
+            MinArea = 1000;
+            MaxArea = 1000;
 
-            MinimumHubs = 1;
-            MaximumHubs = 1;
+            MinHubs = 1;
+            MaxHubs = 1;
+
+            MinConnectivity = 0f;
+            MaxConnectivity = 1f;
 
             _roomGenerators = new List<RoomGeneratorInfo>();
         }
@@ -120,7 +137,7 @@ namespace FacePuncher.Geometry.RoomPlacements
 
             return b + dir * rand.Next(min, max + 1);
         }
-
+        
         private Rectangle GenerateDoor(Rectangle a, Rectangle b, Random rand)
         {
             int min, max;
@@ -164,17 +181,26 @@ namespace FacePuncher.Geometry.RoomPlacements
                 max = min + 2;
             }
 
-
             return new Rectangle(start + direc * min, start + depth + direc * max);
+        }
+
+        private bool CanGenerateDoor(RoomInfo a, RoomInfo b)
+        {
+            if (a.Index >= b.Index) return false;
+            if (!a.Rect.IsAdjacent(b.Rect)) return false;
+
+            var i = a.Rect.Intersection(b.Rect);
+
+            return i.Width >= 3 || i.Height >= 3;
         }
 
         public override void PlaceRooms(Level level, Random rand)
         {
-            int destArea = rand.Next(MinimumArea, MaximumArea);
+            int destArea = rand.Next(MinArea, MaxArea);
 
             var rects = new List<RoomInfo>();
 
-            var hubs = new Position[rand.Next(MinimumHubs, MaximumHubs + 1)];
+            var hubs = new Position[rand.Next(MinHubs, MaxHubs + 1)];
 
             int range = (int) Math.Sqrt(destArea / 2);
             for (int i = 0; i < hubs.Length; ++i) {
@@ -213,7 +239,7 @@ namespace FacePuncher.Geometry.RoomPlacements
                     best = new Rectangle(-size.Width / 2, -size.Height / 2, size.Width, size.Height);
                 }
 
-                var info = new RoomInfo(best, name);
+                var info = new RoomInfo(best, name, rects.Count);
                 if (neighbour != null) {
                     var door = GenerateDoor(info.Rect, neighbour.Rect, rand);
 
@@ -223,6 +249,22 @@ namespace FacePuncher.Geometry.RoomPlacements
 
                 rects.Add(info);
                 destArea -= best.Area;
+            }
+
+            var spareDoors = rects
+                .SelectMany(x => rects
+                    .Where(y => CanGenerateDoor(x, y) && !x.Doors.ContainsKey(y))
+                    .Select(y => Tuple.Create(x, y, rand.Next())))
+                .ToList();
+
+            spareDoors.Sort(Comparer<Tuple<RoomInfo, RoomInfo, int>>.Create((a, b) => b.Item3 - a.Item3));
+
+            int doorCount = Tools.Clamp((int) (rand.NextFloat(MinConnectivity, MaxConnectivity) * spareDoors.Count), 0, spareDoors.Count);
+            foreach (var door in spareDoors.Take(doorCount)) {                
+                var rect = GenerateDoor(door.Item1.Rect, door.Item2.Rect, rand);
+                
+                door.Item1.AddDoor(door.Item2, rect);
+                door.Item2.AddDoor(door.Item1, rect);
             }
 
             foreach (var info in rects) {

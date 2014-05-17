@@ -106,13 +106,16 @@ namespace FacePuncher.Geometry
             var rect = Bounds;
             rect = new Rectangle(rect.Left - 1, rect.Top - 1, rect.Width + 2, rect.Height + 2);
 
+            var rand = new System.Random();
+
             using (var bmp = new Bitmap(rect.Width, rect.Height)) {
                 foreach (var room in _rooms) {
+                    var clr = Color.FromArgb((int) ((uint) rand.Next() | 0xff000000));
                     var origin = room.Rect.TopLeft - rect.TopLeft;
                     foreach (var relPos in room.RelativeRect.Positions) {
                         var pos = origin + relPos;
                         bmp.SetPixel(pos.X, pos.Y,
-                            room[relPos].State == TileState.Floor ? Color.White :
+                            room[relPos].State == TileState.Floor ? clr :
                             room[relPos].State == TileState.Wall ? Color.Black :
                             Color.Transparent);
                     }
