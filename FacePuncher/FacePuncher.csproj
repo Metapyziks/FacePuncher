@@ -45,6 +45,7 @@
     <Compile Include="Entities\Drawable.cs" />
     <Compile Include="Entities\StaticDrawable.cs" />
     <Compile Include="GUI\GuiManager.cs" />
+    <Compile Include="GUI\IWidgetContainer.cs" />
     <Compile Include="GUI\Label.cs" />
     <Compile Include="GUI\Widget.cs" />
     <Compile Include="GUI\Frame.cs" />
