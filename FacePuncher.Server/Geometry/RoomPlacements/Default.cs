@@ -226,7 +226,7 @@ namespace FacePuncher.Geometry.RoomPlacements
 
                         if (rects.Any(x => x.Rect.Intersects(rect))) continue;
 
-                        int dist = (rect.NearestPosition(hub) - hub).LengthSquared;
+                        int dist = (rect.NearestPosition(hub) - hub).ManhattanLength;
                         if (best != Rectangle.Zero && dist >= bestDist) continue;
 
                         best = rect;

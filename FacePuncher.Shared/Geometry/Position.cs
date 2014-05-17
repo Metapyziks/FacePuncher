@@ -43,6 +43,14 @@ namespace FacePuncher.Geometry
         }
 
         /// <summary>
+        /// Gets the manhattan distance from the origin to this position.
+        /// </summary>
+        public int ManhattanLength
+        {
+            get { return Math.Abs(X) + Math.Abs(Y); }
+        }
+
+        /// <summary>
         /// Initializes a new position structure with the given coordinates.
         /// </summary>
         /// <param name="x">Horizontal component of the position.</param>

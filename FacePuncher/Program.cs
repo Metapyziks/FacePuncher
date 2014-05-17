@@ -26,6 +26,8 @@ namespace FacePuncher
 
             Display.Initialize(96, 32);
 
+            Thread.Sleep(2000);
+
             using (var server = new ServerConnection("localhost", 14242)) {
                 int flash = 0;
 
