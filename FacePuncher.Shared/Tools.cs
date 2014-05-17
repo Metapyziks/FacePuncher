@@ -156,5 +156,110 @@ namespace FacePuncher
         {
             return min + (float) rand.NextDouble() * (max - min);
         }
+
+        private class NodeInfo<T>
+        {
+            private float _heuristic;
+
+            public T Node { get; private set; }
+            public Position Pos { get; private set; }
+            public NodeInfo<T> Prev { get; private set; }
+            public int Depth { get; private set; }
+            public float Cost { get; private set; }
+            public float Total { get; private set; }
+
+            public float Heuristic
+            {
+                get { return _heuristic; }
+                set
+                {
+                    _heuristic = value;
+                    Total = Cost + value;
+                }
+            }
+
+            public NodeInfo(T node, Position pos)
+            {
+                Node = node;
+                Pos = pos;
+                Prev = null;
+                Depth = 0;
+                Cost = 0f;
+            }
+
+            public NodeInfo(T node, Position pos, NodeInfo<T> prev, float costAdd)
+            {
+                Node = node;
+                Pos = pos;
+                Prev = prev;
+                Depth = prev.Depth + 1;
+                Cost = prev.Cost + costAdd;
+            }
+
+            public void CalculateHeuristic(Position target)
+            {
+                Heuristic = (target - Pos).ManhattanLength;
+            }
+        }
+
+        public static T[] AStar<T>(T origin, T target,
+            Func<T, IEnumerable<Tuple<T, int>>> adjFunc, Func<T, Position> posFunc)
+        {
+            var open = new List<NodeInfo<T>>();
+            var clsd = new HashSet<NodeInfo<T>>();
+
+            var targPos = posFunc(target);
+
+            var first = new NodeInfo<T>(origin, posFunc(origin));
+            first.CalculateHeuristic(targPos);
+
+            open.Add(first);
+
+            while (open.Count > 0) {
+                NodeInfo<T> cur = null;
+                foreach (var node in open) {
+                    if (cur == null || node.Total < cur.Total) cur = node;
+                }
+
+                if (cur.Node.Equals(target)) {
+                    var path = new T[cur.Depth + 1];
+                    for (int i = cur.Depth; i >= 0; --i) {
+                        path[i] = cur.Node;
+                        cur = cur.Prev;
+                    }
+                    return path;
+                }
+
+                open.Remove(cur);
+                clsd.Add(cur);
+
+                foreach (var adj in adjFunc(cur.Node)) {
+                    var node = new NodeInfo<T>(adj.Item1, posFunc(adj.Item1), cur, adj.Item2);
+                    var existing = clsd.FirstOrDefault(x => x.Node.Equals(adj.Item1));
+
+                    if (existing != null) {
+                        if (existing.Cost <= node.Cost) continue;
+
+                        clsd.Remove(existing);
+                        node.Heuristic = existing.Heuristic;
+                    }
+
+                    existing = open.FirstOrDefault(x => x.Node.Equals(adj.Item1));
+
+                    if (existing != null) {
+                        if (existing.Cost <= node.Cost) continue;
+
+                        open.Remove(existing);
+                        node.Heuristic = existing.Heuristic;
+                    } else {
+                        node.CalculateHeuristic(targPos);
+                    }
+
+                    open.Add(node);
+                }
+            }
+
+            return null;
+        }
     }
 }

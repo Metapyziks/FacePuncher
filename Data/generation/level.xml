@@ -1,7 +1,7 @@
 <server:level name="test">
     <RoomPlacement class="Default">
-        <MinArea>8000</MinArea>
-        <MaxArea>12000</MaxArea>
+        <MinArea>80000</MinArea>
+        <MaxArea>120000</MaxArea>
         <MinHubs>8</MinHubs>
         <MaxHubs>12</MaxHubs>
         <MinConnectivity>0.5</MinConnectivity>

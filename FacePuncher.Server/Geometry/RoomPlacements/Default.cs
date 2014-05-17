@@ -69,6 +69,12 @@ namespace FacePuncher.Geometry.RoomPlacements
             }
         }
 
+        private struct Hub
+        {
+            public Position Position;
+            public int Density;
+        }
+
         private List<RoomGeneratorInfo> _roomGenerators;
 
         [ScriptDefinable]
@@ -221,10 +227,41 @@ namespace FacePuncher.Geometry.RoomPlacements
             return i.Width >= 3 || i.Height >= 3;
         }
 
-        private struct Hub
+        private int Separation(RoomInfo a, RoomInfo b)
         {
-            public Position Position;
-            public int Density;
+            var path = Tools.AStar<RoomInfo>(a, b,
+                x => x.Doors.Keys.Select(y => Tuple.Create(y, (x.Rect.TopLeft - y.Rect.TopLeft).ManhattanLength)),
+                x => x.Rect.TopLeft + new Position(x.Rect.Width / 2, x.Rect.Height / 2));
+
+            return path.Length;
+        }
+
+        private int _progressLeft;
+        private void ProgressStart(String message)
+        {
+            Console.Write(message);
+
+            _progressLeft = Console.CursorLeft;
+            _prevProgress = 0;
+
+            Console.Write("0%");
+        }
+
+        private int _prevProgress;
+        private void ProgressUpdate(int cur, int dest)
+        {
+            int perc = (cur * 100) / dest;
+
+            if (perc != _prevProgress) {
+                Console.CursorLeft = _progressLeft;
+                Console.Write("{0}%", perc);
+            }
+        }
+
+        private void ProgressEnd()
+        {
+            ProgressUpdate(1, 1);
+            Console.WriteLine();
         }
 
         public override void Generate(Level level, Random rand)
@@ -241,7 +278,10 @@ namespace FacePuncher.Geometry.RoomPlacements
                 hubs[i].Density = rand.Next(MinHubDensity, MaxHubDensity);
             }
 
-            while (destArea > 0) {
+            ProgressStart("Creating rooms: ");
+
+            int area = 0;
+            while (area < destArea) {
                 var name = GetRandomGeneratorName(rand);
                 var size = new Rectangle(0, 0, rand.Next(4, 12), rand.Next(4, 12));
 
@@ -283,24 +323,46 @@ namespace FacePuncher.Geometry.RoomPlacements
                 }
 
                 rects.Add(info);
-                destArea -= best.Area;
+                area += best.Area;
+
+                ProgressUpdate(area, destArea);
             }
+
+            ProgressEnd();
 
             var spareDoors = rects
                 .SelectMany(x => rects
                     .Where(y => CanGenerateDoor(x, y) && !x.Doors.ContainsKey(y))
-                    .Select(y => Tuple.Create(x, y, rand.Next())))
+                    .Select(y => Tuple.Create(x, y)))
                 .ToList();
 
-            spareDoors.Sort(Comparer<Tuple<RoomInfo, RoomInfo, int>>.Create((a, b) => b.Item3 - a.Item3));
+            ProgressStart("Creating Doors: ");
 
             int doorCount = Tools.Clamp((int) (rand.NextFloat(MinConnectivity, MaxConnectivity) * spareDoors.Count), 0, spareDoors.Count);
-            foreach (var door in spareDoors.Take(doorCount)) {                
+            for (int d = 0; d < doorCount; ++d) {
+                Tuple<RoomInfo, RoomInfo> door = null;
+                int bestScore = 0;
+                foreach (var elem in spareDoors) {
+                    var score = Separation(elem.Item1, elem.Item2);
+                    score = score * score + rand.Next(50);
+
+                    if (score > bestScore) {
+                        door = elem;
+                        bestScore = score;
+                    }
+                }
+
+                spareDoors.Remove(door);
+
                 var rect = GenerateDoor(door.Item1.Rect, door.Item2.Rect, rand);
                 
                 door.Item1.AddDoor(door.Item2, rect);
                 door.Item2.AddDoor(door.Item1, rect);
+
+                ProgressUpdate(d + 1, doorCount);
             }
+
+            ProgressEnd();
 
             foreach (var info in rects) {
                 RoomGenerator.Generate(level, info.Type, info.Rect, info.Doors.Values.ToArray(), rand);
