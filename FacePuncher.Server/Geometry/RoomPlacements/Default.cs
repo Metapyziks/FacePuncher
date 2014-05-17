@@ -42,7 +42,7 @@ namespace FacePuncher.Geometry.RoomPlacements
 
             public void AddDoor(RoomInfo room, Rectangle rect)
             {
-                Doors.Add(room, rect.Intersection(Rect));
+                Doors.Add(room, rect.Intersection(Rect) - Rect.TopLeft);
             }
 
             public override string ToString()
@@ -71,6 +71,12 @@ namespace FacePuncher.Geometry.RoomPlacements
         [ScriptDefinable]
         public float MaxConnectivity { get; set; }
 
+        [ScriptDefinable]
+        public int MinHubDensity { get; set; }
+
+        [ScriptDefinable]
+        public int MaxHubDensity { get; set; }
+
         public Default()
         {
             MinArea = 1000;
@@ -81,6 +87,9 @@ namespace FacePuncher.Geometry.RoomPlacements
 
             MinConnectivity = 0f;
             MaxConnectivity = 1f;
+
+            MinHubDensity = 64;
+            MaxHubDensity = 64;
 
             _roomGenerators = new List<RoomGeneratorInfo>();
         }
@@ -194,24 +203,32 @@ namespace FacePuncher.Geometry.RoomPlacements
             return i.Width >= 3 || i.Height >= 3;
         }
 
-        public override void PlaceRooms(Level level, Random rand)
+        private struct Hub
+        {
+            public Position Position;
+            public int Density;
+        }
+
+        public override void Generate(Level level, Random rand)
         {
             int destArea = rand.Next(MinArea, MaxArea);
 
             var rects = new List<RoomInfo>();
 
-            var hubs = new Position[rand.Next(MinHubs, MaxHubs + 1)];
-
             int range = (int) Math.Sqrt(destArea / 2);
+            var hubs = new Hub[Math.Max(1, rand.Next(MinHubs, MaxHubs + 1))];
+
             for (int i = 0; i < hubs.Length; ++i) {
-                hubs[i] = new Position(rand.Next(-range, range), rand.Next(-range, range));
+                hubs[i].Position = new Position(rand.Next(-range, range), rand.Next(-range, range));
+                hubs[i].Density = rand.Next(MinHubDensity, MaxHubDensity);
             }
 
             while (destArea > 0) {
                 var name = GetRandomGeneratorName(rand);
                 var size = new Rectangle(0, 0, rand.Next(4, 12), rand.Next(4, 12));
 
-                var hub = hubs.Length > 0 ? hubs[rand.Next(hubs.Length)] : Position.Zero;
+                var hub = hubs[rand.Next(hubs.Length)];
+                var hubPos = hub.Position;
 
                 var best = Rectangle.Zero;
                 RoomInfo neighbour = null;
@@ -220,13 +237,13 @@ namespace FacePuncher.Geometry.RoomPlacements
                     int bestDist = 0;
 
                     int tries = 0;
-                    while (best == Rectangle.Zero || ++tries <= 256) {
+                    while (best == Rectangle.Zero || ++tries <= hub.Density) {
                         var othr = rects[rand.Next(rects.Count)];
                         var rect = GenerateAdjacentRect(othr.Rect, size, rand);
 
                         if (rects.Any(x => x.Rect.Intersects(rect))) continue;
 
-                        int dist = (rect.NearestPosition(hub) - hub).ManhattanLength;
+                        int dist = (rect.NearestPosition(hubPos) - hubPos).ManhattanLength;
                         if (best != Rectangle.Zero && dist >= bestDist) continue;
 
                         best = rect;
@@ -268,15 +285,7 @@ namespace FacePuncher.Geometry.RoomPlacements
             }
 
             foreach (var info in rects) {
-                var rect = info.Rect;
-                var room = level.CreateRoom(rect);
-
-                room.CreateWall(rect - rect.TopLeft);
-                room.CreateFloor(new Rectangle(1, 1, rect.Width - 2, rect.Height - 2));
-
-                foreach (var door in info.Doors.Values) {
-                    room.CreateFloor(door - rect.TopLeft);
-                }
+                RoomGenerator.Generate(level, info.Type, info.Rect, info.Doors.Values.ToArray(), rand);
             }
         }
     }

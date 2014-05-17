@@ -5,6 +5,6 @@ namespace FacePuncher.Geometry
 {
     abstract class RoomPlacement : GenerationWorker
     {
-        public abstract void PlaceRooms(Level level, Random rand);
+        public abstract void Generate(Level level, Random rand);
     }
 }

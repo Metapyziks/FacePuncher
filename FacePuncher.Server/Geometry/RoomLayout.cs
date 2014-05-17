@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FacePuncher.Geometry
 {
     abstract class RoomLayout : GenerationWorker
     {
-
+        public abstract IEnumerable<Room> Generate(Level level, Rectangle rect, Rectangle[] doors, Random rand);
     }
 }

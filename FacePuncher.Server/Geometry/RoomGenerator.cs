@@ -15,11 +15,10 @@ namespace FacePuncher.Geometry
             Definitions.RegisterType("room", _generators.Add);
         }
 
-        public static IEnumerable<Room> Generate(String type, Level level, Rectangle rect, Rectangle[] doors, Random rand)
+        public static void Generate(Level level, String type, Rectangle rect, Rectangle[] doors, Random rand)
         {
             var generator = _generators[type];
-
-            throw new NotImplementedException();
+            var rooms = generator.RoomLayout.Generate(level, rect, doors, rand);
         }
 
         public RoomLayout RoomLayout { get; set; }

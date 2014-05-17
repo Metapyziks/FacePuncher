@@ -6,6 +6,9 @@
         <MaxHubs>12</MaxHubs>
         <MinConnectivity>0.5</MinConnectivity>
         <MaxConnectivity>0.8</MaxConnectivity>
+        <MinHubDensity>16</MinHubDensity>
+        <MaxHubDensity>256</MaxHubDensity>
+
         <Room class="test">
             <Frequency>1</Frequency>
         </Room>

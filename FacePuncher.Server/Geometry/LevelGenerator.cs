@@ -21,7 +21,7 @@ namespace FacePuncher.Geometry
 
             var level = new Level();
 
-            generator.RoomPlacement.PlaceRooms(level, rand);
+            generator.RoomPlacement.Generate(level, rand);
 
             return level;
         }
