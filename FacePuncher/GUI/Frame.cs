@@ -6,6 +6,8 @@ namespace FacePuncher.GUI
 {
     class Frame : Widget, IWidgetContainer
     {
+        public string Title { get; set; }
+
         public Dictionary<string, Widget> Children
         { get; set; }
 
@@ -15,11 +17,12 @@ namespace FacePuncher.GUI
             (char)200, (char)188  // down-left, down-right
         };
 
-        public Frame(Position pos, int width, int height,
+        public Frame(Position pos, int width, int height, string title = "",
             ConsoleColor fc = ConsoleColor.Gray, ConsoleColor bc = ConsoleColor.Black)
             : base(pos, width, height, false, fc, bc)
         {
             Children = new Dictionary<string, Widget>();
+            Title = title;
         }
 
         public override void Draw()
@@ -45,6 +48,8 @@ namespace FacePuncher.GUI
                 Display.SetCell(rectangle.Left, y + rectangle.Top + 1, _frameChars[1], ForegroundColor, BackgroundColor);
                 Display.SetCell(rectangle.Right, y + rectangle.Top + 1, _frameChars[1], ForegroundColor, BackgroundColor);
             }
+
+            GuiManager.DrawString(new Position(Position.X + 2, Position.Y), Title);
         }
 
         public override List<Widget> GetSelectableWidgets()
