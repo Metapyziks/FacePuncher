@@ -258,12 +258,12 @@ namespace FacePuncher.Geometry
                         (GetNeighbour(Direction.North).State == TileState.Wall ? 8 : 0);
 
                     _appearance.Symbol = _sWallTiles[adj];
-                    _appearance.ForeColor = ConsoleColor.Blue;
+                    _appearance.ForeColor = ConsoleColor.Gray;
                     _appearance.BackColor = ConsoleColor.Black;
                     break;
                 case TileState.Floor:
                     _appearance.Symbol = '+';
-                    _appearance.ForeColor = ConsoleColor.DarkBlue;
+                    _appearance.ForeColor = ConsoleColor.DarkGray;
                     _appearance.BackColor = ConsoleColor.Black;
                     break;
             }

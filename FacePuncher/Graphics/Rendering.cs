@@ -91,7 +91,7 @@ namespace FacePuncher.Graphics
         {
             if (tile.EntityCount == 0) {
                 Display.SetCell(screenPos, tile.Symbol,
-                    visible ? tile.ForeColor : ConsoleColor.DarkGray,
+                    visible ? tile.ForeColor : ConsoleColor.DarkBlue,
                     visible ? tile.BackColor : ConsoleColor.Black);
             } else {
                 int index = (attribs.Flash / EntityFlashPeriod) % tile.EntityCount;
@@ -99,7 +99,7 @@ namespace FacePuncher.Graphics
                 var frame = entity[attribs.Flash % entity.FrameCount];
 
                 Display.SetCell(screenPos, frame.Symbol,
-                    visible ? frame.ForeColor : ConsoleColor.DarkGray,
+                    visible ? frame.ForeColor : ConsoleColor.DarkBlue,
                     visible ? frame.BackColor : ConsoleColor.Black);
             }
         }
