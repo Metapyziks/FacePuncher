@@ -1,4 +1,22 @@
-﻿using System;
+/* Copyright (C) 2014 James King (metapyziks@gmail.com)
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -453,7 +471,7 @@ namespace FacePuncher.Entities
         /// <returns>The component, for convenience.</returns>
         private Component AddComponent(Component comp, Type type)
         {
-            if (_thinkProbe == null && !type.GetMethod("OnThink").IsAbstract) {
+            if (_thinkProbe == null && comp.CanThink) {
                 _thinkProbe = comp;
             }
 
@@ -504,7 +522,7 @@ namespace FacePuncher.Entities
             _comps.Remove(comp);
 
             if (_thinkProbe == comp) {
-                _thinkProbe = _comps.FirstOrDefault(x => !x.GetType().GetMethod("OnThink").IsAbstract);
+                _thinkProbe = _comps.FirstOrDefault(x => x.CanThink);
             }
 
             _compsChanged = true;
@@ -620,6 +638,8 @@ namespace FacePuncher.Entities
                 other.OnUpdateComponents();
             }
 
+            Room.UpdateThinkProbe(this);
+
             _compsChanged = false;
         }
 
@@ -640,6 +660,8 @@ namespace FacePuncher.Entities
             foreach (var comp in _comps) {
                 comp.OnPlace();
             }
+
+            Room.UpdateThinkProbe(this);
         }
 
         /// <summary>
@@ -648,6 +670,8 @@ namespace FacePuncher.Entities
         /// </summary>
         private void OnRemove()
         {
+            Room.UpdateThinkProbe(this);
+
             foreach (var comp in this) comp.OnRemove();
             foreach (var child in _children) child.OnRemove();
         }
@@ -701,8 +725,16 @@ namespace FacePuncher.Entities
             var orig = Tile;
             _tile = dest;
 
+            if (dest.Room != orig.Room) {
+                Room.UpdateThinkProbe(this);
+            }
+
             orig.RemoveEntity(this);
             Tile.AddEntity(this);
+            
+            if (dest.Room != orig.Room) {
+                Room.UpdateThinkProbe(this);
+            }
         }
 
         /// <summary>
