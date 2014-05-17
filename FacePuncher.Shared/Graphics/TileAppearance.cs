@@ -22,6 +22,9 @@ using System.IO;
 using System.Linq;
 
 using FacePuncher.Geometry;
+using FacePuncher.Network;
+using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace FacePuncher.Graphics
 {
@@ -54,22 +57,23 @@ namespace FacePuncher.Graphics
             Entities = new EntityAppearance[0];
         }
 
-        public TileAppearance(Position pos, Stream stream)
+        public static async Task<TileAppearance> Read(Position pos, NetworkStream stream)
         {
-            Position = pos;
+            var appearance = await stream.ReadAppearance();
 
-            char symbol; ConsoleColor foreColor, backColor;
-
-            stream.ReadAppearance(out symbol, out foreColor, out backColor);
-
-            Symbol = symbol;
-            ForeColor = foreColor;
-            BackColor = backColor;
-
-            Entities = new EntityAppearance[stream.ReadByte()];
-            for (int i = 0; i < EntityCount; ++i) {
-                Entities[i] = new EntityAppearance(stream);
+            var entities = new EntityAppearance[await stream.ReadByteAsync()];
+            for (int i = 0; i < entities.Length; ++i) {
+                entities[i] = await EntityAppearance.Read(stream);
             }
+
+            return new TileAppearance(pos)
+            {
+                //TODO: this is a bit hacky
+                Symbol = appearance.Item1,
+                ForeColor = appearance.Item2,
+                BackColor = appearance.Item3,
+                Entities = entities
+            };
         }
 
         public void WriteToStream(Stream stream)

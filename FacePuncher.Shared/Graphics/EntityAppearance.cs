@@ -20,6 +20,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
+using System.Threading.Tasks;
+using FacePuncher.Network;
 
 namespace FacePuncher.Graphics
 {
@@ -31,12 +34,15 @@ namespace FacePuncher.Graphics
             public ConsoleColor ForeColor;
             public ConsoleColor BackColor;
             public int Duration;
-        
+
             public Frame(char symbol, ConsoleColor foreColor, ConsoleColor backColor, int duration)
             {
-                if (duration >= 256) {
+                if (duration >= 256)
+                {
                     throw new ArgumentException("Frame duration must be less than 256.");
-                } else if (duration <= 0) {
+                }
+                else if (duration <= 0)
+                {
                     throw new ArgumentException("Frame duration must be larger than zero.");
                 }
 
@@ -46,17 +52,22 @@ namespace FacePuncher.Graphics
                 Duration = duration;
             }
 
-            public Frame(Stream stream)
+            public static async Task<Frame> Read(NetworkStream stream)
             {
-                stream.ReadAppearance(out Symbol, out ForeColor, out BackColor);
-
-                Duration = stream.ReadByte();
+                var appearance = await stream.ReadAppearance();
+                return new Frame()
+                {
+                    Symbol = appearance.Item1,
+                    ForeColor = appearance.Item2,
+                    BackColor = appearance.Item3,
+                    Duration = await stream.ReadByteAsync()
+                };
             }
 
             public void WriteToStream(Stream stream)
             {
                 stream.WriteAppearance(Symbol, ForeColor, BackColor);
-                stream.WriteByte((byte) Duration);
+                stream.WriteByte((byte)Duration);
             }
         }
 
@@ -78,18 +89,21 @@ namespace FacePuncher.Graphics
             _frames = new List<Frame>();
         }
 
-        public EntityAppearance(Stream stream)
-            : this()
+        public static async Task<EntityAppearance> Read(NetworkStream stream)
         {
-            int count = stream.ReadByte();
-            for (int i = 0; i < count; ++i) {
-                _frames.Add(new Frame(stream));
+            int count = await stream.ReadByteAsync();
+            var result = new EntityAppearance();
+            for (int i = 0; i < count; ++i)
+            {
+                result._frames.Add(await Frame.Read(stream));
             }
+            return result;
         }
 
         public void Add(Frame frame)
         {
-            if (_frames.Count >= 255) {
+            if (_frames.Count >= 255)
+            {
                 throw new Exception("EntityAppearance cannot have more than 255 frames.");
             }
 
@@ -116,9 +130,10 @@ namespace FacePuncher.Graphics
 
         public void WriteToStream(Stream stream)
         {
-            stream.WriteByte((byte) FrameCount);
+            stream.WriteByte((byte)FrameCount);
 
-            foreach (var frame in this) {
+            foreach (var frame in this)
+            {
                 frame.WriteToStream(stream);
             }
         }

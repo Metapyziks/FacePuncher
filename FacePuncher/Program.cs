@@ -1,4 +1,5 @@
 /* Copyright (C) 2014 James King (metapyziks@gmail.com)
+ * Copyright (C) 2014 Tamme Schichler (tammeschichler@googlemail.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,17 +17,18 @@
  * USA
  */
 
-using System.Threading;
-
 using FacePuncher.Geometry;
 using FacePuncher.Graphics;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FacePuncher
 {
     /// <summary>
     /// Class containing the client entry point.
     /// </summary>
-    class Program
+    public class Program
     {
         /// <summary>
         /// Milliseconds between redraws.
@@ -37,35 +39,67 @@ namespace FacePuncher
         /// Entry point of the application.
         /// </summary>
         /// <param name="args">An array of command line arguments.</param>
-        static void Main(string[] args)
+        public static void Main(string[] args)
+        {
+            var context = new SynchronizationContext();
+            context.Send((x) => TaskMain().Wait(), null);
+        }
+        static async Task TaskMain()
         {
             // TODO: Use a sane non-development specific path.
             Definitions.LoadFromDirectory("../../../Data", DefinitionsNamespace.Client);
 
             Display.Initialize(96, 32);
 
-            using (var server = new ServerConnection("localhost", 14242)) {
-                int flash = 0;
+            var server = new ServerConnection("localhost", 14242);
+            server.Run();
 
-                var renderTimer = new Timer(state => {
-                    if (!server.LoadedLevel) return;
-
-                    Display.Clear();
-
-                    lock (server.Visibility) {
-                        var attribs = new DrawAttributes(flash++);
-                        var rect = Display.Rect + server.PlayerPosition - Display.Center;
-
-                        foreach (var vis in server.Visibility) {
-                            vis.Draw(rect, Position.Zero, attribs, server.Time);
-                        }
+            while (true)
+            {
+                if (Console.KeyAvailable)
+                {
+                    var key = Console.ReadKey(intercept: true);
+                    switch (key.Key)
+                    {
+                        case ConsoleKey.UpArrow:
+                            server.SendIntent(new MoveIntent(Direction.North));
+                            break;
+                        case ConsoleKey.DownArrow:
+                            server.SendIntent(new MoveIntent(Direction.South));
+                            break;
+                        case ConsoleKey.LeftArrow:
+                            server.SendIntent(new MoveIntent(Direction.West));
+                            break;
+                        case ConsoleKey.RightArrow:
+                            server.SendIntent(new MoveIntent(Direction.East));
+                            break;
+                        default:
+                            break;
                     }
-
-                    Display.Refresh();
-                }, null, 0, RenderPeriod);
-
-                while (server.ProcessPacket());
+                }
+                else
+                {
+                    await Task.Delay(100);
+                }
             }
+        }
+
+        //TODO: Restore framerate
+        static int _flash = 0;
+        internal static void Draw(ServerConnection server)
+        {
+            Display.Clear();
+
+            // removed Level lock
+            var attribs = new DrawAttributes(_flash++);
+            var rect = Display.Rect + server.PlayerPosition - Display.Center;
+
+            foreach (var vis in server.Visibility)
+            {
+                vis.Draw(rect, Position.Zero, attribs, server.Time);
+            }
+
+            Display.Refresh();
         }
     }
 }
