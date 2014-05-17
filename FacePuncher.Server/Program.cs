@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FacePuncher.Server
@@ -73,7 +74,8 @@ namespace FacePuncher.Server
         /// <param name="args">An array of command line arguments.</param>
         public static void Main(string[] args)
         {
-            AsyncMain().Wait();
+            var context = new SynchronizationContext();
+            context.Send((x) => AsyncMain().Wait(), null);
         }
         private static async Task AsyncMain()
         {

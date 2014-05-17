@@ -18,10 +18,10 @@
  */
 
 using FacePuncher.Geometry;
-using System.Threading.Tasks;
-using System;
-﻿using System.Threading;
 using FacePuncher.Graphics;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FacePuncher
 {
@@ -41,7 +41,8 @@ namespace FacePuncher
         /// <param name="args">An array of command line arguments.</param>
         public static void Main(string[] args)
         {
-            TaskMain().Wait();
+            var context = new SynchronizationContext();
+            context.Send((x) => TaskMain().Wait(), null);
         }
         static async Task TaskMain()
         {
