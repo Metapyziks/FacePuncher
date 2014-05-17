@@ -42,8 +42,8 @@ namespace FacePuncher.Geometry
             generator.RoomPlacement.Generate(level, rand);
 
             return level;
-        }
-                    
+            }
+
         public RoomPlacement RoomPlacement { get; private set; }
 
         protected override void OnLoadFromDefinition(XElement elem)
