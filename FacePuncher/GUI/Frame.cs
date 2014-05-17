@@ -17,7 +17,7 @@ namespace FacePuncher.GUI
 
         public Frame(Position pos, int width, int height,
             ConsoleColor fc = ConsoleColor.Gray, ConsoleColor bc = ConsoleColor.Black)
-            : base(pos, width, height, fc, bc)
+            : base(pos, width, height, false, fc, bc)
         {
             Children = new Dictionary<string, Widget>();
         }

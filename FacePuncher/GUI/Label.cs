@@ -9,7 +9,7 @@ namespace FacePuncher.GUI
 
         public Label(Position pos, string text,
             ConsoleColor fc = ConsoleColor.Gray, ConsoleColor bc = ConsoleColor.Black)
-            : base(pos, 0, 0, fc, bc)
+            : base(pos, 0, 0, false, fc, bc)
         {
             this.Text = text;
         }
