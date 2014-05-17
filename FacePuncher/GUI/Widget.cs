@@ -1,5 +1,6 @@
 ﻿using FacePuncher.Geometry;
 using System;
+using System.Collections.Generic;
 
 namespace FacePuncher.GUI
 {
@@ -42,6 +43,14 @@ namespace FacePuncher.GUI
         public int Height
         {
             get { return rectangle.Height; }
+        }
+
+        public virtual List<Widget> GetSelectableWidgets()
+        {
+            List<Widget> list = new List<Widget>();
+            if (IsSelectable) list.Add(this);
+
+            return list;
         }
 
         abstract public void Draw();

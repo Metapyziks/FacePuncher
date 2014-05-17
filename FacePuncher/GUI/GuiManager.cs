@@ -6,9 +6,14 @@ namespace FacePuncher.GUI
 {
     class GuiManager : IWidgetContainer
     {
+        private List<Widget> _selectableWidgets;
+        private int _selectedId;
+
         public GuiManager()
         {
             Children = new Dictionary<string, Widget>();
+            _selectableWidgets = new List<Widget>();
+            _selectedId = 0;
         }
 
         public Dictionary<string, Widget> Children
@@ -21,6 +26,34 @@ namespace FacePuncher.GUI
 
         public void Draw()
         {
+            if (_selectedId > _selectableWidgets.Count - 1)
+                _selectedId = _selectableWidgets.Count - 1;
+            else if (_selectedId < 0)
+                _selectedId = 0;
+            
+            _selectableWidgets[_selectedId].IsSelected = false;
+
+            if (Console.KeyAvailable)
+            {
+                ConsoleKeyInfo info = Console.ReadKey(true);
+
+                if (info.Key == ConsoleKey.W)
+                {
+                    _selectedId--;
+                }
+                else if (info.Key == ConsoleKey.S)
+                {
+                    _selectedId++;
+                }
+            }
+
+            if (_selectedId > _selectableWidgets.Count - 1)
+                _selectedId = _selectableWidgets.Count - 1;
+            else if (_selectedId < 0)
+                _selectedId = 0;
+
+            _selectableWidgets[_selectedId].IsSelected = true;
+
             DrawChildren();
         }
 
@@ -39,6 +72,21 @@ namespace FacePuncher.GUI
             {
                 Display.SetCell(pos.X + x, pos.Y, text[x], fc, bc);
             }
+        }
+
+        public int CalculateSelectableWidgets()
+        {
+            _selectableWidgets = new List<Widget>();
+
+            foreach (var widget in Children)
+            {
+                _selectableWidgets.AddRange(widget.Value.GetSelectableWidgets());
+            }
+
+            _selectedId = 0;
+            _selectableWidgets[_selectedId].IsSelected = true;
+
+            return _selectableWidgets.Count;
         }
     }
 }

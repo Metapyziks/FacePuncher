@@ -47,6 +47,19 @@ namespace FacePuncher.GUI
             }
         }
 
+        public override List<Widget> GetSelectableWidgets()
+        {
+            List<Widget> list = new List<Widget>();
+            if (IsSelectable) list.Add(this);
+
+            foreach (var widget in Children)
+            {
+                list.AddRange(widget.Value.GetSelectableWidgets());
+            }
+
+            return list;
+        }
+
         public void AddChild(string name, Widget w)
         {
             Children.Add(name, w);
