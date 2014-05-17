@@ -8,12 +8,6 @@ using FacePuncher.Geometry;
 namespace FacePuncher.Entities
 {
     /// <summary>
-    /// Used to specify properties that may be set in definition files.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Property)]
-    public class ScriptDefinableAttribute : Attribute { }
-
-    /// <summary>
     /// Base class for entity components.
     /// </summary>
     public abstract class Component
@@ -92,6 +86,14 @@ namespace FacePuncher.Entities
         }
 
         /// <summary>
+        /// Gets the current game time in ticks.
+        /// </summary>
+        protected ulong Time
+        {
+            get { return Level.Time; }
+        }
+
+        /// <summary>
         /// Gets the position of the host entity relative to its
         /// contatining room.
         /// </summary>
@@ -121,17 +123,7 @@ namespace FacePuncher.Entities
         /// the component.</param>
         public virtual void LoadFromDefinition(XElement elem)
         {
-            // As a default implementation, use reflection to
-            // set properties marked as ScriptDefinable.
-            foreach (var sub in elem.Elements()) {
-                var ident = sub.Name.LocalName;
-                var prop = GetType().GetProperty(ident);
-                
-                if (prop == null) continue;
-                if (prop.GetCustomAttributes<ScriptDefinableAttribute>().Count() == 0) return;
-
-                prop.SetValue(this, elem.Element(sub.Name, prop.PropertyType));
-            }
+            Definitions.LoadProperties(this, elem);
         }
 
         /// <summary>
@@ -155,8 +147,7 @@ namespace FacePuncher.Entities
         /// <summary>
         /// Called once per game step.
         /// </summary>
-        /// <param name="time">Current game time.</param>
-        public virtual void OnThink(ulong time) { }
+        public virtual void OnThink() { }
 
         /// <summary>
         /// Called when either the component is removed from its

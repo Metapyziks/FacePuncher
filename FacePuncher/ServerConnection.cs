@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 
-using FacePuncher.Entities;
 using FacePuncher.Geometry;
 using System.Threading.Tasks;
 using FacePuncher.Network;
+using FacePuncher.Graphics;
 
 namespace FacePuncher
 {
@@ -18,23 +18,10 @@ namespace FacePuncher
     {
         private List<RoomVisibility> _visibility;
 
-        private uint _playerID;
+        public Position PlayerPosition { get; private set; }
 
-        /// <summary>
-        /// Gets the partially observed state of the current level
-        /// the local player is within.
-        /// </summary>
-        public Level Level { get; private set; }
+        public bool LoadedLevel { get; private set; }
 
-        /// <summary>
-        /// Gets the local player's entity.
-        /// </summary>
-        public Entity Player { get; private set; }
-
-        /// <summary>
-        /// Gets the server time corresponding to the most recent game
-        /// state update.
-        /// </summary>
         public ulong Time { get; private set; }
 
         /// <summary>
@@ -51,32 +38,7 @@ namespace FacePuncher
         public ServerConnection(String hostname, int port)
             : base(new TcpClient(hostname, port))
         {
-            Level = new Level();
-
             _visibility = new List<RoomVisibility>();
-        }
-
-        /// <summary>
-        /// Reads a single entity from the server.
-        /// </summary>
-        /// <param name="reader">Reader to read the entity from.</param>
-        /// <returns>An entity received from the server.</returns>
-        private async Task<Entity> ReadEntity(NetworkStream stream)
-        {
-            uint id = await stream.ReadUInt32();
-            string className = await stream.ReadString();
-
-            if (id == _playerID && Player != null)
-            {
-                return Player;
-            }
-
-            // TODO: Temporary, should cache entities.
-            var ent = Entity.Create(id, className);
-
-            if (id == _playerID) Player = ent;
-
-            return ent;
         }
 
         /// <summary>
@@ -84,53 +46,34 @@ namespace FacePuncher
         /// </summary>
         private async Task ReadVisibleLevelState(NetworkStream stream)
         {
-            Time = await stream.ReadUInt64();
-            _playerID = await stream.ReadUInt32();
+            Time = await _stream.ReadUInt64();
+            PlayerPosition = await _stream.ReadPosition();
 
-            // removed Level lock
+            // removed lock
+            int roomCount = await _stream.ReadInt32();
+            for (int i = 0; i < roomCount; ++i)
             {
-                int roomCount = await stream.ReadInt32();
-                for (int i = 0; i < roomCount; ++i)
+                // Each room is identified by its rectangle.
+                var rect = await _stream.ReadRectangle();
+
+                var vis = _visibility.FirstOrDefault(x => x.Rect == rect);
+
+                if (vis == null)
                 {
-                    // Each room is identified by its rectangle.
-                    var rect = await stream.ReadRectangle();
+                    vis = new RoomVisibility(rect);
+                    _visibility.Add(vis);
+                }
 
-                    var vis = _visibility.FirstOrDefault(x => x.Room.Rect == rect);
-
-                    if (vis == null)
-                    {
-                        var room = Level.CreateRoom(rect);
-                        vis = new RoomVisibility(room);
-
-                        _visibility.Add(vis);
-                    }
-
-                    int tileCount = await stream.ReadInt32();
-                    for (int j = 0; j < tileCount; ++j)
-                    {
-                        var pos = await stream.ReadPosition();
-                        var state = (TileState)await stream.ReadByteAsync();
-                        var tile = vis.Room[pos];
-
-                        vis.Reveal(pos, Time);
-                        tile.State = state;
-
-                        // The fact that this here mutates is seriously annoying.
-                        var ents = tile.ToArray();
-                        foreach (var ent in ents)
-                        {
-                            ent.Remove();
-                        }
-
-                        var entCount = await stream.ReadUInt16();
-                        for (int k = 0; k < entCount; ++k)
-                        {
-                            var ent = await ReadEntity(stream);
-                            ent.Place(tile);
-                        }
-                    }
+                int tileCount = await _stream.ReadInt32();
+                for (int j = 0; j < tileCount; ++j)
+                {
+                    var pos = await _stream.ReadPosition();
+                    vis.Reveal(pos, await TileAppearance.Read(pos, stream), Time);
                 }
             }
+
+            LoadedLevel = true;
+
 
             Program.Draw(this);
 

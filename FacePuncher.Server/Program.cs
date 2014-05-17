@@ -1,9 +1,8 @@
-﻿using System;
+﻿using FacePuncher.Geometry;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-
-using FacePuncher.Geometry;
 using System.Threading.Tasks;
 
 namespace FacePuncher.Server
@@ -77,7 +76,7 @@ namespace FacePuncher.Server
             {
                 if (_clients.Count > 0)
                 {
-                    _level.Think(_time++);
+                    _level.Think();
                 }
                 else
                 {

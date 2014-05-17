@@ -38,6 +38,11 @@ namespace FacePuncher
             Direction.SouthWest, Direction.South, Direction.SouthEast
         };
 
+        public static Position GetOffset(this Direction dir)
+        {
+            return new Position(((int) dir) % 3 - 1, ((int) dir) / 3 - 1);
+        }
+
         public static bool HasElement(this XElement elem, XName name)
         {
             return elem.Elements(name).Count() > 0;
@@ -91,6 +96,26 @@ namespace FacePuncher
                 await stream.ReadInt32(),
                 await stream.ReadInt32(),
                 await stream.ReadInt32());
+        }
+
+        public static void WriteAppearance(this Stream stream, char symbol, ConsoleColor foreColor, ConsoleColor backColor)
+        {
+            stream.WriteByte((byte)(symbol >> 8));
+            stream.WriteByte(unchecked((byte)symbol));
+            stream.WriteByte((byte)((byte)foreColor | ((byte)backColor << 4)));
+        }
+
+        // TODO: split this method
+        public static async Task<Tuple<char, ConsoleColor, ConsoleColor>> ReadAppearance(this NetworkStream stream)
+        {
+            var symbol = (char)(await stream.ReadByteAsync() << 8 | await stream.ReadByteAsync());
+
+            int color = await stream.ReadByteAsync();
+
+            var foreColor = (ConsoleColor)(color & 0xf);
+            var backColor = (ConsoleColor)(color >> 4);
+
+            return Tuple.Create(symbol, foreColor, backColor);
         }
     }
 }

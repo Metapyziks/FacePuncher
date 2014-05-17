@@ -1,30 +1,30 @@
-<entity name="dust">
-    <client:StaticDrawable>
+<server:entity name="dust">
+    <StaticDrawable>
         <Layer>Debris</Layer>
         <ForeColor>DarkBlue</ForeColor>
-    </client:StaticDrawable>
-</entity>
+    </StaticDrawable>
+</server:entity>
 
-<entity name="dust_0" base="dust">
-    <client:StaticDrawable>
+<server:entity name="dust_0" base="dust">
+    <StaticDrawable>
         <Symbol>.</Symbol>
-    </client:StaticDrawable>
-</entity>
+    </StaticDrawable>
+</server:entity>
 
-<entity name="dust_1" base="dust">
-    <client:StaticDrawable>
+<server:entity name="dust_1" base="dust">
+    <StaticDrawable>
         <Symbol>,</Symbol>
-    </client:StaticDrawable>
-</entity>
+    </StaticDrawable>
+</server:entity>
 
-<entity name="dust_2" base="dust">
-    <client:StaticDrawable>
+<server:entity name="dust_2" base="dust">
+    <StaticDrawable>
         <Symbol>'</Symbol>
-    </client:StaticDrawable>
-</entity>
+    </StaticDrawable>
+</server:entity>
 
-<entity name="dust_3" base="dust">
-    <client:StaticDrawable>
+<server:entity name="dust_3" base="dust">
+    <StaticDrawable>
         <Symbol>`</Symbol>
-    </client:StaticDrawable>
-</entity>
+    </StaticDrawable>
+</server:entity>

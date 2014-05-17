@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
@@ -32,6 +31,11 @@ namespace FacePuncher
         public Entity Player { get; private set; }
 
         /// <summary>
+        /// The current level the player is within.
+        /// </summary>
+        public Level Level { get; private set; }
+
+        /// <summary>
         /// Creates a new ClientConnection instance using a socket,
         /// additionally creating a player entity for the client in
         /// the specified level.
@@ -42,6 +46,7 @@ namespace FacePuncher
             : base(socket)
         {
             _socket = socket;
+            Level = level;
 
             _visibility = level
                 .Select(x => new RoomVisibility(x))
@@ -64,32 +69,23 @@ namespace FacePuncher
         }
 
         /// <summary>
-        /// Sends a single entity to the client.
-        /// </summary>
-        /// <param name="writer">Writer to write the entity to.</param>
-        /// <param name="ent">Entity to send to the client.</param>
-        private void SendEntity(Entity ent)
-        {
-            _stream.Write(ent.ID);
-            _stream.Write(ent.ClassName);
-
-            // TODO: Send component information?
-        }
-
-        /// <summary>
         /// Sends a partially observable level state update to the client.
         /// </summary>
+        /// <param name="timeOffset">How far into the future the level time
+        /// sent should be offset.</param>
         /// <param name="level">Level to send.</param>
-        /// <param name="time">Current game time.</param>
-        public void SendVisibleLevelState(Level level, ulong time)
+        public void SendVisibleLevelState(ulong timeOffset = 0)
         {
             _stream.Write((byte)0); // Pushed packet
             _stream.Write((byte)ServerPacketType.LevelState);
 
-            _stream.Write(time);
-            _stream.Write(Player.ID);
+            var time = Level.Time + timeOffset;
 
-            lock (level)
+
+            _stream.Write(time);
+            _stream.Write(Player.Position);
+
+            lock (Level)
             {
                 var visibleRooms = _visibility
                     .Where(x => x.UpdateVisibility(Player.Position, MaxVisibilityRange, time))
@@ -106,13 +102,7 @@ namespace FacePuncher
                     foreach (var tile in visibleTiles)
                     {
                         _stream.Write(tile.RelativePosition);
-                        _stream.Write((byte)tile.State);
-
-                        _stream.Write((ushort)tile.EntityCount);
-                        foreach (var ent in tile)
-                        {
-                            SendEntity(ent);
-                        }
+                        tile.Appearance.WriteToStream(_stream);
                     }
                 }
             }

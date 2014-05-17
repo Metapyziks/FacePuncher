@@ -6,8 +6,6 @@ using System.Reflection;
 using System.Xml;
 using System.Xml.Linq;
 
-using FacePuncher.Entities;
-
 namespace FacePuncher
 {
     /// <summary>
@@ -33,7 +31,17 @@ namespace FacePuncher
         Shared = 3
     }
 
+    /// <summary>
+    /// Delegate for handling root definition elements.
+    /// </summary>
+    /// <param name="elem">Element to handle.</param>
     public delegate void DefinitionHandlerDelegate(XElement elem);
+
+    /// <summary>
+    /// Used to specify properties that may be set in definition files.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property)]
+    public class ScriptDefinableAttribute : Attribute { }
 
     /// <summary>
     /// Utility class for loading and handling definitions
@@ -52,43 +60,7 @@ namespace FacePuncher
         /// </summary>
         private static Dictionary<String, List<XElement>> _unhandled
             = new Dictionary<string,List<XElement>>();
-
-        /// <summary>
-        /// Static constructor for Definitions.
-        /// </summary>
-        static Definitions()
-        {
-            RegisterType("entity", elem => {
-                var components = new List<Tuple<Type, XElement>>();
-
-                foreach (var sub in elem.Elements()) {
-                    var typeName = String.Format("FacePuncher.Entities.{0}", sub.Name.LocalName);
-                    var type = Assembly.GetEntryAssembly().GetType(typeName);
-
-                    if (type == null) continue;
-
-                    components.Add(Tuple.Create(type, sub));
-                }
-
-                EntityConstructorDelegate ctor = ent => {
-                    foreach (var type in components) {
-                        var comp = ent.GetComponentOrNull(type.Item1)
-                            ?? ent.AddComponent(type.Item1);
-                        
-                        comp.LoadFromDefinition(type.Item2);
-                    }
-                };
-
-                var compTypes = components.Select(x => x.Item1).ToArray();
-
-                if (elem.Attributes("base").Count() > 0) {
-                    Entity.Register(elem.Attribute("name").Value, elem.Attribute("base").Value, ctor, compTypes);
-                } else {
-                    Entity.Register(elem.Attribute("name").Value, ctor, compTypes);
-                }
-            });
-        }
-
+        
         /// <summary>
         /// Attaches a handler to be invoked on definition elements
         /// of the specified type.
@@ -209,6 +181,26 @@ namespace FacePuncher
 
                     _unhandled[name].Add(elem);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Utility function to load properties marked with the
+        /// ScriptDefineable attribute from a definition element.
+        /// </summary>
+        /// <param name="obj">Object to set the properties of.</param>
+        /// <param name="elem">Element to retrieve values from.</param>
+        public static void LoadProperties(Object obj, XElement elem)
+        {
+            var type = obj.GetType();
+            foreach (var sub in elem.Elements()) {
+                var ident = sub.Name.LocalName;
+                var prop = type.GetProperty(ident);
+
+                if (prop == null) continue;
+                if (prop.GetCustomAttributes<ScriptDefinableAttribute>().Count() == 0) return;
+
+                prop.SetValue(obj, elem.Element(sub.Name, prop.PropertyType));
             }
         }
     }

@@ -1,6 +1,8 @@
-﻿using FacePuncher.Geometry;
+using FacePuncher.Geometry;
 using System.Threading.Tasks;
 using System;
+﻿using System.Threading;
+using FacePuncher.Graphics;
 
 namespace FacePuncher
 {
@@ -34,13 +36,6 @@ namespace FacePuncher
 
             while (true)
             {
-                var player = server.Player;
-                if (player == null)
-                {
-                    Console.WriteLine("Connecting...");
-                    await Task.Delay(100);
-                    continue;
-                }
                 if (Console.KeyAvailable)
                 {
                     var key = Console.ReadKey(intercept: true);
@@ -69,18 +64,19 @@ namespace FacePuncher
             }
         }
 
+        //TODO: Restore framerate
         static int _flash = 0;
         internal static void Draw(ServerConnection server)
         {
             Display.Clear();
 
             // removed Level lock
-            var attribs = new DrawAttributes(server.Time, _flash++);
-            var rect = Display.Rect + server.Player.Position - Display.Center;
+            var attribs = new DrawAttributes(_flash++);
+            var rect = Display.Rect + server.PlayerPosition - Display.Center;
 
             foreach (var vis in server.Visibility)
             {
-                vis.Draw(rect, Position.Zero, attribs);
+                vis.Draw(rect, Position.Zero, attribs, server.Time);
             }
 
             Display.Refresh();

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Xml.Linq;
 
 using FacePuncher.Geometry;
 
@@ -9,7 +11,7 @@ namespace FacePuncher.Entities
     /// <summary>
     /// Delegate for entity constructors.
     /// </summary>
-    /// <param name="ent"></param>
+    /// <param name="ent">Entity to construct.</param>
     public delegate void EntityConstructorDelegate(Entity ent);
 
     /// <summary>
@@ -83,6 +85,42 @@ namespace FacePuncher.Entities
                 Constructor = ctor;
                 Components = components;
             }
+        }
+
+        /// <summary>
+        /// Static constructor for Entity.
+        /// </summary>
+        static Entity()
+        {
+            Definitions.RegisterType("entity", elem => {
+                var components = new List<Tuple<Type, XElement>>();
+
+                foreach (var sub in elem.Elements()) {
+                    var typeName = String.Format("FacePuncher.Entities.{0}", sub.Name.LocalName);
+                    var type = Assembly.GetEntryAssembly().GetType(typeName);
+
+                    if (type == null) continue;
+
+                    components.Add(Tuple.Create(type, sub));
+                }
+
+                EntityConstructorDelegate ctor = ent => {
+                    foreach (var type in components) {
+                        var comp = ent.GetComponentOrNull(type.Item1)
+                            ?? ent.AddComponent(type.Item1);
+
+                        comp.LoadFromDefinition(type.Item2);
+                    }
+                };
+
+                var compTypes = components.Select(x => x.Item1).ToArray();
+
+                if (elem.Attributes("base").Count() > 0) {
+                    Entity.Register(elem.Attribute("name").Value, elem.Attribute("base").Value, ctor, compTypes);
+                } else {
+                    Entity.Register(elem.Attribute("name").Value, ctor, compTypes);
+                }
+            });
         }
 
         private static Dictionary<String, ClassInfo> _sEntCtors
@@ -681,19 +719,18 @@ namespace FacePuncher.Entities
         /// actions, while also recursively invoking this method on any child
         /// entities.
         /// </summary>
-        /// <param name="time">Current game time.</param>
-        public void Think(ulong time)
+        public void Think()
         {
-            if (!CanThink || _lastThink >= time) return;
+            if (!CanThink || _lastThink >= Level.Time) return;
 
-            _lastThink = time;
+            _lastThink = Level.Time;
 
             UpdateComponents();
 
             for (int i = _comps.Count - 1; i >= 0; --i)
-                _comps[i].OnThink(time);
+                _comps[i].OnThink();
 
-            foreach (var child in _children) child.Think(time);
+            foreach (var child in _children) child.Think();
         }
 
         /// <summary>

@@ -19,28 +19,24 @@ namespace FacePuncher.Entities
 
         /// <summary>
         /// Checks to see if the entity can move at the
-        /// specified time.
+        /// current time.
         /// </summary>
-        /// <param name="time">Current game time.</param>
-        /// <returns>True if the entity can move, false
-        /// otherwise.</returns>
-        protected bool CanMove(ulong time)
+        protected bool CanMove
         {
-            return time >= _nextMove;
+            get { return Time >= _nextMove; }
         }
 
         /// <summary>
         /// Attempts to move the entity in the specified direction.
         /// </summary>
         /// <param name="dir">Direction to move.</param>
-        /// <param name="time">Current game time.</param>
         /// <returns>Whether the move was successful.</returns>
-        protected bool Move(Direction dir, ulong time)
+        protected bool Move(Direction dir)
         {
-            if (MovePeriod == 0 || !CanMove(time) || !Entity.CanMove(dir)) return false;
+            if (MovePeriod == 0 || !CanMove || !Entity.CanMove(dir)) return false;
 
             Entity.Move(dir);
-            _nextMove = time + MovePeriod;
+            _nextMove = Time + MovePeriod;
             return true;
         }
     }

@@ -22,21 +22,21 @@ namespace FacePuncher.Entities
             set { _intent = value; }
         }
 
-        public override void OnThink(ulong time)
+        public override void OnThink()
         {
-            Intent.HandleIntent(ref _intent, (MoveIntent mi) => HandleMove(mi, time)); // This isn't quite optimal
+            Intent.HandleIntent(ref _intent, (MoveIntent mi) => HandleMove(mi)); // This isn't quite optimal
 
-            Client.SendVisibleLevelState(Level, time);
+            Client.SendVisibleLevelState();
         }
 
-        private bool HandleMove(MoveIntent intent, ulong time)
+        private bool HandleMove(MoveIntent intent)
         {
-            var success = Move(intent.Direction, time);
+            var success = Move(intent.Direction);
 
             if (success)
             {
                 // Let the client know what they can see in their new position.
-                Client.SendVisibleLevelState(Level, time + 1);
+                Client.SendVisibleLevelState(timeOffset: 1);
             }
 
             return success;
