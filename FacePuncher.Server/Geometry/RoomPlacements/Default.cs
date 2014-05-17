@@ -30,10 +30,19 @@ namespace FacePuncher.Geometry.RoomPlacements
         [ScriptDefinable]
         public int MaximumArea { get; set; }
 
+        [ScriptDefinable]
+        public int MinimumHubs { get; set; }
+
+        [ScriptDefinable]
+        public int MaximumHubs { get; set; }
+
         public Default()
         {
             MinimumArea = 1000;
             MaximumArea = 1000;
+
+            MinimumHubs = 1;
+            MaximumHubs = 1;
 
             _roomGenerators = new List<RoomGeneratorInfo>();
         }
@@ -97,9 +106,18 @@ namespace FacePuncher.Geometry.RoomPlacements
 
             var rects = new List<Tuple<Rectangle, String>>();
 
+            var hubs = new Position[rand.Next(MinimumHubs, MaximumHubs - MinimumHubs + 1)];
+
+            int range = (int) Math.Sqrt(destArea);
+            for (int i = 0; i < hubs.Length; ++i) {
+                hubs[i] = new Position(rand.Next(-range, range), rand.Next(-range, range));
+            }
+
             while (destArea > 0) {
                 var name = GetRandomGeneratorName(rand);
                 var size = new Rectangle(0, 0, rand.Next(4, 12), rand.Next(4, 12));
+
+                var hub = hubs.Length > 0 ? hubs[rand.Next(hubs.Length)] : Position.Zero;
 
                 var best = Rectangle.Zero;
 
@@ -112,7 +130,7 @@ namespace FacePuncher.Geometry.RoomPlacements
 
                         if (rects.Any(x => x.Item1.Intersects(rect))) continue;
 
-                        int dist = rect.NearestPosition(Position.Zero).LengthSquared;
+                        int dist = (rect.NearestPosition(hub) - hub).LengthSquared;
                         if (best != Rectangle.Zero && dist >= bestDist) continue;
 
                         best = rect;
