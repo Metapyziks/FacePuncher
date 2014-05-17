@@ -16,10 +16,7 @@ namespace FacePuncher.GUI
 
         public override void Draw()
         {
-            for (var x = 0; x < Text.Length; x++)
-            {
-                Display.SetCell(Position.X + x, Position.Y, Text[x], ForegroundColor, BackgroundColor);
-            }
+            GuiManager.DrawString(Position, Text, ForegroundColor, BackgroundColor);
         }
     }
 }
