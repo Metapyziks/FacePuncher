@@ -41,6 +41,7 @@ namespace FacePuncher.Network
                 while (true)
                 {
                     await ReadPacket();
+                    await Task.Yield();
                 }
             //}
             //catch (Exception ex)
