@@ -16,6 +16,9 @@ namespace FacePuncher.GUI
 
         public bool IsSelected { get; set; }
 
+        public delegate void WidgetAction();
+        public WidgetAction Use = new WidgetAction(() => { });
+
         public ConsoleColor ForegroundColor { get; set; }
         public ConsoleColor BackgroundColor { get; set; }
 

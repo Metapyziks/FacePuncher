@@ -45,6 +45,10 @@ namespace FacePuncher.GUI
                 {
                     _selectedId++;
                 }
+                else if (info.Key == ConsoleKey.Enter)
+                {
+                    _selectableWidgets[_selectedId].Use();
+                }
             }
 
             if (_selectedId > _selectableWidgets.Count - 1)
