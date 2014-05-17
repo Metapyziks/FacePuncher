@@ -3,25 +3,31 @@ using System.Collections.Generic;
 
 namespace FacePuncher.GUI
 {
-    class GuiManager
+    class GuiManager : IWidgetContainer
     {
-        public Dictionary<string, Widget> Widgets { get; set; }
-
         public GuiManager()
         {
-            Widgets = new Dictionary<string, Widget>();
+            Children = new Dictionary<string, Widget>();
         }
 
-        public void AddWidget(string name, Widget w)
+        public Dictionary<string, Widget> Children
+        { get; set; }
+
+        public void AddChild(string name, Widget w)
         {
-            Widgets.Add(name, w);
+            Children.Add(name, w);
         }
 
         public void Draw()
         {
-            foreach (var widget in Widgets)
+            DrawChildren();
+        }
+
+        public void DrawChildren()
+        {
+            foreach (var w in Children)
             {
-                widget.Value.Draw();
+                w.Value.Draw();
             }
         }
     }
