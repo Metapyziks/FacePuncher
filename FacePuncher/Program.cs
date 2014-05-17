@@ -81,6 +81,7 @@ namespace FacePuncher
                 {
                     await Task.Delay(100);
                 }
+                await Task.Yield();
             }
         }
 

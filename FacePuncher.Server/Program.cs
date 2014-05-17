@@ -39,8 +39,6 @@ namespace FacePuncher.Server
         static Level _level;
         static List<ClientConnection> _clients;
 
-        static ulong _time;
-
         /// <summary>
         /// Main loop for the thread that accepts new clients.
         /// </summary>
@@ -87,7 +85,6 @@ namespace FacePuncher.Server
             _level = gen.Generate(0);
 
             _capacity = 16;
-            _time = 1;
 
             _clients = new List<ClientConnection>();
 
@@ -104,9 +101,10 @@ namespace FacePuncher.Server
                     await Task.Delay(100);
                 }
 
-                Console.CursorTop = 0;
-                Console.CursorLeft = 0;
-                Console.Write(_time);
+                Console.WriteLine(_level.Time);
+                Console.CursorTop -= 1;
+
+                //await Task.Yield();
             }
         }
     }
