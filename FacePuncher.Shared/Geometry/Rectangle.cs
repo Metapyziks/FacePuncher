@@ -178,6 +178,29 @@ namespace FacePuncher.Geometry
         }
 
         /// <summary>
+        /// Finds the smallest rectangle that encloses both this
+        /// instance and another given rectangle.
+        /// </summary>
+        /// <param name="rect">Rectangle to find the union of.</param>
+        /// <returns>A rectangle that encloses both this instance and
+        /// the given rectangle.</returns>
+        public Rectangle Union(Rectangle rect)
+        {
+            if (Area == 0) return rect;
+            if (rect.Area == 0) return this;
+
+            var tl = new Position(
+                Math.Min(this.Left, rect.Left),
+                Math.Min(this.Top, rect.Top));
+
+            var br = new Position(
+                Math.Max(this.Right, rect.Right),
+                Math.Max(this.Bottom, rect.Bottom));
+
+            return new Rectangle(tl, br);
+        }
+
+        /// <summary>
         /// Finds the nearest position within the rectangle to
         /// the specified location.
         /// </summary>

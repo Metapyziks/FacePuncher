@@ -1,9 +1,9 @@
 <server:level name="test">
     <RoomPlacement class="Default">
-        <MinimumArea>1000</MinimumArea>
-        <MaximumArea>4000</MaximumArea>
-        <MinimumHubs>1</MinimumHubs>
-        <MaximumHubs>8</MaximumHubs>
+        <MinimumArea>8000</MinimumArea>
+        <MaximumArea>12000</MaximumArea>
+        <MinimumHubs>8</MinimumHubs>
+        <MaximumHubs>12</MaximumHubs>
         <Room class="test">
             <Frequency>1</Frequency>
         </Room>

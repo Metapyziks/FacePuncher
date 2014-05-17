@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace FacePuncher.Geometry
@@ -14,6 +15,14 @@ namespace FacePuncher.Geometry
         /// Gets or sets the current game time in steps.
         /// </summary>
         public ulong Time { get; set; }
+
+        /// <summary>
+        /// Gets a rectangle enclosing all rooms in this level.
+        /// </summary>
+        public Rectangle Bounds
+        {
+            get { return _rooms.Aggregate(Rectangle.Zero, (s, x) => s.Union(x.Rect)); }
+        }
 
         /// <summary>
         /// Constructs an empty level.
@@ -86,6 +95,31 @@ namespace FacePuncher.Geometry
             foreach (var room in _rooms) room.Think();
 
             ++Time;
+        }
+
+        /// <summary>
+        /// Generates and saves an image of this level for debugging.
+        /// </summary>
+        /// <param name="path">File path to save the image to.</param>
+        public void SaveImage(string path)
+        {
+            var rect = Bounds;
+            rect = new Rectangle(rect.Left - 1, rect.Top - 1, rect.Width + 2, rect.Height + 2);
+
+            using (var bmp = new Bitmap(rect.Width, rect.Height)) {
+                foreach (var room in _rooms) {
+                    var origin = room.Rect.TopLeft - rect.TopLeft;
+                    foreach (var relPos in room.RelativeRect.Positions) {
+                        var pos = origin + relPos;
+                        bmp.SetPixel(pos.X, pos.Y,
+                            room[relPos].State == TileState.Floor ? Color.White :
+                            room[relPos].State == TileState.Wall ? Color.Black :
+                            Color.Transparent);
+                    }
+                }
+
+                bmp.Save(path);
+            }
         }
 
         /// <summary>

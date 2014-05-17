@@ -106,9 +106,9 @@ namespace FacePuncher.Geometry.RoomPlacements
 
             var rects = new List<Tuple<Rectangle, String>>();
 
-            var hubs = new Position[rand.Next(MinimumHubs, MaximumHubs - MinimumHubs + 1)];
+            var hubs = new Position[rand.Next(MinimumHubs, MaximumHubs + 1)];
 
-            int range = (int) Math.Sqrt(destArea);
+            int range = (int) Math.Sqrt(destArea / 2);
             for (int i = 0; i < hubs.Length; ++i) {
                 hubs[i] = new Position(rand.Next(-range, range), rand.Next(-range, range));
             }

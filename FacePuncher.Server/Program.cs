@@ -55,6 +55,7 @@ namespace FacePuncher.Server
 
             // TODO: Implement saving / loading levels here.
             _level = LevelGenerator.Generate("test");
+            _level.SaveImage("level.png");
 
             _capacity = 16;
 
