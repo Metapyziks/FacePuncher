@@ -95,6 +95,7 @@ namespace FacePuncher.Server
                 if (_clients.Count > 0)
                 {
                     _level.Think();
+                    await Task.Delay(10);
                 }
                 else
                 {

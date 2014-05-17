@@ -45,7 +45,7 @@ namespace FacePuncher.Entities
         {
             Intent.HandleIntent(ref _intent, (MoveIntent mi) => HandleMove(mi)); // This isn't quite optimal
 
-            Client.SendVisibleLevelState();
+            if (Time % 10 == 0) Client.SendVisibleLevelState();
         }
 
         private bool HandleMove(MoveIntent intent)
