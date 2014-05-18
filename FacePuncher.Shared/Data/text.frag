@@ -1,3 +1,5 @@
+// ROHANS CODE, THIS IS JUST TEMPORARY
+
 #version 110
 
 const vec2 charSize    = vec2(__WIDTH__, __HEIGHT__); // Size of characters in the font texture

@@ -109,9 +109,6 @@ namespace FacePuncher.Graphics
 		{
 			if (Pressed) {
 				KeyDirty = true;
-			} else {
-				KeyDirty = false;
-				return;
 			}
 
 			KeyConsole = ConsoleKey.NoName;
