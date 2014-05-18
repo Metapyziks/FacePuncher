@@ -23,6 +23,101 @@ using FacePuncher.UI;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+<<<<<<< HEAD
+
+using Console = FacePuncher.Graphics.Console;
+
+namespace FacePuncher {
+	/// <summary>
+	/// Class containing the client entry point.
+	/// </summary>
+	public class Program {
+		/// <summary>
+		/// Milliseconds between redraws.
+		/// </summary>
+		const int RenderPeriod = 125;
+
+		/// <summary>
+		/// Currently used UI Manager
+		/// </summary>
+		static UIManager UIManager;
+
+		/// <summary>
+		/// Entry point of the application.
+		/// </summary>
+		/// <param name="args">An array of command line arguments.</param>
+		public static void Main(string[] args) {
+			try {
+				var context = new SynchronizationContext();
+				context.Send((x) => TaskMain().Wait(), null);
+			} catch (AggregateException Ex) {
+				throw Ex.InnerException;
+			}
+
+		}
+
+		static async Task TaskMain() {
+			Definitions.LoadFromDirectory(Tools.GetPath("Data"), DefinitionsNamespace.Client);
+
+			Display.Initialize(96, 32);
+
+			ServerConnection server = null;
+
+			UIManager = new UIManager();
+
+			var select = new ServerSelectPrompt("serverselect");
+			select.Connect += (sender, e) => {
+				UIManager.IsInputBlocked = true;
+
+				server = new ServerConnection("localhost", 14242);
+				server.Run();
+
+				UIManager.RemoveChild(select);
+				UIManager.CalculateSelectableWidgets();
+			};
+
+			UIManager.AddChild(select);
+			UIManager.CalculateSelectableWidgets();
+
+			while (true) {
+				if (server == null) {
+					Draw(null);
+					await Task.Delay(100);
+				} else if (Console.KeyAvailable) {
+					Direction direc = Direction.None;
+					if (Input.TryReadMovement(out direc)) {
+						server.SendIntent(new MoveIntent(direc));
+					}
+				} else {
+					await Task.Delay(100);
+				}
+				await Task.Yield();
+			}
+		}
+
+		//TODO: Restore framerate
+		static int _flash = 0;
+		internal static void Draw(ServerConnection server) {
+			Display.Clear();
+
+			if (server != null) {
+				// removed Level lock
+				var attribs = new DrawAttributes(_flash++);
+				var rect = Display.Rect + server.PlayerPosition - Display.Center;
+
+				foreach (var vis in server.Visibility) {
+					vis.Draw(rect, Position.Zero, attribs, server.Time);
+				}
+			}
+
+			// Render user interface
+			if (UIManager != null)
+				UIManager.Draw();
+
+			Display.Refresh();
+		}
+	}
+=======
 
 namespace FacePuncher
 {
@@ -121,4 +216,5 @@ namespace FacePuncher
             Display.Refresh();
         }
     }
+>>>>>>> original/master
 }

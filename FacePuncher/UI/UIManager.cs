@@ -22,6 +22,11 @@ using System.Collections.Generic;
 using FacePuncher.Geometry;
 using FacePuncher.Graphics;
 
+<<<<<<< HEAD
+using Console = FacePuncher.Graphics.Console;
+
+=======
+>>>>>>> original/master
 namespace FacePuncher.UI
 {
     enum UINavigation
