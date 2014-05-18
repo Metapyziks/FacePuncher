@@ -22,11 +22,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using System.Net.Sockets;
+using System.Threading.Tasks;
 
 using FacePuncher.Geometry;
 using FacePuncher.Network;
-using System.Net.Sockets;
-using System.Threading.Tasks;
 
 namespace FacePuncher
 {
@@ -42,7 +42,24 @@ namespace FacePuncher
 
         public static Position GetOffset(this Direction dir)
         {
-            return new Position(((int) dir) % 3 - 1, ((int) dir) / 3 - 1);
+            var offset = Position.Zero;
+            if ((dir & Direction.East)  == Direction.East)  offset += Position.UnitX;
+            if ((dir & Direction.South) == Direction.South) offset += Position.UnitY;
+            if ((dir & Direction.West)  == Direction.West)  offset -= Position.UnitX;
+            if ((dir & Direction.North) == Direction.North) offset -= Position.UnitY;
+            return offset;
+        }
+
+        public static Direction Left(this Direction dir)
+        {
+            int val = (int) dir;
+            return (Direction) (((val << 3) | (val >> 1)) & 0xf);
+        }
+
+        public static Direction Right(this Direction dir)
+        {
+            int val = (int) dir;
+            return (Direction) (((val << 1) | (val >> 3)) & 0xf);
         }
 
         public static bool HasElement(this XElement elem, XName name)

@@ -23,23 +23,18 @@ namespace FacePuncher.Geometry
     /// directions an entity may move to
     /// a neighbouring tile.
     /// </summary>
-    /// <remarks>
-    /// Values are organised like this:
-    /// 
-    /// 0 | 1 | 2
-    /// 3 | 4 | 5
-    /// 6 | 7 | 8
-    /// </remarks>
     public enum Direction
     {
-        NorthWest = 0,
-        North = 1,
-        NorthEast = 2,
-        West = 3,
-        None = 4,
-        East = 5,
-        SouthWest = 6,
-        South = 7,
-        SouthEast = 8
+        None = 0,
+
+        East  = 1,
+        South = 2,
+        West  = 4,
+        North = 8,
+
+        NorthWest = North | West,
+        NorthEast = North | East,
+        SouthWest = South | West,
+        SouthEast = South | East
     }
 }
