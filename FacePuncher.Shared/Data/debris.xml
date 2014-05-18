@@ -1,0 +1,30 @@
+<server:entity name="dust">
+    <StaticDrawable>
+        <Layer>Debris</Layer>
+        <ForeColor>DarkBlue</ForeColor>
+    </StaticDrawable>
+</server:entity>
+
+<server:entity name="dust_0" base="dust">
+    <StaticDrawable>
+        <Symbol>.</Symbol>
+    </StaticDrawable>
+</server:entity>
+
+<server:entity name="dust_1" base="dust">
+    <StaticDrawable>
+        <Symbol>,</Symbol>
+    </StaticDrawable>
+</server:entity>
+
+<server:entity name="dust_2" base="dust">
+    <StaticDrawable>
+        <Symbol>'</Symbol>
+    </StaticDrawable>
+</server:entity>
+
+<server:entity name="dust_3" base="dust">
+    <StaticDrawable>
+        <Symbol>`</Symbol>
+    </StaticDrawable>
+</server:entity>

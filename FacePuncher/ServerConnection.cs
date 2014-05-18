@@ -1,5 +1,6 @@
 /* Copyright (C) 2014 James King (metapyziks@gmail.com)
  * Copyright (C) 2014 Tamme Schichler (tammeschichler@googlemail.com)
+ * Copyright (C) 2014 Saša Barišiæ (cartman300@net.hr)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,6 +28,8 @@ using FacePuncher.Geometry;
 using System.Threading.Tasks;
 using FacePuncher.Network;
 using FacePuncher.Graphics;
+
+using Console = FacePuncher.Graphics.Console;
 
 namespace FacePuncher
 {

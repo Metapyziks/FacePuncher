@@ -1,5 +1,6 @@
 /* Copyright (C) 2014 James King (metapyziks@gmail.com)
  * Copyright (C) 2014 Tamme Schichler (tammeschichler@googlemail.com)
+ * Copyright (C) 2014 Saša Barišiæ (cartman300@net.hr)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,6 +29,8 @@ using FacePuncher.Network;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
+using System.Windows.Forms;
+
 namespace FacePuncher
 {
     public static class Tools
@@ -42,7 +45,7 @@ namespace FacePuncher
 
         public static Position GetOffset(this Direction dir)
         {
-            return new Position(((int) dir) % 3 - 1, ((int) dir) / 3 - 1);
+            return new Position(((int)dir) % 3 - 1, ((int)dir) / 3 - 1);
         }
 
         public static bool HasElement(this XElement elem, XName name)
@@ -118,6 +121,28 @@ namespace FacePuncher
             var backColor = (ConsoleColor)(color >> 4);
 
             return Tuple.Create(symbol, foreColor, backColor);
+        }
+
+        public static string RootPath()
+        {
+            return Application.StartupPath;
+        }
+
+        public static string GetPath(string Pth, string Fil = "")
+        {
+            string Dr = Path.Combine(RootPath(), Pth);
+            if (!Directory.Exists(Dr))
+                throw new DirectoryNotFoundException("Path not found: " + Pth);
+            if (Fil.Length > 0)
+                Dr = Path.Combine(Dr, Fil);
+            else
+                return Dr;
+            if (!File.Exists(Dr))
+                throw new FileNotFoundException("File not found: " + Path.Combine(Pth, Fil));
+            else
+                return Dr;
+
+            throw new Exception("Unreachable code reached"); // TODO FIXME: Design failure, redo
         }
     }
 }

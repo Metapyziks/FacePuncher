@@ -1,5 +1,6 @@
 ﻿/* Copyright (C) 2014 Michał Ferchow (deseteral@gmail.com)
  * Copyright (C) 2014 James King (metapyziks@gmail.com)
+ * Copyright (C) 2014 Saša Barišić (cartman300@net.hr)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +22,8 @@ using System;
 using System.Collections.Generic;
 using FacePuncher.Geometry;
 using FacePuncher.Graphics;
+
+using Console = FacePuncher.Graphics.Console;
 
 namespace FacePuncher.UI
 {
