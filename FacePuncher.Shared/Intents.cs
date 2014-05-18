@@ -44,7 +44,7 @@ namespace FacePuncher
     [ProtoContract]
     public class MoveIntent : Intent
     {
-        [ProtoMember(1, IsRequired = true)]
+        [ProtoMember(1)]
         public Direction Direction { get; set; }
         public MoveIntent() : this(Direction.None) { }
         public MoveIntent(Direction direction)
