@@ -69,7 +69,7 @@ namespace FacePuncher.GUI
         /// <summary>
         /// Used to render widgets stored in manager.
         /// </summary>
-        private void DrawChildren()
+        public void DrawChildren()
         {
             foreach (var w in Children)
             {

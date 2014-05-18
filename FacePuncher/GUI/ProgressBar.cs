@@ -11,7 +11,7 @@ namespace FacePuncher.GUI
         /// <summary>
         /// Current value.
         /// </summary>
-        public int Value { get; set; }
+        public float Value { get; set; }
 
         /// <summary>
         /// Maximum value.
@@ -23,13 +23,14 @@ namespace FacePuncher.GUI
         /// </summary>
         /// <param name="name">Name of the widget.</param>
         /// <param name="pos">Position of the progress bar.</param>
+        /// <param name="width">Width of the progress bar</param>
         /// <param name="maxValue">Maximum value.</param>
         /// <param name="value">Current value (default: 0).</param>
         /// <param name="fc">Foreground color (default gray).</param>
         /// <param name="bc">Background color (default black).</param>
-        public ProgressBar(string name, Position pos, int maxValue, int value = 0,
+        public ProgressBar(string name, Position pos, int width, int maxValue, float value = 0.0f,
             ConsoleColor fc = ConsoleColor.Gray, ConsoleColor bc = ConsoleColor.Black)
-            : base(name, pos, maxValue, 1, false, fc, bc)
+            : base(name, pos, width, 1, false, fc, bc)
         {
             this.Value = value;
             this.MaxValue = maxValue;
@@ -38,13 +39,15 @@ namespace FacePuncher.GUI
         public override void Draw()
         {
             // Draws background
-            for (var x = 0; x < MaxValue; x++)
+            for (var x = 0; x < Width; x++)
             {
                 Display.SetCell(Position.X + x, Position.Y, (char)219, BackgroundColor, ConsoleColor.Black);
             }
 
+            int progress = (int)((float)(Value / MaxValue) * Width);
+
             // Draws actual progress
-            for (var x = 0; x < Value; x++)
+            for (var x = 0; x < progress; x++)
             {
                 Display.SetCell(Position.X + x, Position.Y, (char)219, ForegroundColor, ConsoleColor.Black);
             }
