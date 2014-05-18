@@ -36,7 +36,8 @@ namespace FacePuncher.UI
                 _selectedId = 0;
 
             // Deselect currently selected item
-            _selectableWidgets[_selectedId].IsSelected = false;
+            if (_selectableWidgets.Count > 0)
+                _selectableWidgets[_selectedId].IsSelected = false;
 
             if (Console.KeyAvailable)
             {
@@ -64,7 +65,8 @@ namespace FacePuncher.UI
             else if (_selectedId < 0)
                 _selectedId = 0;
 
-            _selectableWidgets[_selectedId].IsSelected = true;
+            if (_selectableWidgets.Count > 0)
+                _selectableWidgets[_selectedId].IsSelected = true;
 
             DrawChildren();
         }
@@ -111,7 +113,9 @@ namespace FacePuncher.UI
             }
 
             _selectedId = 0;
-            _selectableWidgets[_selectedId].IsSelected = true;
+
+            if (_selectableWidgets.Count > 0)
+                _selectableWidgets[_selectedId].IsSelected = true;
 
             return _selectableWidgets.Count;
         }
