@@ -27,45 +27,16 @@ namespace FacePuncher.Geometry.RoomPlacements
     {
         private class RoomGeneratorInfo
         {
-            public String ClassName { get; private set; }
+            public RoomGenerator Generator { get; private set; }
 
             [ScriptDefinable]
             public int Frequency { get; set; }
 
             public void Initialize(XElement elem)
             {
-                ClassName = elem.Attribute("class").Value;
+                Generator = RoomGenerator.Get(elem.Attribute("class").Value);
 
                 Definitions.LoadProperties(this, elem);
-            }
-        }
-
-        private class RoomInfo
-        {
-            public int Index { get; private set; }
-
-            public Rectangle Rect { get; private set; }
-
-            public String Type { get; private set; }
-
-            public Dictionary<RoomInfo, Rectangle> Doors { get; private set; }
-
-            public RoomInfo(Rectangle rect, String type, int index)
-            {
-                Index = index;
-                Rect = rect;
-                Type = type;
-                Doors = new Dictionary<RoomInfo, Rectangle>();
-            }
-
-            public void AddDoor(RoomInfo room, Rectangle rect)
-            {
-                Doors.Add(room, rect.Intersection(Rect) - Rect.TopLeft);
-            }
-
-            public override string ToString()
-            {
-                return String.Format("{0} : {1}", Rect.ToString(), Type);
             }
         }
 
@@ -129,12 +100,12 @@ namespace FacePuncher.Geometry.RoomPlacements
             }
         }
 
-        protected String GetRandomGeneratorName(Random rand)
+        protected RoomGenerator GetRandomGenerator(Random rand)
         {
             int total = _roomGenerators.Sum(x => x.Frequency);
             int index = rand.Next(total);
 
-            return _roomGenerators.First(x => (index -= x.Frequency) < 0).ClassName;
+            return _roomGenerators.First(x => (index -= x.Frequency) < 0).Generator;
         }
 
         private Rectangle GenerateAdjacentRect(Rectangle a, Rectangle b, Random rand)
@@ -204,9 +175,9 @@ namespace FacePuncher.Geometry.RoomPlacements
 
             int size = max - min;
 
-            if (size <= 2 || rand.NextDouble() < 0.25) {
+            if (size <= 2 || rand.NextDouble() < 0.125) {
                 return new Rectangle(start, start + depth + direc * size);
-            } else if (size == 3 || rand.NextDouble() < 0.5) {
+            } else if (size == 3 || rand.NextDouble() < 0.75) {
                 min = 1 + rand.Next(size - 2);
                 max = min + 1;
             } else {
@@ -217,7 +188,7 @@ namespace FacePuncher.Geometry.RoomPlacements
             return new Rectangle(start + direc * min, start + depth + direc * max);
         }
 
-        private bool CanGenerateDoor(RoomInfo a, RoomInfo b)
+        private bool CanGenerateDoor(RoomPlan a, RoomPlan b)
         {
             if (a.Index >= b.Index) return false;
             if (!a.Rect.IsAdjacent(b.Rect)) return false;
@@ -227,9 +198,9 @@ namespace FacePuncher.Geometry.RoomPlacements
             return i.Width >= 3 || i.Height >= 3;
         }
 
-        private int Separation(RoomInfo a, RoomInfo b)
+        private int Separation(RoomPlan a, RoomPlan b)
         {
-            var path = Tools.AStar<RoomInfo>(a, b,
+            var path = Tools.AStar<RoomPlan>(a, b,
                 x => x.Doors.Keys.Select(y => Tuple.Create(y, (x.Rect.TopLeft - y.Rect.TopLeft).ManhattanLength)),
                 x => x.Rect.TopLeft + new Position(x.Rect.Width / 2, x.Rect.Height / 2));
 
@@ -253,6 +224,7 @@ namespace FacePuncher.Geometry.RoomPlacements
             int perc = (cur * 100) / dest;
 
             if (perc != _prevProgress) {
+                _prevProgress = perc;
                 Console.CursorLeft = _progressLeft;
                 Console.Write("{0}%", perc);
             }
@@ -264,11 +236,11 @@ namespace FacePuncher.Geometry.RoomPlacements
             Console.WriteLine();
         }
 
-        public override void Generate(Level level, Random rand)
+        public override IEnumerable<RoomPlan> Generate(Level level, Random rand)
         {
             int destArea = rand.Next(MinArea, MaxArea);
 
-            var rects = new List<RoomInfo>();
+            var plans = new List<RoomPlan>();
 
             int range = (int) Math.Sqrt(destArea);
             var hubs = new Hub[Math.Max(1, rand.Next(MinHubs, MaxHubs + 1))];
@@ -282,24 +254,24 @@ namespace FacePuncher.Geometry.RoomPlacements
 
             int area = 0;
             while (area < destArea) {
-                var name = GetRandomGeneratorName(rand);
-                var size = new Rectangle(0, 0, rand.Next(4, 12), rand.Next(4, 12));
+                var generator = GetRandomGenerator(rand);
+                var size = new Rectangle(Position.Zero, generator.RoomLayout.GenerateSize(rand));
 
                 var hub = hubs[rand.Next(hubs.Length)];
                 var hubPos = hub.Position;
 
                 var best = Rectangle.Zero;
-                RoomInfo neighbour = null;
+                RoomPlan neighbour = null;
 
-                if (rects.Count > 0) {
+                if (plans.Count > 0) {
                     int bestDist = 0;
 
                     int tries = 0;
                     while (best == Rectangle.Zero || ++tries <= hub.Density) {
-                        var othr = rects[rand.Next(rects.Count)];
+                        var othr = plans[rand.Next(plans.Count)];
                         var rect = GenerateAdjacentRect(othr.Rect, size, rand);
 
-                        if (rects.Any(x => x.Rect.Intersects(rect))) continue;
+                        if (plans.Any(x => x.Rect.Intersects(rect))) continue;
 
                         int dist = (rect.NearestPosition(hubPos) - hubPos).ManhattanLength;
                         if (best != Rectangle.Zero && dist >= bestDist) continue;
@@ -314,7 +286,7 @@ namespace FacePuncher.Geometry.RoomPlacements
                     best = new Rectangle(-size.Width / 2, -size.Height / 2, size.Width, size.Height);
                 }
 
-                var info = new RoomInfo(best, name, rects.Count);
+                var info = new RoomPlan(best, generator, plans.Count);
                 if (neighbour != null) {
                     var door = GenerateDoor(info.Rect, neighbour.Rect, rand);
 
@@ -322,7 +294,7 @@ namespace FacePuncher.Geometry.RoomPlacements
                     neighbour.AddDoor(info, door);
                 }
 
-                rects.Add(info);
+                plans.Add(info);
                 area += best.Area;
 
                 ProgressUpdate(area, destArea);
@@ -330,8 +302,8 @@ namespace FacePuncher.Geometry.RoomPlacements
 
             ProgressEnd();
 
-            var spareDoors = rects
-                .SelectMany(x => rects
+            var spareDoors = plans
+                .SelectMany(x => plans
                     .Where(y => CanGenerateDoor(x, y) && !x.Doors.ContainsKey(y))
                     .Select(y => Tuple.Create(x, y)))
                 .ToList();
@@ -340,7 +312,7 @@ namespace FacePuncher.Geometry.RoomPlacements
 
             int doorCount = Tools.Clamp((int) (rand.NextFloat(MinConnectivity, MaxConnectivity) * spareDoors.Count), 0, spareDoors.Count);
             for (int d = 0; d < doorCount; ++d) {
-                Tuple<RoomInfo, RoomInfo> door = null;
+                Tuple<RoomPlan, RoomPlan> door = null;
                 int bestScore = 0;
                 foreach (var elem in spareDoors) {
                     var score = Separation(elem.Item1, elem.Item2);
@@ -364,9 +336,7 @@ namespace FacePuncher.Geometry.RoomPlacements
 
             ProgressEnd();
 
-            foreach (var info in rects) {
-                RoomGenerator.Generate(level, info.Type, info.Rect, info.Doors.Values.ToArray(), rand);
-            }
+            return plans;
         }
     }
 }

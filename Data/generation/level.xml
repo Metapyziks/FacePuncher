@@ -1,22 +1,57 @@
 <server:level name="test">
     <RoomPlacement class="Default">
-        <MinArea>80000</MinArea>
-        <MaxArea>120000</MaxArea>
+        <MinArea>12000</MinArea>
+        <MaxArea>16000</MaxArea>
         <MinHubs>8</MinHubs>
         <MaxHubs>12</MaxHubs>
         <MinConnectivity>0.5</MinConnectivity>
         <MaxConnectivity>0.8</MaxConnectivity>
-        <MinHubDensity>32</MinHubDensity>
+        <MinHubDensity>64</MinHubDensity>
         <MaxHubDensity>256</MaxHubDensity>
 
-        <Room class="test">
+        <Room class="huge_room">
             <Frequency>1</Frequency>
+        </Room>
+        <Room class="big_room">
+            <Frequency>16</Frequency>
+        </Room>
+        <Room class="hallway">
+            <Frequency>32</Frequency>
         </Room>
     </RoomPlacement>
 </server:level>
 
-<server:room name="test">
-    <RoomLayout class="Default" />
+<server:room name="huge_room">
+    <RoomLayout class="Default">
+        <MinLength>16</MinLength>
+        <MaxLength>20</MaxLength>
+        <MinBreadth>12</MinBreadth>
+        <MaxBreadth>16</MaxBreadth>
+    </RoomLayout>
+    <ItemPlacement class="Default">
+        <Debris>debris</Debris>
+    </ItemPlacement>
+</server:room>
+
+<server:room name="big_room">
+    <RoomLayout class="Default">
+        <MinLength>8</MinLength>
+        <MaxLength>12</MaxLength>
+        <MinBreadth>6</MinBreadth>
+        <MaxBreadth>8</MaxBreadth>
+    </RoomLayout>
+    <ItemPlacement class="Default">
+        <Debris>debris</Debris>
+    </ItemPlacement>
+</server:room>
+
+<server:room name="hallway">
+    <RoomLayout class="Default">
+        <MinLength>6</MinLength>
+        <MaxLength>12</MaxLength>
+        <MinBreadth>3</MinBreadth>
+        <MaxBreadth>4</MaxBreadth>
+    </RoomLayout>
     <ItemPlacement class="Default">
         <Debris>debris</Debris>
     </ItemPlacement>

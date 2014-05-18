@@ -61,6 +61,7 @@
     <Compile Include="Geometry\LevelGenerator.cs" />
     <Compile Include="Geometry\Room.cs" />
     <Compile Include="Geometry\RoomGenerator.cs" />
+    <Compile Include="Geometry\RoomInfo.cs" />
     <Compile Include="Geometry\RoomLayout.cs" />
     <Compile Include="Geometry\RoomLayouts\Default.cs" />
     <Compile Include="Geometry\RoomPlacement.cs" />

@@ -23,6 +23,8 @@ namespace FacePuncher.Geometry
 {
     abstract class RoomLayout : GenerationWorker
     {
+        public abstract Position GenerateSize(Random rand);
+
         public abstract IEnumerable<Room> Generate(Level level, Rectangle rect, Rectangle[] doors, Random rand);
     }
 }

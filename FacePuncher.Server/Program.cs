@@ -81,7 +81,9 @@ namespace FacePuncher.Server
             Definitions.LoadFromDirectory("../../../Data", DefinitionsNamespace.Server);
 
             // TODO: Implement saving / loading levels here.
-            _level = LevelGenerator.Generate("test");
+            var generator = LevelGenerator.Get("test");
+
+            _level = generator.Generate();
             _level.SaveImage("level.png");
 
             _capacity = 16;

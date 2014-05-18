@@ -33,10 +33,9 @@ namespace FacePuncher.Geometry
             Definitions.RegisterType("room", _generators.Add);
         }
 
-        public static void Generate(Level level, String type, Rectangle rect, Rectangle[] doors, Random rand)
+        public static RoomGenerator Get(String type)
         {
-            var generator = _generators[type];
-            var rooms = generator.RoomLayout.Generate(level, rect, doors, rand);
+            return _generators[type];
         }
 
         public RoomLayout RoomLayout { get; set; }
@@ -45,11 +44,18 @@ namespace FacePuncher.Geometry
 
         protected override void OnLoadFromDefinition(XElement elem)
         {
+            base.OnLoadFromDefinition(elem);
+
             RoomLayout = LoadWorkerFromDefinition<RoomLayout>(elem,
                 RoomLayout ?? new RoomLayouts.Default());
 
             ItemPlacement = LoadWorkerFromDefinition<ItemPlacement>(elem,
                 ItemPlacement ?? new ItemPlacements.Default());
+        }
+
+        public IEnumerable<Room> Generate(Level level, Rectangle rect, Rectangle[] doors, Random rand)
+        {
+            return RoomLayout.Generate(level, rect, doors, rand);
         }
     }
 }

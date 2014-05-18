@@ -17,6 +17,7 @@
  */
 
 using System;
+using System.Linq;
 using System.Xml.Linq;
 
 namespace FacePuncher.Geometry
@@ -32,17 +33,10 @@ namespace FacePuncher.Geometry
             Definitions.RegisterType("level", _generators.Add);
         }
 
-        public static Level Generate(String type, int seed = 0)
+        public static LevelGenerator Get(String type)
         {
-            var generator = _generators[type];
-            var rand = seed == 0 ? new Random() : new Random(seed);
-
-            var level = new Level();
-
-            generator.RoomPlacement.Generate(level, rand);
-
-            return level;
-            }
+            return _generators[type];
+        }
 
         public RoomPlacement RoomPlacement { get; private set; }
 
@@ -50,6 +44,20 @@ namespace FacePuncher.Geometry
         {
             RoomPlacement = LoadWorkerFromDefinition<RoomPlacement>(elem,
                 RoomPlacement ?? new RoomPlacements.Default());
+        }
+
+        public Level Generate(int seed = 0)
+        {
+            var rand = seed == 0 ? new Random() : new Random(seed);
+            var level = new Level();
+
+            var plans = RoomPlacement.Generate(level, rand);
+
+            foreach (var plan in plans) {
+                plan.Generator.Generate(level, plan.Rect, plan.Doors.Values.ToArray(), rand);
+            }
+
+            return level;
         }
     }
 }

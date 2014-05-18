@@ -111,7 +111,10 @@ namespace FacePuncher
             return fallback;
         }
 
-        protected abstract void OnLoadFromDefinition(XElement elem);
+        protected virtual void OnLoadFromDefinition(XElement elem)
+        {
+            Definitions.LoadProperties(this, elem);
+        }
     }
 
     class GeneratorCollection<T>
