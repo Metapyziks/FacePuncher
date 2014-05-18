@@ -7,9 +7,9 @@ namespace FacePuncher.GUI
     {
         public string Text { get; set; }
 
-        public Button(Position pos, string text,
+        public Button(string name, Position pos, string text,
             ConsoleColor fc = ConsoleColor.Gray, ConsoleColor bc = ConsoleColor.Black)
-            : base(pos, 0, 0, true, fc, bc)
+            : base(name, pos, 0, 0, true, fc, bc)
         {
             this.Text = text;
         }

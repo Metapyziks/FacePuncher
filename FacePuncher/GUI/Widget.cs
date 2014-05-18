@@ -6,6 +6,8 @@ namespace FacePuncher.GUI
 {
     abstract class Widget
     {
+        public string Name { get; set; }
+
         protected Rectangle rectangle;
 
         private bool _isSelectable;
@@ -22,9 +24,11 @@ namespace FacePuncher.GUI
         public ConsoleColor ForegroundColor { get; set; }
         public ConsoleColor BackgroundColor { get; set; }
 
-        public Widget(Position pos, int width, int height, bool isSelectable,
+        public Widget(string name, Position pos, int width, int height, bool isSelectable,
             ConsoleColor fc = ConsoleColor.Gray, ConsoleColor bc = ConsoleColor.Black)
         {
+            this.Name = name;
+
             this.rectangle = new Rectangle(pos, new Position(pos.X + width, pos.Y + height));
 
             this.ForegroundColor = fc;

@@ -19,9 +19,9 @@ namespace FacePuncher.GUI
         public Dictionary<string, Widget> Children
         { get; set; }
 
-        public void AddChild(string name, Widget w)
+        public void AddChild(Widget w)
         {
-            Children.Add(name, w);
+            Children.Add(w.Name, w);
         }
 
         public void Draw()

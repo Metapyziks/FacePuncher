@@ -7,7 +7,7 @@ namespace FacePuncher.GUI
     {
         Dictionary<string, Widget> Children { get; set; }
 
-        void AddChild(string name, Widget w);
+        void AddChild(Widget w);
         void DrawChildren();
     }
 }

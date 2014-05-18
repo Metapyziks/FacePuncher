@@ -8,9 +8,9 @@ namespace FacePuncher.GUI
         public int Value { get; set; }
         public int MaxValue { get; set; }
 
-        public ProgressBar(Position pos, int maxValue, int value = 0,
+        public ProgressBar(string name, Position pos, int maxValue, int value = 0,
             ConsoleColor fc = ConsoleColor.Gray, ConsoleColor bc = ConsoleColor.Black)
-            : base(pos, 0, maxValue, false, fc, bc)
+            : base(name, pos, 0, maxValue, false, fc, bc)
         {
             this.Value = value;
             this.MaxValue = maxValue;

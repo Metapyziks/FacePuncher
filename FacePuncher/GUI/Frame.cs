@@ -17,9 +17,9 @@ namespace FacePuncher.GUI
             (char)200, (char)188  // down-left, down-right
         };
 
-        public Frame(Position pos, int width, int height, string title = "",
+        public Frame(string name, Position pos, int width, int height, string title = "",
             ConsoleColor fc = ConsoleColor.Gray, ConsoleColor bc = ConsoleColor.Black)
-            : base(pos, width, height, false, fc, bc)
+            : base(name, pos, width, height, false, fc, bc)
         {
             Children = new Dictionary<string, Widget>();
             Title = title;
@@ -65,9 +65,9 @@ namespace FacePuncher.GUI
             return list;
         }
 
-        public void AddChild(string name, Widget w)
+        public void AddChild(Widget w)
         {
-            Children.Add(name, w);
+            Children.Add(w.Name, w);
         }
 
         public void DrawChildren()
