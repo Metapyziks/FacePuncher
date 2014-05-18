@@ -36,20 +36,6 @@ namespace FacePuncher.UI
     /// </summary>
     class UIManager : IWidgetContainer
     {
-        public static readonly Dictionary<ConsoleKey, UINavigation> _sNavigationKeys = new Dictionary<ConsoleKey, UINavigation> {
-            { ConsoleKey.W, UINavigation.Up },
-            { ConsoleKey.UpArrow, UINavigation.Up },
-            { ConsoleKey.NumPad8, UINavigation.Up },
-            { ConsoleKey.Subtract, UINavigation.Up },
-
-            { ConsoleKey.S, UINavigation.Down },
-            { ConsoleKey.DownArrow, UINavigation.Down },
-            { ConsoleKey.NumPad2, UINavigation.Down },
-            { ConsoleKey.Add, UINavigation.Down },
-
-            { ConsoleKey.Enter, UINavigation.Select }
-        };
-
         /// <summary>
         /// Is one of widgets blocking input
         /// </summary>
@@ -87,20 +73,16 @@ namespace FacePuncher.UI
 
             if (!IsInputBlocked && Console.KeyAvailable)
             {
-                var key = Console.ReadKey(true).Key;
-
-                if (_sNavigationKeys.ContainsKey(key)) {
-                    switch (_sNavigationKeys[key]) {
-                        case UINavigation.Up:
-                            _selectedId--; break;
-                        case UINavigation.Down:
-                            _selectedId++; break;
-                        case UINavigation.Select:
-                            if (_selectableWidgets[_selectedId] is UsableWidget) {
-                                ((UsableWidget) _selectableWidgets[_selectedId]).Use();
-                            }
-                            break;
-                    }
+                switch (Input.ReadUINavigation()) {
+                    case UINavigation.Up:
+                        _selectedId--; break;
+                    case UINavigation.Down:
+                        _selectedId++; break;
+                    case UINavigation.Select:
+                        if (_selectableWidgets[_selectedId] is UsableWidget) {
+                            ((UsableWidget) _selectableWidgets[_selectedId]).Use();
+                        }
+                        break;
                 }
             }
 
