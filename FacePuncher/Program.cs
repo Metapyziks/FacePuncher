@@ -1,5 +1,6 @@
 ﻿/* Copyright (C) 2014 James King (metapyziks@gmail.com)
  * Copyright (C) 2014 Tamme Schichler (tammeschichler@googlemail.com)
+ * Copyright (C) 2014 Saša Barišić (cartman300@net.hr)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +24,8 @@ using FacePuncher.UI;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Console = FacePuncher.Graphics.Console;
 
 namespace FacePuncher
 {
@@ -53,8 +56,7 @@ namespace FacePuncher
 
         static async Task TaskMain()
         {
-            // TODO: Use a sane non-development specific path.
-            Definitions.LoadFromDirectory("../../../Data", DefinitionsNamespace.Client);
+            Definitions.LoadFromDirectory(Tools.GetPath("Data"), DefinitionsNamespace.Client);
 
             Display.Initialize(96, 32);
 
