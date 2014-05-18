@@ -44,6 +44,15 @@
     <Compile Include="Geometry\RoomVisibility.cs" />
     <Compile Include="Graphics\Display.cs" />
     <Compile Include="Graphics\Rendering.cs" />
+    <Compile Include="UI\Button.cs" />
+    <Compile Include="UI\UIManager.cs" />
+    <Compile Include="UI\IWidgetContainer.cs" />
+    <Compile Include="UI\Label.cs" />
+    <Compile Include="UI\ProgressBar.cs" />
+    <Compile Include="UI\TextBox.cs" />
+    <Compile Include="UI\UsableWidget.cs" />
+    <Compile Include="UI\Widget.cs" />
+    <Compile Include="UI\Frame.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerConnection.cs" />

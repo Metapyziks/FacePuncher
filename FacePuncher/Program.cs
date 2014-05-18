@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James King (metapyziks@gmail.com)
+﻿/* Copyright (C) 2014 James King (metapyziks@gmail.com)
  * Copyright (C) 2014 Tamme Schichler (tammeschichler@googlemail.com)
  *
  * This library is free software; you can redistribute it and/or
@@ -19,6 +19,7 @@
 
 using FacePuncher.Geometry;
 using FacePuncher.Graphics;
+using FacePuncher.UI;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,6 +35,11 @@ namespace FacePuncher
         /// Milliseconds between redraws.
         /// </summary>
         const int RenderPeriod = 125;
+
+        /// <summary>
+        /// Currently used UI Manager
+        /// </summary>
+        static UIManager UIManager;
 
         /// <summary>
         /// Entry point of the application.
@@ -85,6 +91,10 @@ namespace FacePuncher
             {
                 vis.Draw(rect, Position.Zero, attribs, server.Time);
             }
+
+            // Render user interface
+            if (UIManager != null)
+                UIManager.Draw();
 
             Display.Refresh();
         }
