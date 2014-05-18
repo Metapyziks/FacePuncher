@@ -1,4 +1,5 @@
 ﻿/* Copyright (C) 2014 Michał Ferchow (deseteral@gmail.com)
+ * Copyright (C) 2014 James King (metapyziks@gmail.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,11 +24,32 @@ using FacePuncher.Graphics;
 
 namespace FacePuncher.UI
 {
+    enum UINavigation
+    {
+        Up,
+        Down,
+        Select
+    }
+
     /// <summary>
     /// Root node for all widgets.
     /// </summary>
     class UIManager : IWidgetContainer
     {
+        public static readonly Dictionary<ConsoleKey, UINavigation> _sNavigationKeys = new Dictionary<ConsoleKey, UINavigation> {
+            { ConsoleKey.W, UINavigation.Up },
+            { ConsoleKey.UpArrow, UINavigation.Up },
+            { ConsoleKey.NumPad8, UINavigation.Up },
+            { ConsoleKey.Subtract, UINavigation.Up },
+
+            { ConsoleKey.S, UINavigation.Down },
+            { ConsoleKey.DownArrow, UINavigation.Down },
+            { ConsoleKey.NumPad2, UINavigation.Down },
+            { ConsoleKey.Add, UINavigation.Down },
+
+            { ConsoleKey.Enter, UINavigation.Select }
+        };
+
         /// <summary>
         /// Is one of widgets blocking input
         /// </summary>
@@ -65,21 +87,19 @@ namespace FacePuncher.UI
 
             if (!IsInputBlocked && Console.KeyAvailable)
             {
-                ConsoleKeyInfo info = Console.ReadKey(true);
+                var key = Console.ReadKey(true).Key;
 
-                if (info.Key == ConsoleKey.W)
-                {
-                    _selectedId--;
-                }
-                else if (info.Key == ConsoleKey.S)
-                {
-                    _selectedId++;
-                }
-                else if (info.Key == ConsoleKey.Enter)
-                {
-                    if (_selectableWidgets[_selectedId] is UsableWidget)
-                    {
-                        ((UsableWidget)_selectableWidgets[_selectedId]).Use();
+                if (_sNavigationKeys.ContainsKey(key)) {
+                    switch (_sNavigationKeys[key]) {
+                        case UINavigation.Up:
+                            _selectedId--; break;
+                        case UINavigation.Down:
+                            _selectedId++; break;
+                        case UINavigation.Select:
+                            if (_selectableWidgets[_selectedId] is UsableWidget) {
+                                ((UsableWidget) _selectableWidgets[_selectedId]).Use();
+                            }
+                            break;
                     }
                 }
             }
