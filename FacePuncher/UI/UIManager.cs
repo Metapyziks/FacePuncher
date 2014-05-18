@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using FacePuncher.Geometry;
 
-namespace FacePuncher.GUI
+namespace FacePuncher.UI
 {
     /// <summary>
     /// Root node for all widgets.
     /// </summary>
-    class GuiManager : IWidgetContainer
+    class UIManager : IWidgetContainer
     {
         private List<Widget> _selectableWidgets;
         private int _selectedId;
@@ -15,7 +15,7 @@ namespace FacePuncher.GUI
         /// <summary>
         /// Creates empty manager.
         /// </summary>
-        public GuiManager()
+        public UIManager()
         {
             Children = new Dictionary<string, Widget>();
             _selectableWidgets = new List<Widget>();

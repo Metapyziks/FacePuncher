@@ -1,7 +1,7 @@
 ﻿using System;
 using FacePuncher.Geometry;
 
-namespace FacePuncher.GUI
+namespace FacePuncher.UI
 {
     /// <summary>
     /// Widget used to display text.
@@ -30,7 +30,7 @@ namespace FacePuncher.GUI
 
         public override void Draw()
         {
-            GuiManager.DrawString(Position, Text, ForegroundColor, BackgroundColor);
+            UIManager.DrawString(Position, Text, ForegroundColor, BackgroundColor);
         }
     }
 }

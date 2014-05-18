@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using FacePuncher.Geometry;
 
-namespace FacePuncher.GUI
+namespace FacePuncher.UI
 {
     /// <summary>
     /// Base class for every widget.

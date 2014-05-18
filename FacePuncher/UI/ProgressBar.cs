@@ -1,7 +1,7 @@
 ﻿using System;
 using FacePuncher.Geometry;
 
-namespace FacePuncher.GUI
+namespace FacePuncher.UI
 {
     /// <summary>
     /// Widget that provides a horizontal progress bar.

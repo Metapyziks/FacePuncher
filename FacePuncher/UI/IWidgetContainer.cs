@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FacePuncher.GUI
+namespace FacePuncher.UI
 {
     /// <summary>
     /// Interface for widgets, that can store other widgets.

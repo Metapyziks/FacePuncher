@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using FacePuncher.Geometry;
 
-namespace FacePuncher.GUI
+namespace FacePuncher.UI
 {
     /// <summary>
     /// Frame widget.
@@ -66,7 +66,7 @@ namespace FacePuncher.GUI
             }
 
             // Render title
-            GuiManager.DrawString(new Position(Position.X + 2, Position.Y), Title);
+            UIManager.DrawString(new Position(Position.X + 2, Position.Y), Title);
         }
 
         public override List<Widget> GetSelectableWidgets()

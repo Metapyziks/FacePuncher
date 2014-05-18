@@ -1,7 +1,7 @@
 ﻿using System;
 using FacePuncher.Geometry;
 
-namespace FacePuncher.GUI
+namespace FacePuncher.UI
 {
     /// <summary>
     /// Widget used for getting user text input.
@@ -80,7 +80,7 @@ namespace FacePuncher.GUI
                 bc = ForegroundColor;
             }
 
-            GuiManager.DrawString(Position, "[" + Text + "]", fc, bc);
+            UIManager.DrawString(Position, "[" + Text + "]", fc, bc);
         }
     }
 }

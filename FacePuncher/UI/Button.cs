@@ -1,7 +1,7 @@
 ﻿using System;
 using FacePuncher.Geometry;
 
-namespace FacePuncher.GUI
+namespace FacePuncher.UI
 {
     /// <summary>
     /// Widget that performs an action when used.
@@ -41,7 +41,7 @@ namespace FacePuncher.GUI
                 bc = ForegroundColor;
             }
 
-            GuiManager.DrawString(Position, Text, fc, bc);
+            UIManager.DrawString(Position, Text, fc, bc);
         }
     }
 }
