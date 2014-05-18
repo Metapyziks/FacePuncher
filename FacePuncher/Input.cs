@@ -22,8 +22,11 @@ using System.Collections.Generic;
 using FacePuncher.Geometry;
 using FacePuncher.UI;
 
+<<<<<<< HEAD
 using Console = FacePuncher.Graphics.Console;
 
+=======
+>>>>>>> original/master
 namespace FacePuncher
 {
     static class Input

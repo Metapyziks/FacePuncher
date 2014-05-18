@@ -64,25 +64,45 @@ namespace FacePuncher {
             return val < min ? min : val > max ? max : val;
         }
 
+<<<<<<< HEAD
         public static void Write(this NetworkStream stream, Position pos) {
+=======
+        public static void Write(this NetworkStream stream, Position pos)
+        {
+>>>>>>> original/master
             stream.Write(pos.X);
             stream.Write(pos.Y);
         }
 
+<<<<<<< HEAD
         public static async Task<Position> ReadPosition(this NetworkStream stream) {
+=======
+        public static async Task<Position> ReadPosition(this NetworkStream stream)
+        {
+>>>>>>> original/master
             return new Position(
                 x: await stream.ReadInt32(),
                 y: await stream.ReadInt32());
         }
 
+<<<<<<< HEAD
         public static void Write(this NetworkStream stream, Rectangle rect) {
+=======
+        public static void Write(this NetworkStream stream, Rectangle rect)
+        {
+>>>>>>> original/master
             stream.Write(rect.Left);
             stream.Write(rect.Top);
             stream.Write(rect.Width);
             stream.Write(rect.Height);
         }
 
+<<<<<<< HEAD
         public static async Task<Rectangle> ReadRectangle(this NetworkStream stream) {
+=======
+        public static async Task<Rectangle> ReadRectangle(this NetworkStream stream)
+        {
+>>>>>>> original/master
             return new Rectangle(
                 x: await stream.ReadInt32(),
                 y: await stream.ReadInt32(),
@@ -90,20 +110,31 @@ namespace FacePuncher {
                 h: await stream.ReadInt32());
         }
 
+<<<<<<< HEAD
         public static void WriteAppearance(this Stream stream, char symbol, ConsoleColor foreColor, ConsoleColor backColor) {
+=======
+        public static void WriteAppearance(this Stream stream, char symbol, ConsoleColor foreColor, ConsoleColor backColor)
+        {
+>>>>>>> original/master
             stream.WriteByte((byte)(symbol >> 8));
             stream.WriteByte(unchecked((byte)symbol));
             stream.WriteByte((byte)((byte)foreColor | ((byte)backColor << 4)));
         }
 
         // TODO: split this method
+<<<<<<< HEAD
         public static async Task<Tuple<char, ConsoleColor, ConsoleColor>> ReadAppearance(this NetworkStream stream) {
+=======
+        public static async Task<Tuple<char, ConsoleColor, ConsoleColor>> ReadAppearance(this NetworkStream stream)
+        {
+>>>>>>> original/master
             var symbol = (char)(await stream.ReadByteAsync() << 8 | await stream.ReadByteAsync());
 
             int color = await stream.ReadByteAsync();
 
             var foreColor = (ConsoleColor)(color & 0xf);
             var backColor = (ConsoleColor)(color >> 4);
+<<<<<<< HEAD
 
             return Tuple.Create(symbol, foreColor, backColor);
         }
@@ -126,6 +157,10 @@ namespace FacePuncher {
                 return Dr;
 
             throw new Exception("Unreachable code reached"); // FIXME: Design failure, i have to redo
+=======
+
+            return Tuple.Create(symbol, foreColor, backColor);
+>>>>>>> original/master
         }
     }
 }

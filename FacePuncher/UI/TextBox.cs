@@ -18,7 +18,10 @@
 
 using System;
 using FacePuncher.Geometry;
+<<<<<<< HEAD
 using Console = FacePuncher.Graphics.Console;
+=======
+>>>>>>> original/master
 
 namespace FacePuncher.UI
 {
