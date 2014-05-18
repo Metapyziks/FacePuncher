@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James King (metapyziks@gmail.com)
+﻿/* Copyright (C) 2014 James King (metapyziks@gmail.com)
  * Copyright (C) 2014 Tamme Schichler (tammeschichler@googlemail.com)
  *
  * This library is free software; you can redistribute it and/or
@@ -19,6 +19,7 @@
 
 using FacePuncher.Geometry;
 using FacePuncher.Graphics;
+using FacePuncher.UI;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,6 +37,11 @@ namespace FacePuncher
         const int RenderPeriod = 125;
 
         /// <summary>
+        /// Currently used UI Manager
+        /// </summary>
+        static UIManager UIManager;
+
+        /// <summary>
         /// Entry point of the application.
         /// </summary>
         /// <param name="args">An array of command line arguments.</param>
@@ -44,6 +50,7 @@ namespace FacePuncher
             var context = new SynchronizationContext();
             context.Send((x) => TaskMain().Wait(), null);
         }
+
         static async Task TaskMain()
         {
             // TODO: Use a sane non-development specific path.
@@ -51,15 +58,37 @@ namespace FacePuncher
 
             Display.Initialize(96, 32);
 
-            var server = new ServerConnection("localhost", 14242);
-            server.Run();
+            ServerConnection server = null;
+
+            UIManager = new UIManager();
+
+            var select = new ServerSelectPrompt("serverselect");
+            select.Connect += (sender, e) => {
+                UIManager.IsInputBlocked = true;
+
+                server = new ServerConnection("localhost", 14242);
+                server.Run();
+
+                UIManager.RemoveChild(select);
+                UIManager.CalculateSelectableWidgets();
+            };
+
+            UIManager.AddChild(select);
+            UIManager.CalculateSelectableWidgets();
 
             while (true)
             {
-                if (Console.KeyAvailable)
+                if (server == null)
+                {
+                    Draw(null);
+                    await Task.Delay(100);
+                }
+                else if (Console.KeyAvailable)
                 {
                     var key = Console.ReadKey(intercept: true);
-                    if (Tools.MovementKeys.ContainsKey(key.Key)) {
+
+                    if (Tools.MovementKeys.ContainsKey(key.Key))
+                    {
                         server.SendIntent(new MoveIntent(Tools.MovementKeys[key.Key]));
                     }
                 }
@@ -77,14 +106,19 @@ namespace FacePuncher
         {
             Display.Clear();
 
-            // removed Level lock
-            var attribs = new DrawAttributes(_flash++);
-            var rect = Display.Rect + server.PlayerPosition - Display.Center;
+            if (server != null) {
+                // removed Level lock
+                var attribs = new DrawAttributes(_flash++);
+                var rect = Display.Rect + server.PlayerPosition - Display.Center;
 
-            foreach (var vis in server.Visibility)
-            {
-                vis.Draw(rect, Position.Zero, attribs, server.Time);
+                foreach (var vis in server.Visibility) {
+                    vis.Draw(rect, Position.Zero, attribs, server.Time);
+                }
             }
+
+            // Render user interface
+            if (UIManager != null)
+                UIManager.Draw();
 
             Display.Refresh();
         }
