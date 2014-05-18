@@ -168,5 +168,10 @@ namespace FacePuncher.UI
         {
             Children.Add(w.Name, w);
         }
+
+        public void RemoveChild(Widget w)
+        {
+            Children.Remove(w.Name);
+        }
     }
 }

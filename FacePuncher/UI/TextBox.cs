@@ -48,13 +48,13 @@ namespace FacePuncher.UI
         {
             this.Text = text;
             this._isEdited = false;
+        }
 
-            this.Use = () =>
-            {
-                _isEdited = true;
-                UIManager.IsInputBlocked = true;
-                Text = "";
-            };
+        protected override void OnUse()
+        {
+            _isEdited = true;
+            UIManager.IsInputBlocked = true;
+            Text = "";
         }
 
         public override void Draw()

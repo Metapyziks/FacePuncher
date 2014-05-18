@@ -1,4 +1,5 @@
 ﻿/* Copyright (C) 2014 Michał Ferchow (deseteral@gmail.com)
+ * Copyright (C) 2014 James King (metapyziks@gmail.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,9 +30,9 @@ namespace FacePuncher.UI
         public delegate void WidgetAction();
 
         /// <summary>
-        /// Function delegate invoked when widget is selected and used.
+        /// Event invoked when widget is selected and used.
         /// </summary>
-        public WidgetAction Use = new WidgetAction(() => { });
+        public event EventHandler Used;
 
         /// <summary>
         /// Creates an widget that can be used.
@@ -46,5 +47,14 @@ namespace FacePuncher.UI
             ConsoleColor fc = ConsoleColor.Gray, ConsoleColor bc = ConsoleColor.Black)
             : base(name, pos, width, height, true, fc, bc)
         { }
+
+        public void Use()
+        {
+            OnUse();
+
+            if (Used != null) Used(this, new EventArgs());
+        }
+
+        protected virtual void OnUse() { }
     }
 }

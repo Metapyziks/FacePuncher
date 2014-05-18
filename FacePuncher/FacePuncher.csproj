@@ -45,6 +45,7 @@
     <Compile Include="Graphics\Display.cs" />
     <Compile Include="Graphics\Rendering.cs" />
     <Compile Include="UI\Button.cs" />
+    <Compile Include="UI\ServerSelectPrompt.cs" />
     <Compile Include="UI\UIManager.cs" />
     <Compile Include="UI\IWidgetContainer.cs" />
     <Compile Include="UI\Label.cs" />
