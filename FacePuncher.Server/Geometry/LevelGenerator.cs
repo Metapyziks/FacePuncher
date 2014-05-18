@@ -34,7 +34,7 @@ namespace FacePuncher.Geometry
 
             var debris = Entity.GetClassNames("dust", true);
 
-            int size = 32;
+            int size = 4;
 
             for (int i = 0; i < size; ++i) {
                 for (int j = 0; j < size; ++j) {

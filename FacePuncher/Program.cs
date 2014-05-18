@@ -1,4 +1,5 @@
-/* Copyright (C) 2014 James King (metapyziks@gmail.com)
+﻿/* Copyright (C) 2014 James King (metapyziks@gmail.com)
+ * Copyright (C) 2014 Tamme Schichler (tammeschichler@googlemail.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,56 +17,103 @@
  * USA
  */
 
-using System.Threading;
-
 using FacePuncher.Geometry;
 using FacePuncher.Graphics;
+using FacePuncher.UI;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace FacePuncher
-{
-    /// <summary>
-    /// Class containing the client entry point.
-    /// </summary>
-    class Program
-    {
-        /// <summary>
-        /// Milliseconds between redraws.
-        /// </summary>
-        const int RenderPeriod = 125;
+using Console = FacePuncher.Graphics.Console;
 
-        /// <summary>
-        /// Entry point of the application.
-        /// </summary>
-        /// <param name="args">An array of command line arguments.</param>
-        static void Main(string[] args)
-        {
-            // TODO: Use a sane non-development specific path.
-            Definitions.LoadFromDirectory("../../../Data", DefinitionsNamespace.Client);
+namespace FacePuncher {
+	/// <summary>
+	/// Class containing the client entry point.
+	/// </summary>
+	public class Program {
+		/// <summary>
+		/// Milliseconds between redraws.
+		/// </summary>
+		const int RenderPeriod = 125;
 
-            Display.Initialize(96, 32);
+		/// <summary>
+		/// Currently used UI Manager
+		/// </summary>
+		static UIManager UIManager;
 
-            using (var server = new ServerConnection("localhost", 14242)) {
-                int flash = 0;
+		/// <summary>
+		/// Entry point of the application.
+		/// </summary>
+		/// <param name="args">An array of command line arguments.</param>
+		public static void Main(string[] args) {
+			try {
+				var context = new SynchronizationContext();
+				context.Send((x) => TaskMain().Wait(), null);
+			} catch (AggregateException Ex) {
+				throw Ex.InnerException;
+			}
 
-                var renderTimer = new Timer(state => {
-                    if (!server.LoadedLevel) return;
+		}
 
-                    Display.Clear();
+		static async Task TaskMain() {
+			Definitions.LoadFromDirectory(Tools.GetPath("Data"), DefinitionsNamespace.Client);
 
-                    lock (server.Visibility) {
-                        var attribs = new DrawAttributes(flash++);
-                        var rect = Display.Rect + server.PlayerPosition - Display.Center;
+			Display.Initialize(96, 32);
 
-                        foreach (var vis in server.Visibility) {
-                            vis.Draw(rect, Position.Zero, attribs, server.Time);
-                        }
-                    }
+			ServerConnection server = null;
 
-                    Display.Refresh();
-                }, null, 0, RenderPeriod);
+			UIManager = new UIManager();
 
-                while (server.ProcessPacket());
-            }
-        }
-    }
+			var select = new ServerSelectPrompt("serverselect");
+			select.Connect += (sender, e) => {
+				UIManager.IsInputBlocked = true;
+
+				server = new ServerConnection("localhost", 14242);
+				server.Run();
+
+				UIManager.RemoveChild(select);
+				UIManager.CalculateSelectableWidgets();
+			};
+
+			UIManager.AddChild(select);
+			UIManager.CalculateSelectableWidgets();
+
+			while (true) {
+				if (server == null) {
+					Draw(null);
+					await Task.Delay(100);
+				} else if (Console.KeyAvailable) {
+					Direction direc = Direction.None;
+					if (Input.TryReadMovement(out direc)) {
+						server.SendIntent(new MoveIntent(direc));
+					}
+				} else {
+					await Task.Delay(100);
+				}
+				await Task.Yield();
+			}
+		}
+
+		//TODO: Restore framerate
+		static int _flash = 0;
+		internal static void Draw(ServerConnection server) {
+			Display.Clear();
+
+			if (server != null) {
+				// removed Level lock
+				var attribs = new DrawAttributes(_flash++);
+				var rect = Display.Rect + server.PlayerPosition - Display.Center;
+
+				foreach (var vis in server.Visibility) {
+					vis.Draw(rect, Position.Zero, attribs, server.Time);
+				}
+			}
+
+			// Render user interface
+			if (UIManager != null)
+				UIManager.Draw();
+
+			Display.Refresh();
+		}
+	}
 }

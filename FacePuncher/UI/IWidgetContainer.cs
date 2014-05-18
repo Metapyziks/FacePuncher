@@ -1,5 +1,4 @@
-/* Copyright (C) 2014 James King (metapyziks@gmail.com)
- * Copyright (C) 2014 Tamme Schichler (tammeschichler@googlemail.com)
+﻿/* Copyright (C) 2014 Michał Ferchow (deseteral@gmail.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,23 +16,33 @@
  * USA
  */
 
-namespace FacePuncher
+using System;
+using System.Collections.Generic;
+
+namespace FacePuncher.UI
 {
     /// <summary>
-    /// Used to specify the nature of the following packet
-    /// during communication between the server and client.
+    /// Interface for widgets, that can store other widgets.
     /// </summary>
-    public enum ServerPacketType : byte
+    interface IWidgetContainer
     {
-        LevelState = 1
-    }
+        /// <summary>
+        /// Stored widgets.
+        /// 
+        /// key - name of the widget.
+        /// value - stored widget.
+        /// </summary>
+        Dictionary<string, Widget> Children { get; set; }
 
-    /// <summary>
-    /// Used to specify the nature of the following packet
-    /// during communication between the client and server.
-    /// </summary>
-    public enum ClientPacketType : byte
-    {
-        PlayerIntent = 1
+        /// <summary>
+        /// Adds widget.
+        /// </summary>
+        /// <param name="w">Widget to store.</param>
+        void AddChild(Widget w);
+
+        /// <summary>
+        /// Renders stored widgets.
+        /// </summary>
+        void DrawChildren();
     }
 }

@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -26,12 +26,21 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="sfmlnet-audio-2">
+      <HintPath>C:\Users\cartm_000\Desktop\_Libraries\SFML\lib\sfmlnet-audio-2.dll</HintPath>
+    </Reference>
+    <Reference Include="sfmlnet-graphics-2">
+      <HintPath>C:\Users\cartm_000\Desktop\_Libraries\SFML\lib\sfmlnet-graphics-2.dll</HintPath>
+    </Reference>
+    <Reference Include="sfmlnet-window-2">
+      <HintPath>C:\Users\cartm_000\Desktop\_Libraries\SFML\lib\sfmlnet-window-2.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -44,6 +53,17 @@
     <Compile Include="Geometry\RoomVisibility.cs" />
     <Compile Include="Graphics\Display.cs" />
     <Compile Include="Graphics\Rendering.cs" />
+    <Compile Include="Input.cs" />
+    <Compile Include="UI\Button.cs" />
+    <Compile Include="UI\ServerSelectPrompt.cs" />
+    <Compile Include="UI\UIManager.cs" />
+    <Compile Include="UI\IWidgetContainer.cs" />
+    <Compile Include="UI\Label.cs" />
+    <Compile Include="UI\ProgressBar.cs" />
+    <Compile Include="UI\TextBox.cs" />
+    <Compile Include="UI\UsableWidget.cs" />
+    <Compile Include="UI\Widget.cs" />
+    <Compile Include="UI\Frame.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerConnection.cs" />
@@ -56,6 +76,23 @@
       <Project>{4e2355af-f51d-4913-9eb0-845eb7759bb3}</Project>
       <Name>FacePuncher.Shared</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="csfml-audio-2.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="csfml-graphics-2.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="csfml-window-2.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libsndfile-1.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="openal32.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

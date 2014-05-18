@@ -1,4 +1,5 @@
 /* Copyright (C) 2014 James King (metapyziks@gmail.com)
+ * Copyright (C) 2014 Tamme Schichler (tammeschichler@googlemail.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -48,12 +49,14 @@ namespace FacePuncher.Entities
         /// Attempts to move the entity in the specified direction.
         /// </summary>
         /// <param name="dir">Direction to move.</param>
-        protected void Move(Direction dir)
+        /// <returns>Whether the move was successful.</returns>
+        protected bool Move(Direction dir)
         {
-            if (MovePeriod == 0 || !CanMove || !Entity.CanMove(dir)) return;
+            if (MovePeriod == 0 || !CanMove || !Entity.CanMove(dir)) return false;
 
             Entity.Move(dir);
             _nextMove = Time + MovePeriod;
+            return true;
         }
     }
 }
