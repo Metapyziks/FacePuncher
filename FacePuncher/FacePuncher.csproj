@@ -44,6 +44,7 @@
     <Compile Include="Geometry\RoomVisibility.cs" />
     <Compile Include="Graphics\Display.cs" />
     <Compile Include="Graphics\Rendering.cs" />
+    <Compile Include="Input.cs" />
     <Compile Include="UI\Button.cs" />
     <Compile Include="UI\ServerSelectPrompt.cs" />
     <Compile Include="UI\UIManager.cs" />

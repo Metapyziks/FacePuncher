@@ -85,11 +85,9 @@ namespace FacePuncher
                 }
                 else if (Console.KeyAvailable)
                 {
-                    var key = Console.ReadKey(intercept: true);
-
-                    if (Tools.MovementKeys.ContainsKey(key.Key))
-                    {
-                        server.SendIntent(new MoveIntent(Tools.MovementKeys[key.Key]));
+                    Direction direc = Direction.None;
+                    if (Input.TryReadMovement(out direc)) {
+                        server.SendIntent(new MoveIntent(direc));
                     }
                 }
                 else
