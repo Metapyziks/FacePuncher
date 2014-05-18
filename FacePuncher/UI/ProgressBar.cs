@@ -1,5 +1,6 @@
 ﻿using System;
 using FacePuncher.Geometry;
+using FacePuncher.Graphics;
 
 namespace FacePuncher.UI
 {
