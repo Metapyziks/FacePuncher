@@ -28,12 +28,6 @@ namespace FacePuncher.UI
         /// </summary>
         public bool IsSelected { get; set; }
 
-        public delegate void WidgetAction();
-        /// <summary>
-        /// Function delegate invoked when widget is selected and used.
-        /// </summary>
-        public WidgetAction Use = new WidgetAction(() => { });
-
         /// <summary>
         /// Widgets foreground color.
         /// </summary>

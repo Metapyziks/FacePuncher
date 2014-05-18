@@ -50,6 +50,7 @@
     <Compile Include="UI\Label.cs" />
     <Compile Include="UI\ProgressBar.cs" />
     <Compile Include="UI\TextBox.cs" />
+    <Compile Include="UI\UsableWidget.cs" />
     <Compile Include="UI\Widget.cs" />
     <Compile Include="UI\Frame.cs" />
     <Compile Include="Rendering.cs" />

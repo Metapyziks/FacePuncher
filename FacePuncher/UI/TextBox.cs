@@ -6,7 +6,7 @@ namespace FacePuncher.UI
     /// <summary>
     /// Widget used for getting user text input.
     /// </summary>
-    class TextBox : Widget
+    class TextBox : UsableWidget
     {
         /// <summary>
         /// Current value.
@@ -26,7 +26,7 @@ namespace FacePuncher.UI
         /// <param name="bc">Background color (default black).</param>
         public TextBox(string name, Position pos, int length, string text = "",
             ConsoleColor fc = ConsoleColor.Gray, ConsoleColor bc = ConsoleColor.Black)
-            : base(name, pos, length, 1, true, fc, bc)
+            : base(name, pos, length, 1, fc, bc)
         {
             this.Text = text;
             this._isEdited = false;

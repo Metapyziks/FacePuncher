@@ -52,7 +52,10 @@ namespace FacePuncher.UI
                 }
                 else if (info.Key == ConsoleKey.Enter)
                 {
-                    _selectableWidgets[_selectedId].Use();
+                    if (_selectableWidgets[_selectedId] is UsableWidget)
+                    {
+                        ((UsableWidget)_selectableWidgets[_selectedId]).Use();
+                    }
                 }
             }
 

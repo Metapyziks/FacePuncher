@@ -6,7 +6,7 @@ namespace FacePuncher.UI
     /// <summary>
     /// Widget that performs an action when used.
     /// </summary>
-    class Button : Widget
+    class Button : UsableWidget
     {
         /// <summary>
         /// The text shown on the button.
@@ -23,7 +23,7 @@ namespace FacePuncher.UI
         /// <param name="bc">Background color (default black).</param>
         public Button(string name, Position pos, string text,
             ConsoleColor fc = ConsoleColor.Gray, ConsoleColor bc = ConsoleColor.Black)
-            : base(name, pos, text.Length, 1, true, fc, bc)
+            : base(name, pos, text.Length, 1, fc, bc)
         {
             this.Text = text;
         }
