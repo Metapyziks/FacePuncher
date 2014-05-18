@@ -64,8 +64,7 @@ namespace FacePuncher.Geometry
                 int flats = i & 0xf;
 
                 int corns = flats & (flats >> 1 | flats << 3) & diags;
-                corns &= corns >> 1 | corns << 3;
-                flats ^= (corns << 1 | corns >> 3) & 0xf;
+                flats ^= corns & (corns << 1 | corns >> 3);
 
                 _sWallTiles[i] = chars[flats];
             }
