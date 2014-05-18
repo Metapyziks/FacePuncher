@@ -283,7 +283,8 @@ namespace FacePuncher.Geometry
                 case TileState.Void:
                     _appearance.Symbol = ' ';
                     _appearance.ForeColor = _appearance.BackColor = ConsoleColor.Black;
-                    _appearance.Entities = new EntityAppearance[0];
+                    _appearance.Entities = _appearance.Entities.Length == 0
+                        ? _appearance.Entities : new EntityAppearance[0];
                     return;
                 case TileState.Wall:
                     int adj = 
