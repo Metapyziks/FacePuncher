@@ -1,11 +1,17 @@
-﻿using FacePuncher.Geometry;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using FacePuncher.Geometry;
 
 namespace FacePuncher.GUI
 {
+    /// <summary>
+    /// Frame widget.
+    /// </summary>
     class Frame : Widget, IWidgetContainer
     {
+        /// <summary>
+        /// Frame title.
+        /// </summary>
         public string Title { get; set; }
 
         public Dictionary<string, Widget> Children
@@ -17,6 +23,16 @@ namespace FacePuncher.GUI
             (char)200, (char)188  // down-left, down-right
         };
 
+        /// <summary>
+        /// Creates empty frame.
+        /// </summary>
+        /// <param name="name">Name of the widget.</param>
+        /// <param name="pos">Position of the frame.</param>
+        /// <param name="width">Size of the frame.</param>
+        /// <param name="height">Size of the frame.</param>
+        /// <param name="title">Frame title.</param>
+        /// <param name="fc">Foreground color (default gray).</param>
+        /// <param name="bc">Background color (default black).</param>
         public Frame(string name, Position pos, int width, int height, string title = "",
             ConsoleColor fc = ConsoleColor.Gray, ConsoleColor bc = ConsoleColor.Black)
             : base(name, pos, width, height, false, fc, bc)
@@ -49,6 +65,7 @@ namespace FacePuncher.GUI
                 Display.SetCell(rectangle.Right, y + rectangle.Top + 1, _frameChars[1], ForegroundColor, BackgroundColor);
             }
 
+            // Render title
             GuiManager.DrawString(new Position(Position.X + 2, Position.Y), Title);
         }
 

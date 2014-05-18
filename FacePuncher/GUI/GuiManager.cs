@@ -4,11 +4,17 @@ using FacePuncher.Geometry;
 
 namespace FacePuncher.GUI
 {
+    /// <summary>
+    /// Root node for all widgets.
+    /// </summary>
     class GuiManager : IWidgetContainer
     {
         private List<Widget> _selectableWidgets;
         private int _selectedId;
 
+        /// <summary>
+        /// Creates empty manager.
+        /// </summary>
         public GuiManager()
         {
             Children = new Dictionary<string, Widget>();
@@ -19,18 +25,17 @@ namespace FacePuncher.GUI
         public Dictionary<string, Widget> Children
         { get; set; }
 
-        public void AddChild(Widget w)
-        {
-            Children.Add(w.Name, w);
-        }
-
+        /// <summary>
+        /// Function used to render widgets and check for UI input.
+        /// </summary>
         public void Draw()
         {
             if (_selectedId > _selectableWidgets.Count - 1)
                 _selectedId = _selectableWidgets.Count - 1;
             else if (_selectedId < 0)
                 _selectedId = 0;
-            
+
+            // Deselect currently selected item
             _selectableWidgets[_selectedId].IsSelected = false;
 
             if (Console.KeyAvailable)
@@ -61,7 +66,10 @@ namespace FacePuncher.GUI
             DrawChildren();
         }
 
-        public void DrawChildren()
+        /// <summary>
+        /// Used to render widgets stored in manager.
+        /// </summary>
+        private void DrawChildren()
         {
             foreach (var w in Children)
             {
@@ -69,6 +77,13 @@ namespace FacePuncher.GUI
             }
         }
 
+        /// <summary>
+        /// Renders text
+        /// </summary>
+        /// <param name="pos">Position of first character.</param>
+        /// <param name="text">Text to render.</param>
+        /// <param name="fc">Foreground color (default gray).</param>
+        /// <param name="bc">Background color (default black).</param>
         public static void DrawString(Position pos, string text,
             ConsoleColor fc = ConsoleColor.Gray, ConsoleColor bc = ConsoleColor.Black)
         {
@@ -78,6 +93,11 @@ namespace FacePuncher.GUI
             }
         }
 
+        /// <summary>
+        /// Calculates information about widgets that can be selected.
+        /// Call only once, after adding or removing widgets.
+        /// </summary>
+        /// <returns>Number of widgets that can be selected.</returns>
         public int CalculateSelectableWidgets()
         {
             _selectableWidgets = new List<Widget>();
@@ -91,6 +111,11 @@ namespace FacePuncher.GUI
             _selectableWidgets[_selectedId].IsSelected = true;
 
             return _selectableWidgets.Count;
+        }
+
+        public void AddChild(Widget w)
+        {
+            Children.Add(w.Name, w);
         }
     }
 }

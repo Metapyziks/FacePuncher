@@ -3,10 +3,24 @@ using FacePuncher.Geometry;
 
 namespace FacePuncher.GUI
 {
+    /// <summary>
+    /// Widget that performs an action when used.
+    /// </summary>
     class Button : Widget
     {
+        /// <summary>
+        /// The text shown on the button.
+        /// </summary>
         public string Text { get; set; }
 
+        /// <summary>
+        /// Creates new button.
+        /// </summary>
+        /// <param name="name">Name of the widget.</param>
+        /// <param name="pos">Position of the button.</param>
+        /// <param name="text">The text shown on the button.</param>
+        /// <param name="fc">Foreground color (default gray).</param>
+        /// <param name="bc">Background color (default black).</param>
         public Button(string name, Position pos, string text,
             ConsoleColor fc = ConsoleColor.Gray, ConsoleColor bc = ConsoleColor.Black)
             : base(name, pos, text.Length, 1, true, fc, bc)
