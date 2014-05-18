@@ -35,9 +35,21 @@ namespace FacePuncher
         public static readonly Random Random = new Random();
 
         public static readonly Direction[] Directions = new[] {
-            Direction.NorthWest, Direction.North, Direction.NorthEast,
-            Direction.West, Direction.East,
-            Direction.SouthWest, Direction.South, Direction.SouthEast
+            Direction.East,
+            Direction.South,
+            Direction.West,
+            Direction.North,
+            Direction.SouthEast,
+            Direction.SouthWest,
+            Direction.NorthWest,
+            Direction.NorthEast
+        };
+
+        public static readonly Direction[] CardinalDirections = new[] {
+            Direction.East,
+            Direction.South,
+            Direction.West,
+            Direction.North
         };
 
         public static Position GetOffset(this Direction dir)

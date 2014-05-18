@@ -40,11 +40,36 @@ namespace FacePuncher.Geometry
     /// </summary>
     public class Tile : IEnumerable<Entity>
     {
+        static readonly char[] _sWallTiles;
+
         /// <summary>
         /// Default void tile to be used when requesting a tile outside
         /// of any rooms in a level.
         /// </summary>
         public static readonly Tile Default = new Tile(null, 0, 0);
+
+        static Tile()
+        {
+            _sWallTiles = new char[256];
+
+            char[] chars = new[] {
+                '\u006f', '\u006f', '\u006f', '\u00c9',
+                '\u006f', '\u00cd', '\u00bb', '\u00cb',
+                '\u006f', '\u00c8', '\u00ba', '\u00cc',
+                '\u00bc', '\u00ca', '\u00b9', '\u00ce'
+            };
+
+            for (int i = 0; i < 256; ++i) {
+                int diags = i >> 4;
+                int flats = i & 0xf;
+
+                int corns = flats & (flats >> 1 | flats << 3) & diags;
+                corns &= corns >> 1 | corns << 3;
+                flats ^= (corns << 1 | corns >> 3) & 0xf;
+
+                _sWallTiles[i] = chars[flats];
+            }
+        }
 
         private TileState _state;
         private List<Entity> _entities;
@@ -247,13 +272,6 @@ namespace FacePuncher.Geometry
                 .All(x => x == Position || Room[x].State == TileState.Floor);
         }
 
-        static readonly char[] _sWallTiles = new[] {
-            '\u006f', '\u006f', '\u006f', '\u00c9',
-            '\u006f', '\u00cd', '\u00bb', '\u00cb',
-            '\u006f', '\u00c8', '\u00ba', '\u00cc',
-            '\u00bc', '\u00ca', '\u00b9', '\u00ce'
-        };
-
         /// <summary>
         /// Updates the appearance of this tile.
         /// </summary>
@@ -270,10 +288,14 @@ namespace FacePuncher.Geometry
                     return;
                 case TileState.Wall:
                     int adj = 
-                        (GetNeighbour(Direction.East).State == TileState.Wall ? 1 : 0) |
-                        (GetNeighbour(Direction.South).State == TileState.Wall ? 2 : 0) |
-                        (GetNeighbour(Direction.West).State == TileState.Wall ? 4 : 0) |
-                        (GetNeighbour(Direction.North).State == TileState.Wall ? 8 : 0);
+                        (GetNeighbour(Direction.East).State != TileState.Floor ? 1 : 0) |
+                        (GetNeighbour(Direction.South).State != TileState.Floor ? 2 : 0) |
+                        (GetNeighbour(Direction.West).State != TileState.Floor ? 4 : 0) |
+                        (GetNeighbour(Direction.North).State != TileState.Floor ? 8 : 0) |
+                        (GetNeighbour(Direction.SouthEast).State != TileState.Floor ? 16 : 0) |
+                        (GetNeighbour(Direction.SouthWest).State != TileState.Floor ? 32 : 0) |
+                        (GetNeighbour(Direction.NorthWest).State != TileState.Floor ? 64 : 0) |
+                        (GetNeighbour(Direction.NorthEast).State != TileState.Floor ? 128 : 0);
 
                     _appearance.Symbol = _sWallTiles[adj];
                     _appearance.ForeColor = ConsoleColor.Gray;
