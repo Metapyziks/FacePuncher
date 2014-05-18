@@ -46,13 +46,13 @@ namespace FacePuncher.UI
             : base(name, Display.Center - new Position(Size.X / 2, Size.Y / 2),
                 Size.X, Size.Y, "Connect to Server")
         {
-            var lblHostName = new Label("lbl_hostname", Position + new Position(2, 2), "Host name");
+            var lblHostName = new Label("lbl_hostname", Position + new Position(2, 2), "Host name", ConsoleColor.DarkGray);
             var txtHostName = new TextBox("txt_hostname", Position + new Position(3, 4), 28, "localhost");
 
-            var lblPort = new Label("lbl_port", Position + new Position(2, 6), "Port number");
+            var lblPort = new Label("lbl_port", Position + new Position(2, 6), "Port number", ConsoleColor.DarkGray);
             var txtPort = new TextBox("txt_port", Position + new Position(3, 8), 5, "14242");
 
-            var btnConnect = new Button("btn_connect", Position + new Position(2, 10), "Connect");
+            var btnConnect = new Button("btn_connect", Position + new Position(3, 10), "Connect");
 
             btnConnect.Used += (sender, e) => {
                 int port;
