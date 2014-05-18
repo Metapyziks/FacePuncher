@@ -20,6 +20,9 @@
 #define USE_CONSOLE
 #undef USE_CONSOLE // Comment to enable print to console
 
+#define USE_CONSOLE_INPUT
+#undef USE_CONSOLE_INPUT // Comment to enable console input
+
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -57,7 +60,11 @@ namespace FacePuncher.Graphics
 		{
 			get
 			{
+#if USE_CONSOLE_INPUT
+				return System.Console.KeyAvailable;
+#else
 				return KeyDirty;
+#endif
 			}
 		}
 
@@ -153,10 +160,14 @@ namespace FacePuncher.Graphics
 
 		public static ConsoleKeyInfo ReadKey(bool intercept = false)
 		{
+#if USE_CONSOLE_INPUT
+			return System.Console.ReadKey(intercept);
+#else
 			while (!KeyDirty)
 				;
 			KeyDirty = false;
 			return new ConsoleKeyInfo(KeyChar, KeyConsole, Shift, Alt, Ctrl);
+#endif
 		}
 
 		public static void Write(object Format, params object[] Args)
