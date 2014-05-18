@@ -31,39 +31,11 @@ namespace FacePuncher.UI
             this.Text = text;
             this._isEdited = false;
 
-            // Editing logic
             this.Use = () =>
             {
                 _isEdited = true;
+                UIManager.IsInputBlocked = true;
                 Text = "";
-
-                while (_isEdited)
-                {
-                    if (Console.KeyAvailable)
-                    {
-                        ConsoleKeyInfo info = Console.ReadKey(true);
-
-                        // ASCII code of pressed key
-                        int asciiCode = (int)info.KeyChar;
-
-                        // If pressed key is enter - stop editing
-                        if (info.Key == ConsoleKey.Enter)
-                        {
-                            _isEdited = false;
-                        }
-                        // If pressed key is backspace - remove last char
-                        else if (info.Key == ConsoleKey.Backspace)
-                        {
-                            Text = Text.Remove(Text.Length - 1);
-                        }
-                        // If pressed key is a printable char
-                        // add this char to text
-                        else if (asciiCode >= 32 && asciiCode <= 126)
-                        {
-                            Text += info.KeyChar.ToString();
-                        }
-                    }
-                }
             };
         }
 
@@ -78,6 +50,32 @@ namespace FacePuncher.UI
             {
                 fc = BackgroundColor;
                 bc = ForegroundColor;
+            }
+
+            if (_isEdited && Console.KeyAvailable)
+            {
+                ConsoleKeyInfo info = Console.ReadKey(true);
+
+                // ASCII code of pressed key
+                int asciiCode = (int)info.KeyChar;
+
+                // If pressed key is enter - stop editing
+                if (info.Key == ConsoleKey.Enter)
+                {
+                    _isEdited = false;
+                    UIManager.IsInputBlocked = false;
+                }
+                // If pressed key is backspace - remove last char
+                else if (info.Key == ConsoleKey.Backspace)
+                {
+                    Text = Text.Remove(Text.Length - 1);
+                }
+                // If pressed key is a printable char
+                // add this char to text
+                else if (asciiCode >= 32 && asciiCode <= 126)
+                {
+                    Text += info.KeyChar.ToString();
+                }
             }
 
             UIManager.DrawString(Position, "[" + Text + "]", fc, bc);

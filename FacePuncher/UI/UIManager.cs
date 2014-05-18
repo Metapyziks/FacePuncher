@@ -10,6 +10,11 @@ namespace FacePuncher.UI
     /// </summary>
     class UIManager : IWidgetContainer
     {
+        /// <summary>
+        /// Is one of widgets blocking input
+        /// </summary>
+        public static bool IsInputBlocked { get; set; }
+
         private List<Widget> _selectableWidgets;
         private int _selectedId;
 
@@ -40,7 +45,7 @@ namespace FacePuncher.UI
             if (_selectableWidgets.Count > 0)
                 _selectableWidgets[_selectedId].IsSelected = false;
 
-            if (Console.KeyAvailable)
+            if (!IsInputBlocked && Console.KeyAvailable)
             {
                 ConsoleKeyInfo info = Console.ReadKey(true);
 
