@@ -9,9 +9,9 @@ namespace FacePuncher.GUI
 
         public bool _isEdited;
 
-        public TextBox(string name, Position pos, string text = "",
+        public TextBox(string name, Position pos, int length, string text = "",
             ConsoleColor fc = ConsoleColor.Gray, ConsoleColor bc = ConsoleColor.Black)
-            : base(name, pos, 0, 0, true, fc, bc)
+            : base(name, pos, length, 1, true, fc, bc)
         {
             this.Text = text;
             this._isEdited = false;
