@@ -54,7 +54,7 @@ namespace FacePuncher
         static async Task TaskMain()
         {
             // TODO: Use a sane non-development specific path.
-            Definitions.LoadFromDirectory("../../../Data", DefinitionsNamespace.Client);
+            Definitions.LoadFromDirectory("../../Data", DefinitionsNamespace.Client);
 
             Display.Initialize(96, 32);
 

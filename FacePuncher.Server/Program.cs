@@ -78,7 +78,7 @@ namespace FacePuncher.Server
         private static async Task AsyncMain()
         {
             // TODO: Use a sane non-development specific path.
-            Definitions.LoadFromDirectory("../../../Data", DefinitionsNamespace.Server);
+            Definitions.LoadFromDirectory("../../Data", DefinitionsNamespace.Server);
 
             // TODO: Implement saving / loading levels here.
             var generator = LevelGenerator.Get("test");
