@@ -17,13 +17,16 @@
  * USA
  */
 
-using FacePuncher.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using System.IO;
+using System.Reflection;
+
+using FacePuncher.Geometry;
 
 namespace FacePuncher.Server
 {
@@ -77,8 +80,9 @@ namespace FacePuncher.Server
         }
         private static async Task AsyncMain()
         {
-            // TODO: Use a sane non-development specific path.
-            Definitions.LoadFromDirectory("../../Data", DefinitionsNamespace.Server);
+            Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+
+            Definitions.LoadFromDirectory("Data", DefinitionsNamespace.Server);
 
             // TODO: Implement saving / loading levels here.
             var generator = LevelGenerator.Get("test");

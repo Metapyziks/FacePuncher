@@ -17,12 +17,15 @@
  * USA
  */
 
-using FacePuncher.Geometry;
-using FacePuncher.Graphics;
-using FacePuncher.UI;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.IO;
+using System.Reflection;
+
+using FacePuncher.Geometry;
+using FacePuncher.Graphics;
+using FacePuncher.UI;
 
 namespace FacePuncher
 {
@@ -53,8 +56,9 @@ namespace FacePuncher
 
         static async Task TaskMain()
         {
-            // TODO: Use a sane non-development specific path.
-            Definitions.LoadFromDirectory("../../Data", DefinitionsNamespace.Client);
+            Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+
+            Definitions.LoadFromDirectory("Data", DefinitionsNamespace.Client);
 
             Display.Initialize(96, 32);
 
