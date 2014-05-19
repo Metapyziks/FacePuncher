@@ -92,6 +92,27 @@ namespace FacePuncher.Graphics
             }
         }
 
+        public override bool Equals(object obj)
+        {
+            return obj is TileAppearance && Equals((TileAppearance) obj);
+        }
+
+        public bool Equals(TileAppearance that)
+        {
+            return this.Position == that.Position
+                && this.Symbol == that.Symbol
+                && this.ForeColor == that.ForeColor
+                && this.BackColor == that.BackColor
+                && this.EntityCount == that.EntityCount
+                && this.Entities.Zip(that, (a, b) => a.Equals(b)).All(x => x);
+        }
+
+        public override int GetHashCode()
+        {
+            return Position.GetHashCode()
+                 ^ EntityCount << 16;
+        }
+
         public IEnumerator<EntityAppearance> GetEnumerator()
         {
             return Entities.AsEnumerable<EntityAppearance>().GetEnumerator();

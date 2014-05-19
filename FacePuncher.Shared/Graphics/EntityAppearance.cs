@@ -22,6 +22,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+
 using FacePuncher.Network;
 
 namespace FacePuncher.Graphics
@@ -52,6 +53,16 @@ namespace FacePuncher.Graphics
                 Duration = duration;
             }
 
+            public static bool operator==(Frame a, Frame b)
+            {
+                return a.Equals(b);
+            }
+
+            public static bool operator!=(Frame a, Frame b)
+            {
+                return !a.Equals(b);
+            }
+
             public static async Task<Frame> Read(NetworkStream stream)
             {
                 var appearance = await stream.ReadAppearance();
@@ -62,6 +73,24 @@ namespace FacePuncher.Graphics
                     BackColor = appearance.Item3,
                     Duration = await stream.ReadByteAsync()
                 };
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is Frame && Equals((Frame) obj);
+            }
+
+            public bool Equals(Frame that)
+            {
+                return this.Symbol == that.Symbol
+                    && this.ForeColor == that.ForeColor
+                    && this.BackColor == that.BackColor
+                    && this.Duration == that.Duration;
+            }
+
+            public override int GetHashCode()
+            {
+                return Symbol << 16 ^ (int) ForeColor << 12 ^ (int) BackColor << 8 ^ Duration;
             }
 
             public void WriteToStream(Stream stream)
@@ -146,6 +175,22 @@ namespace FacePuncher.Graphics
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return _frames.GetEnumerator();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is EntityAppearance && Equals((EntityAppearance) obj);
+        }
+
+        public bool Equals(EntityAppearance that)
+        {
+            return this.FrameCount == that.FrameCount
+                && this._frames.Zip(that._frames, (a, b) => a.Equals(b)).All(x => x);
+        }
+
+        public override int GetHashCode()
+        {
+            return _frames.Aggregate(0, (s, x) => s ^ x.GetHashCode());
         }
     }
 }

@@ -107,7 +107,7 @@ namespace FacePuncher.Server
                 Console.WriteLine(_level.Time);
                 Console.CursorTop -= 1;
 
-                //await Task.Yield();
+                await Task.Yield();
             }
         }
     }
