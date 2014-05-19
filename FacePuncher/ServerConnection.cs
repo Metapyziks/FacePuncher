@@ -29,8 +29,6 @@ using System.Threading.Tasks;
 using FacePuncher.Network;
 using FacePuncher.Graphics;
 
-using Console = FacePuncher.Graphics.Console;
-
 namespace FacePuncher
 {
     /// <summary>

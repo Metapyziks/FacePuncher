@@ -20,261 +20,190 @@
 #define USE_CONSOLE
 #undef USE_CONSOLE // Comment to enable print to console
 
-#define USE_CONSOLE_INPUT
-#undef USE_CONSOLE_INPUT // Comment to enable console input
 
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 using FacePuncher.Geometry;
+using SdlDotNet;
+using SdlDotNet.Core;
+using SdlDotNet.Graphics;
+using SdlDotNet.Input;
+using SdlDotNet.Windows;
 
-//using Microsoft.Win32.SafeHandles;
-using SFML;
-using SFML.Audio;
-using SFML.Graphics;
-using SFML.Window;
+using Rectangle = FacePuncher.Geometry.Rectangle;
+using DRect = System.Drawing.Rectangle;
 
 namespace FacePuncher.Graphics
 {
 	struct ConsoleClr
 	{
-		public ConsoleColor Foreground, Background;
+		public Color Foreground, Background;
+
+		public ConsoleClr(Color FG, Color BG)
+		{
+			this.Foreground = FG;
+			this.Background = BG;
+		}
+
 		public ConsoleClr(ConsoleColor FG, ConsoleColor BG)
 		{
-			Foreground = FG;
-			Background = BG;
+			Foreground = ToColor(FG);
+			Background = ToColor(BG);
+		}
+
+		public static Color ToColor(ConsoleColor Clr)
+		{
+			switch (Clr) {
+				case ConsoleColor.Black:
+					return Color.Black;
+				case ConsoleColor.Blue:
+					return Color.Blue;
+				case ConsoleColor.Cyan:
+					return Color.Cyan;
+				case ConsoleColor.DarkBlue:
+					return Color.DarkBlue;
+				case ConsoleColor.DarkCyan:
+					return Color.DarkCyan;
+				case ConsoleColor.DarkGray:
+					return Color.DarkGray;
+				case ConsoleColor.DarkGreen:
+					return Color.DarkGreen;
+				case ConsoleColor.DarkMagenta:
+					return Color.DarkMagenta;
+				case ConsoleColor.DarkRed:
+					return Color.DarkRed;
+				case ConsoleColor.DarkYellow:
+					return Color.Orange;
+				case ConsoleColor.Gray:
+					return Color.Gray;
+				case ConsoleColor.Green:
+					return Color.Green;
+				case ConsoleColor.Magenta:
+					return Color.Magenta;
+				case ConsoleColor.Red:
+					return Color.Red;
+				case ConsoleColor.White:
+					return Color.White;
+				case ConsoleColor.Yellow:
+					return Color.Yellow;
+				default:
+					return Color.LightPink;
+			}
+			throw new Exception("Unreachable code reached in ConsoleClr"); // Shouldn't happen
 		}
 	}
 
-	static class Console
+	struct ConsoleInput
 	{
-		private static RenderWindow RWind = null;
-		private static bool Ctrl, Shift, Alt;
-		private static bool KeyDirty;
-		private static char KeyChar;
-		private static ConsoleKey KeyConsole;
+		public bool Ctrl, Alt, Shift;
+		public char Character;
+		public Key Key;
 
-		public static bool KeyAvailable
+		public ConsoleInput(char Character, Key Key, bool Ctrl = false, bool Alt = false, bool Shift = false)
 		{
-			get
-			{
-#if USE_CONSOLE_INPUT
-				return System.Console.KeyAvailable;
-#else
-				return KeyDirty;
-#endif
-			}
-		}
-
-		public static int CursorLeft
-		{
-			get
-			{
-				return System.Console.CursorLeft;
-			}
-			set
-			{
-				System.Console.CursorLeft = value;
-			}
-		}
-
-		public static int CursorTop
-		{
-			get
-			{
-				return System.Console.CursorTop;
-			}
-			set
-			{
-				System.Console.CursorTop = value;
-			}
-		}
-
-		public static void Initialize(RenderWindow RWind)
-		{
-			Console.RWind = RWind;
-
-			RWind.KeyPressed += (S, E) => OnKey(S, E, true);
-			RWind.KeyReleased += (S, E) => OnKey(S, E, false);
-			RWind.SetKeyRepeatEnabled(true);
-
-			RWind.TextEntered += (S, E) => {
-				KeyChar = E.Unicode[0];
-			};
-		}
-
-		private static void OnKey(object Sender, KeyEventArgs E, bool Pressed)
-		{
-			if (Pressed) {
-				KeyDirty = true;
-			}
-
-			KeyConsole = ConsoleKey.NoName;
-
-			// TODO Add keys as required
-			switch (E.Code) {
-				// Control keys
-				case Keyboard.Key.LControl:
-				case Keyboard.Key.RControl:
-					Ctrl = Pressed;
-					break;
-				case Keyboard.Key.LShift:
-				case Keyboard.Key.RShift:
-					Shift = Pressed;
-					break;
-				case Keyboard.Key.LAlt:
-				case Keyboard.Key.RAlt:
-					Alt = Pressed;
-					break;
-				// Arrow keys
-				case Keyboard.Key.Up:
-				case Keyboard.Key.Down:
-				case Keyboard.Key.Left:
-				case Keyboard.Key.Right:
-					KeyConsole = (ConsoleKey)Enum.Parse(typeof(ConsoleKey), E.Code.ToString() + "Arrow");
-					break;
-				// Keys
-				case Keyboard.Key.Space:
-					KeyConsole = ConsoleKey.Spacebar;
-					break;
-				case Keyboard.Key.Return:
-					KeyConsole = ConsoleKey.Enter;
-					break;
-				case Keyboard.Key.Back:
-					KeyConsole = ConsoleKey.Backspace;
-					break;
-
-				default: {
-						int Code = (int)E.Code;
-						if (Code > (int)Keyboard.Key.A && Code < (int)Keyboard.Key.Z)
-							KeyConsole = (ConsoleKey)Enum.Parse(typeof(ConsoleKey), E.Code.ToString());
-						break;
-					}
-			}
-		}
-
-		public static ConsoleKeyInfo ReadKey(bool intercept = false)
-		{
-#if USE_CONSOLE_INPUT
-			return System.Console.ReadKey(intercept);
-#else
-			while (!KeyDirty)
-				;
-			KeyDirty = false;
-			return new ConsoleKeyInfo(KeyChar, KeyConsole, Shift, Alt, Ctrl);
-#endif
-		}
-
-		public static void Write(object Format, params object[] Args)
-		{
-			System.Console.Write(Format.ToString(), Args);
+			this.Ctrl = Ctrl;
+			this.Alt = Alt;
+			this.Shift = Shift;
+			this.Character = Character;
+			this.Key = Key;
 		}
 	}
 
 	class VideoMem
 	{
 		public int Len, W, H;
-		public Sprite FontSprite;
-		public RectangleShape Background;
 		public ConsoleClr CurrentColor;
+		public bool Dirty;
 
-		public int CharW, CharH, CharCountX;
+		public int CharW, CharH, CharCountX, CharCountY;
 
 		public char[] Text;
 		public ConsoleClr[] Colors;
 
-		Shader TextShader;
+		//Surface FontSurface;
+		Surface ScreenSurf, ScreenSurfBackground, FontSurfaceTinted, FontSurfaceMask;
 
-		Image Data, Palette;
-		Texture DataTex, PaletteTex;
-		VertexArray Display;
-
-		public VideoMem(int W, int H, Sprite FontSprite, int CharCountX = 16, int CharCountY = 16)
+		public VideoMem(int W, int H, Surface FontSurface, Surface FontSurfaceMask, int CharCountX = 16, int CharCountY = 16)
 		{
+		
 			this.Len = W * H;
 			this.W = W;
 			this.H = H;
-			this.FontSprite = FontSprite;
-			this.CharW = ((int)FontSprite.Texture.Size.X) / CharCountX;
-			this.CharH = ((int)FontSprite.Texture.Size.Y) / CharCountY;
+			this.CharW = FontSurface.Size.Width / CharCountX;
+			this.CharH = FontSurface.Size.Height / CharCountY;
 			this.CharCountX = CharCountX;
-			Background = new RectangleShape(new Vector2f(CharW, CharH));
+			this.CharCountY = CharCountY;
+
 			Text = new char[Len];
 			Colors = new ConsoleClr[Len];
 
-			// HACK for color mask (
-			Image Img = FontSprite.Texture.CopyToImage();
-			Color MaskClr = Img.GetPixel(0, 0);
-			for (uint x = 0; x < Img.Size.X; x++)
-				for (uint y = 0; y < Img.Size.Y; y++) {
-					Color CurClr = Img.GetPixel(x, y);
-					if (CurClr.R == MaskClr.R && CurClr.G == MaskClr.G && CurClr.B == MaskClr.B && CurClr.A == MaskClr.A)
-						Img.SetPixel(x, y, Color.Black);
-				}
-			FontSprite.Texture = new Texture(Img);
+			/*this.FontSurface = FontSurface;
+			FontSurface.TransparentColor = FontSurface.GetPixel(new Point(0, 0));
+			FontSurface.Transparent = true;*/
 
-			// Using rohans' texter shaders.
-			// TODO Replace with own
-			// TODO Fix color masks with non-while colors in font
-			string Vert = File.ReadAllText(Tools.GetPath("Data", "text.vert"));
-			string Frag = File.ReadAllText(Tools.GetPath("Data", "text.frag"));
-			Frag = Frag.Replace("__WIDTH__", CharW.ToString()).Replace("__HEIGHT__", CharH.ToString());
-			TextShader = Shader.FromString(Vert, Frag);
+			this.FontSurfaceMask = FontSurfaceMask;
+			FontSurfaceMask.SourceColorKey = Color.White;
 
-			Data = new Image((uint)(W), (uint)(H));
-			DataTex = new Texture(Data);
+			FontSurfaceTinted = new Surface(FontSurface);
+			FontSurfaceTinted.SourceColorKey = Color.Black;
 
-			Palette = new Image(Tools.GetPath("Data", "palette.png"));
-			PaletteTex = new Texture(Palette);
+			Tint(new ConsoleClr(ConsoleColor.White, ConsoleColor.Black));
 
-			Display = new VertexArray(PrimitiveType.Quads, 4);
-			Display[0] = new Vertex(new Vector2f(0, 0), new Vector2f(0, 0));
-			Display[1] = new Vertex(new Vector2f(W * CharW, 0), new Vector2f(1, 0));
-			Display[2] = new Vertex(new Vector2f(W * CharW, H * CharH), new Vector2f(1, 1));
-			Display[3] = new Vertex(new Vector2f(0, H * CharH), new Vector2f(0, 1));
-
-			TextShader.SetParameter("data", DataTex);
-			TextShader.SetParameter("dataSize", DataTex.Size.X, DataTex.Size.Y);
-			TextShader.SetParameter("font", FontSprite.Texture);
-			TextShader.SetParameter("palette", PaletteTex);
-
-			CurrentColor = new ConsoleClr(ConsoleColor.Gray, ConsoleColor.Black);
+			ScreenSurf = new Surface(new Size(W * CharW, H * CharH));
+			ScreenSurf.SourceColorKey = Color.Black;
+			ScreenSurfBackground = new Surface(new Size(W * CharW, H * CharH));
+			LockRect = new DRect(0, 0, FontSurface.Bitmap.Size.Width, FontSurface.Bitmap.Size.Height);
 		}
 
-		public void Set(int X, int Y, char Chr)
+		private void Tint(ConsoleClr Clr)
 		{
-			Data.SetPixel((uint)X, (uint)Y, new Color((byte)Chr, (byte)CurrentColor.Foreground, (byte)CurrentColor.Background));
+			if (CurrentColor.Foreground == Clr.Foreground)
+				return;
+			CurrentColor = Clr;
+
+			FontSurfaceTinted.Fill(Clr.Foreground);
+			FontSurfaceTinted.Blit(FontSurfaceMask);
+
 		}
 
-		public char GetChar(int X, int Y)
+		private DRect LockRect;
+
+		public void Set(int X, int Y, char Chr, ConsoleClr Clr)
 		{
-			return (char)Data.GetPixel((uint)X, (uint)Y).R;
+			DRect Dest = new DRect(X * CharW, Y * CharH, CharW, CharH);
+			DRect Src = new DRect(((byte)Chr % CharCountX) * CharW, ((byte)Chr / CharCountY) * CharH, CharW, CharH);
+
+			ScreenSurfBackground.Fill(Dest, Clr.Background);
+			Tint(Clr);
+			ScreenSurf.Blit(FontSurfaceTinted, Dest, Src);
 		}
 
-		public void Set(int X, int Y, ConsoleClr Clr)
+		public void Write(int X, int Y, string S, ConsoleClr Clr)
 		{
-			Color Pxl = Data.GetPixel((uint)X, (uint)Y);
-			Data.SetPixel((uint)X, (uint)Y, new Color(Pxl.R, (byte)Clr.Foreground, (byte)Clr.Background));
+			for (int I = Y * W + X, J = I + S.Length, R = 0; I < J; I++, R++) {
+				Set(I % W, I / W, S[R], Clr);
+			}
 		}
 
-		public ConsoleClr GetClr(int X, int Y)
+		public void Write(int X, int Y, string S)
 		{
-			Color Pxl = Data.GetPixel((uint)X, (uint)Y);
-			return new ConsoleClr((ConsoleColor)Pxl.G, (ConsoleColor)Pxl.B);
+			Write(X, Y, S, new ConsoleClr(Color.Gray, Color.Black));
 		}
 
-		public void Draw(RenderTarget RT)
+		public void Draw()
 		{
-			PaletteTex.Update(Palette);
-			DataTex.Update(Data);
+			if (!Dirty)
+				return;
+			Dirty = false;
 
-			RenderStates RS = RenderStates.Default;
-			RS.Shader = TextShader;
-
-			Texture.Bind(null);
-			RT.Draw(Display, RS);
+			Video.Screen.Blit(ScreenSurfBackground);
+			Video.Screen.Blit(ScreenSurf);
 		}
 	}
 
@@ -284,9 +213,7 @@ namespace FacePuncher.Graphics
 	/// </summary>
 	static class Display
 	{
-		public static RenderWindow RWind;
 		public static VideoMem VideoMemory;
-		public static bool Dirty = true;
 
 		public static Rectangle Rect
 		{
@@ -346,62 +273,46 @@ namespace FacePuncher.Graphics
 		public static void Initialize(int width, int height)
 		{
 			Rect = new Rectangle(0, 0, width, height);
-			VideoMemory = new VideoMem(width, height, new Sprite(new Texture(Tools.GetPath("Data", "font.png"))));
 
 #if USE_CONSOLE
 			Console.SetBufferSize(width, height);
 			Console.SetWindowSize(width, height);
 #endif
 
+			bool Initializing = true;
+
 			Thread RenderThread = new Thread(() => {
-				RWind = new RenderWindow(new VideoMode(
-					(uint)width * (uint)VideoMemory.CharW,
-					(uint)height * (uint)VideoMemory.CharH),
-					"FacePuncher", Styles.Close);
+				VideoMemory = new VideoMem(width, height,
+					new Surface(Tools.GetPath("Data", "font.png")),
+					new Surface(Tools.GetPath("Data", "fontmask.png")));
 
-				RWind.SetVerticalSyncEnabled(true);
-				Console.Initialize(RWind);
+				Video.SetVideoMode(width * VideoMemory.CharW, height * VideoMemory.CharH, false, false, false, true, true);
+				Video.WindowCaption = "FacePuncher";
 
-				RenderTexture RTex = new RenderTexture(RWind.Size.X, RWind.Size.Y);
-				Sprite RSprite = new Sprite(RTex.Texture);
+				Input.Initialize();
 
-				RWind.Closed += (S, E) => {
-					RWind.Close();
+				Events.Quit += (S, E) => {
+					Events.QuitApplication();
+					Environment.Exit(0);
 				};
 
-				while (RWind.IsOpen()) {
-					RWind.DispatchEvents();
-
-					if (Dirty) {
-						Dirty = false;
-						RTex.Clear();
-						VideoMemory.Draw(RTex);
-						RTex.Display();
+				Events.Tick += (S, E) => {
+					if (VideoMemory.Dirty) {
+						Video.Screen.Fill(Color.Black);
+						VideoMemory.Write(0, 0, E.Fps.ToString() + "FPS", new ConsoleClr(Color.Red, Color.DarkRed));
+						VideoMemory.Draw();
+						Video.Update();
 					}
+				};
 
-					RSprite.Draw(RWind, RenderStates.Default);
-					RWind.Display();
-				}
-
-				Environment.Exit(0);
+				Initializing = false;
+				Events.Run();
 			});
 
-			Clear();
 			RenderThread.Start();
-
-			/*SetCell(0, 0, 'H', ConsoleColor.White, ConsoleColor.Black);
-			SetCell(1, 0, 'e', ConsoleColor.Red, ConsoleColor.DarkRed);
-			SetCell(2, 0, 'l', ConsoleColor.DarkBlue, ConsoleColor.Blue);
-			SetCell(3, 0, 'l');
-			SetCell(4, 0, 'o');
-			SetCell(5, 0, ' ');
-			SetCell(6, 0, 'W');
-			SetCell(7, 0, 'o');
-			SetCell(8, 0, 'r');
-			SetCell(9, 0, 'l');
-			SetCell(10, 0, 'd');
-			while (true)
-				; //*/
+			while (Initializing)
+				;
+			Clear();
 		}
 
 		/// <summary>
@@ -409,12 +320,12 @@ namespace FacePuncher.Graphics
 		/// </summary>
 		public static void Clear()
 		{
-			ConsoleClr ClearClr = new ConsoleClr(ConsoleColor.Gray, ConsoleColor.Black);
-			for (int x = 0; x < Width; x++)
-				for (int y = 0; y < Height; y++) {
-					VideoMemory.Set(x, y, ' ');
-					VideoMemory.Set(x, y, ClearClr);
-				}
+			if (VideoMemory != null) {
+				ConsoleClr ClearClr = new ConsoleClr(ConsoleColor.Gray, ConsoleColor.Black);
+				for (int x = 0; x < Width; x++)
+					for (int y = 0; y < Height; y++)
+						VideoMemory.Set(x, y, ' ', ClearClr);
+			}
 		}
 
 		/// <summary>
@@ -427,8 +338,8 @@ namespace FacePuncher.Graphics
 		/// <param name="back">Background color of the character.</param>
 		public static void SetCell(int x, int y, char symbol, ConsoleColor fore = ConsoleColor.Gray, ConsoleColor back = ConsoleColor.Black)
 		{
-			VideoMemory.Set(x, y, symbol);
-			VideoMemory.Set(x, y, new ConsoleClr(fore, back));
+			if (VideoMemory != null)
+				VideoMemory.Set(x, y, symbol, new ConsoleClr(fore, back));
 
 #if USE_CONSOLE
 			Console.SetCursorPosition(x, y);
@@ -455,7 +366,8 @@ namespace FacePuncher.Graphics
 		/// </summary>
 		public static void Refresh()
 		{
-			Dirty = true;
+			if (VideoMemory != null)
+				VideoMemory.Dirty = true;
 		}
 	}
 }

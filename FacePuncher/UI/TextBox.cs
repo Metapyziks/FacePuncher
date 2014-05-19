@@ -1,4 +1,5 @@
 ﻿/* Copyright (C) 2014 Michał Ferchow (deseteral@gmail.com)
+ * Copyright (C) 2014 Saša Barišić (cartman300@net.hr)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

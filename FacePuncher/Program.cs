@@ -25,8 +25,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Console = FacePuncher.Graphics.Console;
-
 namespace FacePuncher
 {
     /// <summary>
@@ -50,8 +48,12 @@ namespace FacePuncher
         /// <param name="args">An array of command line arguments.</param>
         public static void Main(string[] args)
         {
-            var context = new SynchronizationContext();
-            context.Send((x) => TaskMain().Wait(), null);
+            try {
+                var context = new SynchronizationContext();
+                context.Send((x) => TaskMain().Wait(), null);
+            } catch (AggregateException E) {
+                throw E.InnerException;
+            }
         }
 
         static async Task TaskMain()

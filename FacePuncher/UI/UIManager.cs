@@ -23,8 +23,6 @@ using System.Collections.Generic;
 using FacePuncher.Geometry;
 using FacePuncher.Graphics;
 
-using Console = FacePuncher.Graphics.Console;
-
 namespace FacePuncher.UI
 {
     enum UINavigation

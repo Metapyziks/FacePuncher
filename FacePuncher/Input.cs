@@ -23,12 +23,40 @@ using System.Collections.Generic;
 using FacePuncher.Geometry;
 using FacePuncher.UI;
 
-using Console = FacePuncher.Graphics.Console;
+using SdlDotNet;
+using SdlDotNet.Core;
+using SdlDotNet.Graphics;
+using SdlDotNet.Input;
+using SdlDotNet.Windows;
+
+using ConsoleKey = SdlDotNet.Input.Key;
 
 namespace FacePuncher
 {
     static class Input
     {
+        static Queue<ConsoleKey> Keys;
+
+        public static void Initialize()
+        {
+            Keys = new Queue<ConsoleKey>();
+            Events.KeyboardDown += KeyEvent;
+            Events.KeyboardUp += KeyEvent;
+        }
+
+        private static void KeyEvent(object S, KeyboardEventArgs E)
+        {
+            if (E.Down)
+                Keys.Enqueue(E.Key);
+        }
+
+        public static ConsoleKey SDLReadKey()
+        {
+            while (Keys.Count < 1)
+                ;
+            return Keys.Dequeue();
+        }
+
         private static T ReadKey<T>(Dictionary<ConsoleKey, T> keyMap)
         {
             T result;
@@ -38,7 +66,8 @@ namespace FacePuncher
 
         private static bool TryReadKey<T>(Dictionary<ConsoleKey, T> keyMap, out T result)
         {
-            ConsoleKey key = Console.ReadKey(intercept: true).Key;
+            //ConsoleKey key = Console.ReadKey(intercept: true).Key;
+            ConsoleKey key = SDLReadKey();
             if (keyMap.ContainsKey(key)) {
                 result = keyMap[key];
                 return true;
@@ -50,19 +79,19 @@ namespace FacePuncher
 
         public static readonly Dictionary<ConsoleKey, Direction> MovementKeys
             = new Dictionary<ConsoleKey, Direction> {
-            { ConsoleKey.NumPad7, Direction.NorthWest },
-            { ConsoleKey.NumPad8, Direction.North },
+            { ConsoleKey.Keypad7, Direction.NorthWest },
+            { ConsoleKey.Keypad8, Direction.North },
             { ConsoleKey.UpArrow, Direction.North },
-            { ConsoleKey.NumPad9, Direction.NorthEast },
-            { ConsoleKey.NumPad4, Direction.West },
+            { ConsoleKey.Keypad9, Direction.NorthEast },
+            { ConsoleKey.Keypad4, Direction.West },
             { ConsoleKey.LeftArrow, Direction.West },
-            { ConsoleKey.NumPad5, Direction.None },
-            { ConsoleKey.NumPad6, Direction.East },
+            { ConsoleKey.Keypad5, Direction.None },
+            { ConsoleKey.Keypad6, Direction.East },
             { ConsoleKey.RightArrow, Direction.East },
-            { ConsoleKey.NumPad1, Direction.SouthWest },
-            { ConsoleKey.NumPad2, Direction.South },
+            { ConsoleKey.Keypad1, Direction.SouthWest },
+            { ConsoleKey.Keypad2, Direction.South },
             { ConsoleKey.DownArrow, Direction.South },
-            { ConsoleKey.NumPad3, Direction.SouthEast }
+            { ConsoleKey.Keypad3, Direction.SouthEast }
         };
 
         public static Direction ReadMovement()
@@ -78,15 +107,15 @@ namespace FacePuncher
         public static readonly Dictionary<ConsoleKey, UINavigation> NavigationKeys = new Dictionary<ConsoleKey, UINavigation> {
             { ConsoleKey.W, UINavigation.Up },
             { ConsoleKey.UpArrow, UINavigation.Up },
-            { ConsoleKey.NumPad8, UINavigation.Up },
-            { ConsoleKey.Subtract, UINavigation.Up },
+            { ConsoleKey.Keypad8, UINavigation.Up },
+            { ConsoleKey.KeypadMinus, UINavigation.Up },
 
             { ConsoleKey.S, UINavigation.Down },
             { ConsoleKey.DownArrow, UINavigation.Down },
-            { ConsoleKey.NumPad2, UINavigation.Down },
-            { ConsoleKey.Add, UINavigation.Down },
+            { ConsoleKey.Keypad2, UINavigation.Down },
+            { ConsoleKey.KeypadPlus, UINavigation.Down },
 
-            { ConsoleKey.Enter, UINavigation.Select }
+            { ConsoleKey.Return, UINavigation.Select }
         };
 
         public static UINavigation ReadUINavigation()
