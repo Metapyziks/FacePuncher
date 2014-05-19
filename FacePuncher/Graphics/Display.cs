@@ -81,7 +81,7 @@ namespace FacePuncher.Graphics
 				case ConsoleColor.DarkYellow:
 					return Color.Orange;
 				case ConsoleColor.Gray:
-					return Color.Gray;
+					return Color.FromArgb(200, 200, 200);
 				case ConsoleColor.Green:
 					return Color.Green;
 				case ConsoleColor.Magenta:
@@ -115,7 +115,7 @@ namespace FacePuncher.Graphics
 		}
 	}
 
-	class VideoMem
+	class VideoMem // SDL doesn't allow tinting? STRIP THIS SHIT DOWN AND USE SOMETHING ELSE JESUS FUCKING CHRIST
 	{
 		public int Len, W, H;
 		public ConsoleClr CurrentColor;
@@ -127,11 +127,11 @@ namespace FacePuncher.Graphics
 		public ConsoleClr[] Colors;
 
 		//Surface FontSurface;
-		Surface ScreenSurf, ScreenSurfBackground, FontSurfaceTinted, FontSurfaceMask;
+		Surface ScreenSurf, ScreenSurfBackground, FontSurface, FontSurfaceMask;
 
 		public VideoMem(int W, int H, Surface FontSurface, Surface FontSurfaceMask, int CharCountX = 16, int CharCountY = 16)
 		{
-		
+
 			this.Len = W * H;
 			this.W = W;
 			this.H = H;
@@ -147,13 +147,14 @@ namespace FacePuncher.Graphics
 			FontSurface.TransparentColor = FontSurface.GetPixel(new Point(0, 0));
 			FontSurface.Transparent = true;*/
 
-			this.FontSurfaceMask = FontSurfaceMask;
-			FontSurfaceMask.SourceColorKey = Color.White;
+			FontSurfaceMask.TransparentColor = Color.White;
+			FontSurfaceMask.Transparent = true;
+			this.FontSurfaceMask = new Surface(FontSurfaceMask);
 
-			FontSurfaceTinted = new Surface(FontSurface);
-			FontSurfaceTinted.SourceColorKey = Color.Black;
+			FontSurface.TransparentColor = FontSurface.GetPixel(new Point(0, 0));
+			FontSurface.Transparent = true;
+			this.FontSurface = new Surface(FontSurface);
 
-			Tint(new ConsoleClr(ConsoleColor.White, ConsoleColor.Black));
 
 			ScreenSurf = new Surface(new Size(W * CharW, H * CharH));
 			ScreenSurf.SourceColorKey = Color.Black;
@@ -161,16 +162,6 @@ namespace FacePuncher.Graphics
 			LockRect = new DRect(0, 0, FontSurface.Bitmap.Size.Width, FontSurface.Bitmap.Size.Height);
 		}
 
-		private void Tint(ConsoleClr Clr)
-		{
-			if (CurrentColor.Foreground == Clr.Foreground)
-				return;
-			CurrentColor = Clr;
-
-			FontSurfaceTinted.Fill(Clr.Foreground);
-			FontSurfaceTinted.Blit(FontSurfaceMask);
-
-		}
 
 		private DRect LockRect;
 
@@ -179,9 +170,9 @@ namespace FacePuncher.Graphics
 			DRect Dest = new DRect(X * CharW, Y * CharH, CharW, CharH);
 			DRect Src = new DRect(((byte)Chr % CharCountX) * CharW, ((byte)Chr / CharCountY) * CharH, CharW, CharH);
 
-			ScreenSurfBackground.Fill(Dest, Clr.Background);
-			Tint(Clr);
-			ScreenSurf.Blit(FontSurfaceTinted, Dest, Src);
+			//ScreenSurfBackground.Fill(Dest, Clr.Background);
+			ScreenSurf.Fill(Dest, Clr.Background);
+			ScreenSurf.Blit(FontSurface, Dest, Src);
 		}
 
 		public void Write(int X, int Y, string S, ConsoleClr Clr)
@@ -202,7 +193,7 @@ namespace FacePuncher.Graphics
 				return;
 			Dirty = false;
 
-			Video.Screen.Blit(ScreenSurfBackground);
+			//Video.Screen.Blit(ScreenSurfBackground);
 			Video.Screen.Blit(ScreenSurf);
 		}
 	}
