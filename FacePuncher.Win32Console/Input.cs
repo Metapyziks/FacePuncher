@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 using FacePuncher.Geometry;
 using FacePuncher.UI;
@@ -26,37 +27,21 @@ namespace FacePuncher.Win32Console
 {
     public class Input : FacePuncher.Input
     {
-        private static readonly Dictionary<ConsoleKey, Direction> _sMovementKeys
-            = new Dictionary<ConsoleKey, Direction> {
-            { ConsoleKey.NumPad7, Direction.NorthWest },
-            { ConsoleKey.NumPad8, Direction.North },
-            { ConsoleKey.UpArrow, Direction.North },
-            { ConsoleKey.NumPad9, Direction.NorthEast },
-            { ConsoleKey.NumPad4, Direction.West },
-            { ConsoleKey.LeftArrow, Direction.West },
-            { ConsoleKey.NumPad5, Direction.None },
-            { ConsoleKey.NumPad6, Direction.East },
-            { ConsoleKey.RightArrow, Direction.East },
-            { ConsoleKey.NumPad1, Direction.SouthWest },
-            { ConsoleKey.NumPad2, Direction.South },
-            { ConsoleKey.DownArrow, Direction.South },
-            { ConsoleKey.NumPad3, Direction.SouthEast }
-        };
-        
-        private static readonly Dictionary<ConsoleKey, UINavigation> _sNavigationKeys
-            = new Dictionary<ConsoleKey, UINavigation> {
-            { ConsoleKey.W, UINavigation.Up },
-            { ConsoleKey.UpArrow, UINavigation.Up },
-            { ConsoleKey.NumPad8, UINavigation.Up },
-            { ConsoleKey.Subtract, UINavigation.Up },
+        private Dictionary<ConsoleKey, Direction> _movementKeys;
+        private Dictionary<ConsoleKey, UINavigation> _uiNavigationKeys;
 
-            { ConsoleKey.S, UINavigation.Down },
-            { ConsoleKey.DownArrow, UINavigation.Down },
-            { ConsoleKey.NumPad2, UINavigation.Down },
-            { ConsoleKey.Add, UINavigation.Down },
+        protected override void OnLoadFromDefinition(System.Xml.Linq.XElement elem)
+        {
+            base.OnLoadFromDefinition(elem);
 
-            { ConsoleKey.Enter, UINavigation.Select }
-        };
+            if (elem.HasElement("MovementKeys")) {
+                _movementKeys = ReadKeyBindings<ConsoleKey, Direction>(elem.Element("MovementKeys"));
+            }
+
+            if (elem.HasElement("UINavigationKeys")) {
+                _uiNavigationKeys = ReadKeyBindings<ConsoleKey, UINavigation>(elem.Element("UINavigationKeys"));
+            }
+        }
 
         private static T ReadKey<T>(Dictionary<ConsoleKey, T> keyMap)
         {
@@ -82,22 +67,22 @@ namespace FacePuncher.Win32Console
         
         public override Direction ReadMovement()
         {
-            return ReadKey(_sMovementKeys);
+            return ReadKey(_movementKeys);
         }
 
         public override bool TryReadMovement(out Direction result)
         {
-            return TryReadKey(_sMovementKeys, out result);
+            return TryReadKey(_movementKeys, out result);
         }
 
         public override UINavigation ReadUINavigation()
         {
-            return ReadKey(_sNavigationKeys);
+            return ReadKey(_uiNavigationKeys);
         }
 
         public override bool TryReadUINavigation(out UINavigation result)
         {
-            return TryReadKey(_sNavigationKeys, out result);
+            return TryReadKey(_uiNavigationKeys, out result);
         }
 
         public override ConsoleKeyInfo ReadKey()

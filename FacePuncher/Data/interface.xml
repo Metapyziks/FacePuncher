@@ -1,33 +1,71 @@
-﻿<!--
+﻿<!---->
     <client:interface dll="FacePuncher.Win32Console.dll">
         <Display class="FacePuncher.Win32Console.Display" />
-        <Input class="FacePuncher.Win32Console.Input" />
-    </client:interface>
--->
+        <Input class="FacePuncher.Win32Console.Input">
+            <MovementKeys>
+                <Key name="NumPad7">NorthWest</Key>
 
+                <Key name="NumPad8">North</Key>
+                <Key name="UpArrow">North</Key>
+
+                <Key name="NumPad9">NorthEast</Key>
+
+                <Key name="NumPad4">West</Key>
+                <Key name="LeftArrow">West</Key>
+
+                <Key name="NumPad5">None</Key>
+
+                <Key name="NumPad6">East</Key>
+                <Key name="RightArrow">East</Key>
+
+                <Key name="NumPad1">SouthWest</Key>
+
+                <Key name="NumPad2">South</Key>
+                <Key name="DownArrow">South</Key>
+
+                <Key name="NumPad3">SouthEast</Key>
+            </MovementKeys>
+
+            <UINavigationKeys>
+                <Key name="W">Up</Key>
+                <Key name="UpArrow">Up</Key>
+                <Key name="NumPad8">Up</Key>
+                <Key name="Subtract">Up</Key>
+
+                <Key name="S">Down</Key>
+                <Key name="DownArrow">Down</Key>
+                <Key name="NumPad2">Down</Key>
+                <Key name="Add">Down</Key>
+
+                <Key name="Enter">Select</Key>
+            </UINavigationKeys>
+        </Input>
+    </client:interface>
 <!---->
+
+<!--
     <client:interface dll="FacePuncher.CartConsole.dll">
         <Display class="FacePuncher.CartConsole.Display">
             <Tileset>font.png</Tileset>
             <Palette>
                 <Color index="00" rgb="000000" />
                 <Color index="01" rgb="000080" />
-                <Color index="02" rgb="DarkGreen" />
-                <Color index="03" rgb="DarkCyan" />
-                <Color index="04" rgb="DarkRed" />
-                <Color index="05" rgb="DarkMagenta" />
-                <Color index="06" rgb="DarkYellow" />
-                <Color index="07" rgb="Gray" />
-                <Color index="08" rgb="DarkGray" />
-                <Color index="09" rgb="Blue" />
-                <Color index="10" rgb="Green" />
-                <Color index="11" rgb="Cyan" />
-                <Color index="12" rgb="Red" />
-                <Color index="13" rgb="Magenta" />
-                <Color index="14" rgb="Yellow" />
+                <Color index="02" rgb="008000" />
+                <Color index="03" rgb="008080" />
+                <Color index="04" rgb="800000" />
+                <Color index="05" rgb="800080" />
+                <Color index="06" rgb="808000" />
+                <Color index="07" rgb="c0c0c0" />
+                <Color index="08" rgb="808080" />
+                <Color index="09" rgb="0000ff" />
+                <Color index="10" rgb="00ff00" />
+                <Color index="11" rgb="00ffff" />
+                <Color index="12" rgb="ff0000" />
+                <Color index="13" rgb="ff00ff" />
+                <Color index="14" rgb="ffff00" />
                 <Color index="15" rgb="ffffff" />
             </Palette>
         </Display>
         <Input class="FacePuncher.CartConsole.Input" />
     </client:interface>
-<!---->
+-->

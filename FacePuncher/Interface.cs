@@ -17,6 +17,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Xml.Linq;
 
@@ -129,6 +130,24 @@ namespace FacePuncher
 
     public abstract class Input : Interface
     {
+        protected Dictionary<TKey, TBind> ReadKeyBindings<TKey, TBind>(XElement elem)
+        {
+            if (!typeof(TKey).IsEnum || !typeof(TBind).IsEnum) {
+                throw new ArgumentException("Enum type arguments expected.");
+            }
+
+            var dict = new Dictionary<TKey, TBind>();
+
+            foreach (var sub in elem.Elements("Key")) {
+                var key = (TKey) Enum.Parse(typeof(TKey), sub.Attribute("name").Value);
+                var bind = (TBind) Enum.Parse(typeof(TBind), sub.Value);
+
+                dict.Add(key, bind);
+            }
+
+            return dict;
+        }
+
         public abstract Direction ReadMovement();
 
         public abstract bool TryReadMovement(out Direction result);
