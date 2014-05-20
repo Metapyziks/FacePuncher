@@ -60,7 +60,7 @@ namespace FacePuncher
 
             Definitions.LoadFromDirectory("Data", DefinitionsNamespace.Client);
 
-            Display.Initialize(96, 32);
+            Interface.Display.Initialize(96, 32);
 
             ServerConnection server = null;
 
@@ -86,7 +86,7 @@ namespace FacePuncher
                 if (server == null) {
                     Draw(null);
                     await Task.Delay(100);
-                } else if (Input.TryReadMovement(out direc)) {
+                } else if (Interface.Input.TryReadMovement(out direc)) {
                     server.SendIntent(new MoveIntent(direc));
                 } else {
                     await Task.Delay(100);
@@ -100,12 +100,12 @@ namespace FacePuncher
         static int _flash = 0;
         internal static void Draw(ServerConnection server)
         {
-            Display.Clear();
+            Interface.Display.Clear();
 
             if (server != null) {
                 // removed Level lock
                 var attribs = new DrawAttributes(_flash++);
-                var rect = Display.Rect + server.PlayerPosition - Display.Center;
+                var rect = Interface.Display.Rect + server.PlayerPosition - Interface.Display.Center;
 
                 foreach (var vis in server.Visibility) {
                     vis.Draw(rect, Position.Zero, attribs, server.Time);
@@ -116,7 +116,7 @@ namespace FacePuncher
             if (UIManager != null)
                 UIManager.Draw();
 
-            Display.Refresh();
+            Interface.Display.Refresh();
         }
     }
 }

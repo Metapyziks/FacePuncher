@@ -43,7 +43,7 @@ namespace FacePuncher.UI
         public event EventHandler<AttemptConnectEventArgs> Connect;
 
         public ServerSelectPrompt(String name)
-            : base(name, Display.Center - new Position(Size.X / 2, Size.Y / 2),
+            : base(name, Interface.Display.Center - new Position(Size.X / 2, Size.Y / 2),
                 Size.X, Size.Y, "Connect to Server")
         {
             var lblHostName = new Label("lbl_hostname", Position + new Position(2, 2), "Host name", ConsoleColor.DarkGray);

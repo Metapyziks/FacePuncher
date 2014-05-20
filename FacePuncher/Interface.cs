@@ -16,19 +16,30 @@
  * USA
  */
 
-using FacePuncher.Geometry;
-using FacePuncher.UI;
+using System;
+using System.Reflection;
 
 namespace FacePuncher
 {
-    public abstract class Input
+    public static class Interface
     {
-        public abstract Direction ReadMovement();
+        public static bool Loaded { get { return Display != null; } }
+        
+        static Interface()
+        {
+            Definitions.RegisterType("interface", elem => {
+                if (Loaded) return;
 
-        public abstract bool TryReadMovement(out Direction result);
+                var path = elem.Attribute("dll").Value;
+                var asm = Assembly.LoadFrom(path);
 
-        public abstract UINavigation ReadUINavigation();
+                Display = (Display) asm.CreateInstance(elem.Element("Display").Value);
+                Input = (Input) asm.CreateInstance(elem.Element("Input").Value);
+            });
+        }
 
-        public abstract bool TryReadUINavigation(out UINavigation result);
+        public static Display Display { get; private set; }
+
+        public static Input Input { get; private set; }
     }
 }

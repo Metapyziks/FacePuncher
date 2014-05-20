@@ -65,23 +65,23 @@ namespace FacePuncher.UI
             DrawChildren();
 
             // Render frame corners
-            Display.SetCell(rectangle.TopLeft, _frameChars[2], ForegroundColor, BackgroundColor);
-            Display.SetCell(rectangle.TopRight, _frameChars[3], ForegroundColor, BackgroundColor);
-            Display.SetCell(rectangle.BottomLeft, _frameChars[4], ForegroundColor, BackgroundColor);
-            Display.SetCell(rectangle.BottomRight, _frameChars[5], ForegroundColor, BackgroundColor);
+            Interface.Display.SetCell(rectangle.TopLeft, _frameChars[2], ForegroundColor, BackgroundColor);
+            Interface.Display.SetCell(rectangle.TopRight, _frameChars[3], ForegroundColor, BackgroundColor);
+            Interface.Display.SetCell(rectangle.BottomLeft, _frameChars[4], ForegroundColor, BackgroundColor);
+            Interface.Display.SetCell(rectangle.BottomRight, _frameChars[5], ForegroundColor, BackgroundColor);
 
             // Render horizontal line
             for (var x = 0; x < rectangle.Width - 1; x++)
             {
-                Display.SetCell(x + rectangle.Left + 1, rectangle.Top, _frameChars[0], ForegroundColor, BackgroundColor);
-                Display.SetCell(x + rectangle.Left + 1, rectangle.Bottom, _frameChars[0], ForegroundColor, BackgroundColor);
+                Interface.Display.SetCell(x + rectangle.Left + 1, rectangle.Top, _frameChars[0], ForegroundColor, BackgroundColor);
+                Interface.Display.SetCell(x + rectangle.Left + 1, rectangle.Bottom, _frameChars[0], ForegroundColor, BackgroundColor);
             }
 
             // Render vertical line
             for (var y = 0; y < rectangle.Height - 1; y++)
             {
-                Display.SetCell(rectangle.Left, y + rectangle.Top + 1, _frameChars[1], ForegroundColor, BackgroundColor);
-                Display.SetCell(rectangle.Right, y + rectangle.Top + 1, _frameChars[1], ForegroundColor, BackgroundColor);
+                Interface.Display.SetCell(rectangle.Left, y + rectangle.Top + 1, _frameChars[1], ForegroundColor, BackgroundColor);
+                Interface.Display.SetCell(rectangle.Right, y + rectangle.Top + 1, _frameChars[1], ForegroundColor, BackgroundColor);
             }
 
             // Render title

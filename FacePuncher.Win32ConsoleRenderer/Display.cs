@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 James King (metapyziks@gmail.com)
+﻿/* Copyright (C) 2014 James King (metapyziks@gmail.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,17 +20,13 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-using FacePuncher.Geometry;
-
 using Microsoft.Win32.SafeHandles;
 
-namespace FacePuncher.Graphics
+using FacePuncher.Geometry;
+
+namespace FacePuncher.Win32ConsoleRenderer
 {
-    /// <summary>
-    /// Wrapper around console display functions.
-    /// Adapted from http://stackoverflow.com/a/2754674
-    /// </summary>
-    static class Display
+    public class Display : FacePuncher.Display
     {
         #region Nasty Windows Specific Stuff
         [DllImport("Kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
@@ -82,43 +78,24 @@ namespace FacePuncher.Graphics
             public short Bottom;
         }
 
-        static SafeFileHandle _sHandle;
-        static CharInfo[] _sBuffer;
-        static SmallRect _sRect;
-
         static short GetAttributes(ConsoleColor fore, ConsoleColor back)
         {
             return (short) ((int) fore | ((int) back << 4));
         }
+
+        SafeFileHandle _handle;
+        CharInfo[] _buffer;
+        SmallRect _rect;
         #endregion
-
-        public static Rectangle Rect { get; private set; }
-
-        /// <summary>
-        /// Horizontal size of the display in characters.
-        /// </summary>
-        public static int Width { get { return Rect.Width; } }
-
-        /// <summary>
-        /// Vertical size of the display in characters.
-        /// </summary>
-        public static int Height { get { return Rect.Height; } }
-
-        /// <summary>
-        /// Position of the center of the display.
-        /// </summary>
-        public static Position Center { get { return new Position(Width / 2, Height / 2); } }
 
         /// <summary>
         /// Prepare the display for rendering.
         /// </summary>
         /// <param name="width">Desired horizontal size of the display in characters.</param>
         /// <param name="height">Desired vertical size of the display in characters.</param>
-        public static void Initialize(int width, int height)
+        protected override void OnInitialize(int width, int height)
         {
-            Rect = new Rectangle(0, 0, width, height);
-
-            _sHandle = CreateFile("CONOUT$", 0x40000000, 2, IntPtr.Zero, FileMode.Open, 0, IntPtr.Zero);
+            _handle = CreateFile("CONOUT$", 0x40000000, 2, IntPtr.Zero, FileMode.Open, 0, IntPtr.Zero);
 
             Console.SetWindowSize(Math.Min(width, Console.WindowWidth), Math.Min(height, Console.WindowHeight));
 
@@ -127,20 +104,18 @@ namespace FacePuncher.Graphics
 
             Console.CursorVisible = false;
 
-            _sBuffer = new CharInfo[width * height];
-            _sRect = new SmallRect { Left = 0, Top = 0, Right = (short) width, Bottom = (short) height };
-
-            Clear();
+            _buffer = new CharInfo[width * height];
+            _rect = new SmallRect { Left = 0, Top = 0, Right = (short) width, Bottom = (short) height };
         }
 
         /// <summary>
         /// Wipe the display buffer.
         /// </summary>
-        public static void Clear()
+        public override void Clear()
         {
-            for (int i = 0; i < _sBuffer.Length; ++i) {
-                _sBuffer[i].Char = ' ';
-                _sBuffer[i].Attributes = GetAttributes(ConsoleColor.Black, ConsoleColor.Black);
+            for (int i = 0; i < _buffer.Length; ++i) {
+                _buffer[i].Char = ' ';
+                _buffer[i].Attributes = GetAttributes(ConsoleColor.Black, ConsoleColor.Black);
             }
         }
 
@@ -152,37 +127,25 @@ namespace FacePuncher.Graphics
         /// <param name="symbol">Character to display.</param>
         /// <param name="fore">Foreground color of the character.</param>
         /// <param name="back">Background color of the character.</param>
-        public static void SetCell(int x, int y, char symbol, ConsoleColor fore = ConsoleColor.Gray, ConsoleColor back = ConsoleColor.Black)
+        public override void SetCell(int x, int y, char symbol, ConsoleColor fore = ConsoleColor.Gray, ConsoleColor back = ConsoleColor.Black)
         {
-            if (x < 0 || y < 0 || x >= _sRect.Right || y >= _sRect.Bottom) return;
+            if (x < 0 || y < 0 || x >= _rect.Right || y >= _rect.Bottom) return;
 
-            int index = x + y * _sRect.Right;
+            int index = x + y * _rect.Right;
 
-            _sBuffer[index].Char = symbol;
-            _sBuffer[index].Attributes = GetAttributes(fore, back);
-        }
-
-        /// <summary>
-        /// Set a specific character in the display buffer.
-        /// </summary>
-        /// <param name="pos">Position of the character.</param>
-        /// <param name="symbol">Character to display.</param>
-        /// <param name="fore">Foreground color of the character.</param>
-        /// <param name="back">Background color of the character.</param>
-        public static void SetCell(Position pos, char symbol, ConsoleColor fore = ConsoleColor.Gray, ConsoleColor back = ConsoleColor.Black)
-        {
-            SetCell(pos.X, pos.Y, symbol, fore, back);
+            _buffer[index].Char = symbol;
+            _buffer[index].Attributes = GetAttributes(fore, back);
         }
 
         /// <summary>
         /// Send the display buffer to the console window.
         /// </summary>
-        public static void Refresh()
+        public override void Refresh()
         {
-            var rect = _sRect;
+            var rect = _rect;
 
-            WriteConsoleOutput(_sHandle, _sBuffer,
-                new Coord(_sRect.Right, _sRect.Bottom),
+            WriteConsoleOutput(_handle, _buffer,
+                new Coord(_rect.Right, _rect.Bottom),
                 new Coord(0, 0), ref rect);
         }
     }

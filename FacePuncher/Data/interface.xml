@@ -1,0 +1,4 @@
+﻿<client:interface dll="FacePuncher.Win32ConsoleRenderer.dll">
+    <Display>FacePuncher.Win32ConsoleRenderer.Display</Display>
+    <Input>FacePuncher.Win32ConsoleRenderer.Input</Input>
+</client:interface>

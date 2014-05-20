@@ -21,8 +21,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 using FacePuncher.Geometry;
+using FacePuncher.Graphics;
 
-namespace FacePuncher.Graphics
+namespace FacePuncher
 {
     /// <summary>
     /// Structure containing information used when drawing 
@@ -110,7 +111,7 @@ namespace FacePuncher.Graphics
         public static void Draw(this TileAppearance tile, Position screenPos, DrawAttributes attribs, bool visible)
         {
             if (tile.EntityCount == 0) {
-                Display.SetCell(screenPos, tile.Symbol,
+                Interface.Display.SetCell(screenPos, tile.Symbol,
                     visible ? tile.ForeColor : ConsoleColor.DarkBlue,
                     visible ? tile.BackColor : ConsoleColor.Black);
             } else {
@@ -118,7 +119,7 @@ namespace FacePuncher.Graphics
                 var entity = tile[index];
                 var frame = entity[attribs.Flash % entity.FrameCount];
 
-                Display.SetCell(screenPos, frame.Symbol,
+                Interface.Display.SetCell(screenPos, frame.Symbol,
                     visible ? frame.ForeColor : ConsoleColor.DarkBlue,
                     visible ? frame.BackColor : ConsoleColor.Black);
             }

@@ -24,7 +24,7 @@ using FacePuncher.Graphics;
 
 namespace FacePuncher.UI
 {
-    enum UINavigation
+    public enum UINavigation
     {
         Up,
         Down,
@@ -72,7 +72,7 @@ namespace FacePuncher.UI
                 _selectableWidgets[_selectedId].IsSelected = false;
 
             UINavigation nav;
-            if (!IsInputBlocked && Input.TryReadUINavigation(out nav))
+            if (!IsInputBlocked && Interface.Input.TryReadUINavigation(out nav))
             {
                 switch (nav) {
                     case UINavigation.Up:
@@ -121,7 +121,7 @@ namespace FacePuncher.UI
         {
             for (var x = 0; x < text.Length; x++)
             {
-                Display.SetCell(pos.X + x, pos.Y, text[x], fc, bc);
+                Interface.Display.SetCell(pos.X + x, pos.Y, text[x], fc, bc);
             }
         }
 
