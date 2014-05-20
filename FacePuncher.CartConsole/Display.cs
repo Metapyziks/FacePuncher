@@ -33,24 +33,7 @@ namespace FacePuncher.CartConsole
         {
             Tileset = "font.png";
 
-            _palette = new [] {
-                Color.Black,
-                Color.DarkBlue,
-                Color.DarkGreen,
-                Color.DarkCyan,
-                Color.DarkRed,
-                Color.DarkMagenta,
-                Color.FromArgb(0x80, 0x80, 0x00),
-                Color.Gray,
-                Color.DarkGray,
-                Color.Blue,
-                Color.Green,
-                Color.Cyan,
-                Color.Red,
-                Color.Magenta,
-                Color.Yellow,
-                Color.White
-            };
+            _palette = new Color[16];
         }
 
         protected override void OnLoadFromDefinition(System.Xml.Linq.XElement elem)
@@ -65,11 +48,13 @@ namespace FacePuncher.CartConsole
                         index < 0 ||
                         index >= 16) continue;
 
-                    uint rgb;
+                    int rgb;
                     if (clr.HasAttribute("name")) {
                         _palette[index] = Color.FromName(clr.Attribute("name").Value);
-                    } else if (uint.TryParse(clr.Attribute("rgb").Value, out rgb)) {
-                        _palette[index] = Color.FromArgb((int) (rgb | 0xff000000));
+                    } else if (int.TryParse(clr.Attribute("rgb").Value, System.Globalization.NumberStyles.HexNumber, null, out rgb)) {
+                        _palette[index] = Color.FromArgb((rgb >> 16) & 0xff, (rgb >> 8) & 0xff, rgb & 0xff);
+                    } else {
+                        throw new Exception(String.Format("Bad color #{0} in palette.", index));
                     }
                 }
             }

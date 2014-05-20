@@ -29,35 +29,21 @@ namespace FacePuncher.CartConsole
 {
     class Input : FacePuncher.Input
     {
-        private static readonly Dictionary<SDL.SDL_Keycode, Direction> _sMovementKeys
-			= new Dictionary<SDL.SDL_Keycode, Direction> {
-			{ SDL.SDL_Keycode.SDLK_KP_7, Direction.NorthWest },
-			{ SDL.SDL_Keycode.SDLK_KP_8, Direction.North },
-			{ SDL.SDL_Keycode.SDLK_UP, Direction.North },
-			{ SDL.SDL_Keycode.SDLK_KP_9, Direction.NorthEast },
-			{ SDL.SDL_Keycode.SDLK_KP_4, Direction.West },
-			{ SDL.SDL_Keycode.SDLK_LEFT, Direction.West },
-			{ SDL.SDL_Keycode.SDLK_KP_5, Direction.None },
-			{ SDL.SDL_Keycode.SDLK_KP_6, Direction.East },
-			{ SDL.SDL_Keycode.SDLK_RIGHT, Direction.East },
-			{ SDL.SDL_Keycode.SDLK_KP_1, Direction.SouthWest },
-			{ SDL.SDL_Keycode.SDLK_KP_2, Direction.South },
-			{ SDL.SDL_Keycode.SDLK_DOWN, Direction.South },
-			{ SDL.SDL_Keycode.SDLK_KP_3, Direction.SouthEast }
-		};
+        private Dictionary<SDL.SDL_Keycode, Direction> _movementKeys;
+        private Dictionary<SDL.SDL_Keycode, UINavigation> _uiNavigationKeys;
 
-        private static readonly Dictionary<SDL.SDL_Keycode, UINavigation> _sNavigationKeys
-            = new Dictionary<SDL.SDL_Keycode, UINavigation> {
-			{ SDL.SDL_Keycode.SDLK_w, UINavigation.Up },
-			{ SDL.SDL_Keycode.SDLK_UP, UINavigation.Up },
-			{ SDL.SDL_Keycode.SDLK_KP_8, UINavigation.Up },
-			{ SDL.SDL_Keycode.SDLK_KP_MINUS, UINavigation.Up },
-			{ SDL.SDL_Keycode.SDLK_s, UINavigation.Down },
-			{ SDL.SDL_Keycode.SDLK_DOWN, UINavigation.Down },
-			{ SDL.SDL_Keycode.SDLK_KP_2, UINavigation.Down },
-			{ SDL.SDL_Keycode.SDLK_KP_PLUS, UINavigation.Down },
-			{ SDL.SDL_Keycode.SDLK_RETURN, UINavigation.Select }
-		};
+        protected override void OnLoadFromDefinition(System.Xml.Linq.XElement elem)
+        {
+            base.OnLoadFromDefinition(elem);
+
+            if (elem.HasElement("MovementKeys")) {
+                _movementKeys = ReadKeyBindings<SDL.SDL_Keycode, Direction>(elem.Element("MovementKeys"));
+            }
+
+            if (elem.HasElement("UINavigationKeys")) {
+                _uiNavigationKeys = ReadKeyBindings<SDL.SDL_Keycode, UINavigation>(elem.Element("UINavigationKeys"));
+            }
+        }
 
         private static T ReadKey<T>(Dictionary<SDL.SDL_Keycode, T> keyMap)
         {
@@ -85,22 +71,22 @@ namespace FacePuncher.CartConsole
 
         public override Direction ReadMovement()
         {
-            return ReadKey(_sMovementKeys);
+            return ReadKey(_movementKeys);
         }
 
         public override bool TryReadMovement(out Direction result)
         {
-            return TryReadKey(_sMovementKeys, out result);
+            return TryReadKey(_movementKeys, out result);
         }
 
         public override UINavigation ReadUINavigation()
         {
-            return ReadKey(_sNavigationKeys);
+            return ReadKey(_uiNavigationKeys);
         }
 
         public override bool TryReadUINavigation(out UINavigation result)
         {
-            return TryReadKey(_sNavigationKeys, out result);
+            return TryReadKey(_uiNavigationKeys, out result);
         }
 
         public override ConsoleKeyInfo ReadKey()
