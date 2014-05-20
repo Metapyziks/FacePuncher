@@ -19,15 +19,16 @@
 
 using System;
 using System.Collections.Generic;
+
 using FacePuncher.Geometry;
 using FacePuncher.UI;
+
 using SDL2;
 
 namespace FacePuncher.CartConsole
 {
     class Input : FacePuncher.Input
     {
-
         private static readonly Dictionary<SDL.SDL_Keycode, Direction> _sMovementKeys
 			= new Dictionary<SDL.SDL_Keycode, Direction> {
 			{ SDL.SDL_Keycode.SDLK_KP_7, Direction.NorthWest },

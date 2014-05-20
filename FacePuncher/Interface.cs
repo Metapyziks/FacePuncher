@@ -18,10 +18,14 @@
 
 using System;
 using System.Reflection;
+using System.Xml.Linq;
+
+using FacePuncher.Geometry;
+using FacePuncher.UI;
 
 namespace FacePuncher
 {
-    public static class Interface
+    public class Interface
     {
         public static bool Loaded { get { return Display != null; } }
         
@@ -41,5 +45,95 @@ namespace FacePuncher
         public static Display Display { get; private set; }
 
         public static Input Input { get; private set; }
+
+        protected virtual void OnLoadFromDefinition(XElement elem)
+        {
+            Definitions.LoadProperties(this, elem);
+        }
+    }
+
+    public abstract class Display : Interface
+    {
+        public Rectangle Rect { get; private set; }
+
+        /// <summary>
+        /// Horizontal size of the display in characters.
+        /// </summary>
+        public int Width { get { return Rect.Width; } }
+
+        /// <summary>
+        /// Vertical size of the display in characters.
+        /// </summary>
+        public int Height { get { return Rect.Height; } }
+
+        /// <summary>
+        /// Position of the center of the display.
+        /// </summary>
+        public Position Center { get { return new Position(Width / 2, Height / 2); } }
+
+        /// <summary>
+        /// Prepare the display for rendering.
+        /// </summary>
+        /// <param name="width">Desired horizontal size of the display in characters.</param>
+        /// <param name="height">Desired vertical size of the display in characters.</param>
+        public void Initialize(int width, int height)
+        {
+            Rect = new Rectangle(0, 0, width, height);
+
+            OnInitialize(width, height);
+            Clear();
+        }
+
+        protected abstract void OnInitialize(int width, int height);
+
+        /// <summary>
+        /// Wipe the display buffer.
+        /// </summary>
+        public abstract void Clear();
+
+        /// <summary>
+        /// Set a specific character in the display buffer.
+        /// </summary>
+        /// <param name="x">Horizontal position of the character.</param>
+        /// <param name="y">Vertical position of the character.</param>
+        /// <param name="symbol">Character to display.</param>
+        /// <param name="fore">Foreground color of the character.</param>
+        /// <param name="back">Background color of the character.</param>
+        public abstract void SetCell(int x, int y, char symbol, ConsoleColor fore = ConsoleColor.Gray, ConsoleColor back = ConsoleColor.Black);
+
+        /// <summary>
+        /// Set a specific character in the display buffer.
+        /// </summary>
+        /// <param name="pos">Position of the character.</param>
+        /// <param name="symbol">Character to display.</param>
+        /// <param name="fore">Foreground color of the character.</param>
+        /// <param name="back">Background color of the character.</param>
+        public void SetCell(Position pos, char symbol, ConsoleColor fore = ConsoleColor.Gray, ConsoleColor back = ConsoleColor.Black)
+        {
+            SetCell(pos.X, pos.Y, symbol, fore, back);
+        }
+
+        public abstract void Write(int x, int y, String text);
+
+        /// <summary>
+        /// Send the display buffer to the display window.
+        /// </summary>
+        public abstract void Refresh();
+    }
+
+    public abstract class Input : Interface
+    {
+        public abstract Direction ReadMovement();
+
+        public abstract bool TryReadMovement(out Direction result);
+
+        public abstract UINavigation ReadUINavigation();
+
+        public abstract bool TryReadUINavigation(out UINavigation result);
+
+        // TODO: Replace ConsoleKeyInfo with bespoke structure?
+        public abstract ConsoleKeyInfo ReadKey();
+
+        public abstract bool TryReadKey(out ConsoleKeyInfo result);
     }
 }
