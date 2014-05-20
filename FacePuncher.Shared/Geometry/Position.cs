@@ -122,9 +122,29 @@ namespace FacePuncher.Geometry
             return new Position(a.X + b.X, a.Y + b.Y);
         }
 
+        public static Position operator +(Position P, int[] Sz)
+        {
+            return new Position(P.X + Sz[0], P.Y + Sz[1]);
+        }
+
+        public static Position operator +(Position P, int I)
+        {
+            return P + new[] { I, 0 };
+        }
+
         public static Position operator -(Position a, Position b)
         {
             return new Position(a.X - b.X, a.Y - b.Y);
+        }
+
+        public static Position operator -(Position P, int[] Sz)
+        {
+            return new Position(P.X - Sz[0], P.Y - Sz[1]);
+        }
+
+        public static Position operator -(Position P, int I)
+        {
+            return P - new[] { I, 0 };
         }
 
         public static Position operator *(Position pos, int mul)
