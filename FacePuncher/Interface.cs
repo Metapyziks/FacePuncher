@@ -37,8 +37,14 @@ namespace FacePuncher
                 var path = elem.Attribute("dll").Value;
                 var asm = Assembly.LoadFrom(path);
 
-                Display = (Display) asm.CreateInstance(elem.Element("Display").Value);
-                Input = (Input) asm.CreateInstance(elem.Element("Input").Value);
+                var disp = elem.Element("Display");
+                var inpt = elem.Element("Input");
+
+                Display = (Display) asm.CreateInstance(disp.Attribute("class").Value);
+                Input = (Input) asm.CreateInstance(inpt.Attribute("class").Value);
+
+                Display.OnLoadFromDefinition(disp);
+                Input.OnLoadFromDefinition(inpt);
             });
         }
 

@@ -1,13 +1,33 @@
-﻿<!---->
+﻿<!--
     <client:interface dll="FacePuncher.Win32Console.dll">
-        <Display>FacePuncher.Win32Console.Display</Display>
-        <Input>FacePuncher.Win32Console.Input</Input>
-    </client:interface>
-<!---->
-
-<!--
-    <client:interface dll="FacePuncher.CartConsole.dll">
-        <Display>FacePuncher.CartConsole.Display</Display>
-        <Input>FacePuncher.CartConsole.Input</Input>
+        <Display class="FacePuncher.Win32Console.Display" />
+        <Input class="FacePuncher.Win32Console.Input" />
     </client:interface>
 -->
+
+<!---->
+    <client:interface dll="FacePuncher.CartConsole.dll">
+        <Display class="FacePuncher.CartConsole.Display">
+            <Tileset>font.png</Tileset>
+            <Palette>
+                <Color index="00" rgb="000000" />
+                <Color index="01" rgb="000080" />
+                <Color index="02" rgb="DarkGreen" />
+                <Color index="03" rgb="DarkCyan" />
+                <Color index="04" rgb="DarkRed" />
+                <Color index="05" rgb="DarkMagenta" />
+                <Color index="06" rgb="DarkYellow" />
+                <Color index="07" rgb="Gray" />
+                <Color index="08" rgb="DarkGray" />
+                <Color index="09" rgb="Blue" />
+                <Color index="10" rgb="Green" />
+                <Color index="11" rgb="Cyan" />
+                <Color index="12" rgb="Red" />
+                <Color index="13" rgb="Magenta" />
+                <Color index="14" rgb="Yellow" />
+                <Color index="15" rgb="ffffff" />
+            </Palette>
+        </Display>
+        <Input class="FacePuncher.CartConsole.Input" />
+    </client:interface>
+<!---->

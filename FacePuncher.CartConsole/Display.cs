@@ -24,9 +24,60 @@ namespace FacePuncher.CartConsole
 {
     public class Display : FacePuncher.Display
     {
+        private Color[] _palette;
+
+        [ScriptDefinable]
+        public String Tileset { get; set; }
+
+        public Display()
+        {
+            Tileset = "font.png";
+
+            _palette = new [] {
+                Color.Black,
+                Color.DarkBlue,
+                Color.DarkGreen,
+                Color.DarkCyan,
+                Color.DarkRed,
+                Color.DarkMagenta,
+                Color.FromArgb(0x80, 0x80, 0x00),
+                Color.Gray,
+                Color.DarkGray,
+                Color.Blue,
+                Color.Green,
+                Color.Cyan,
+                Color.Red,
+                Color.Magenta,
+                Color.Yellow,
+                Color.White
+            };
+        }
+
+        protected override void OnLoadFromDefinition(System.Xml.Linq.XElement elem)
+        {
+            base.OnLoadFromDefinition(elem);
+
+            if (elem.HasElement("Palette")) {
+                foreach (var clr in elem.Element("Palette").Elements("Color")) {
+                    int index;
+                    if (!clr.HasAttribute("index") ||
+                        !int.TryParse(clr.Attribute("index").Value, out index) ||
+                        index < 0 ||
+                        index >= 16) continue;
+
+                    uint rgb;
+                    if (clr.HasAttribute("name")) {
+                        _palette[index] = Color.FromName(clr.Attribute("name").Value);
+                    } else if (uint.TryParse(clr.Attribute("rgb").Value, out rgb)) {
+                        _palette[index] = Color.FromArgb((int) (rgb | 0xff000000));
+                    }
+                }
+            }
+        }
+
         protected override void OnInitialize(int width, int height)
         {
-            CartConsole.Initialize("Data/font.png");
+            CartConsole.Initialize(String.Format("Data/{0}", Tileset));
             CartConsole.Title = "FacePuncher";
 
             CartConsole.SetSize(width, height);
@@ -40,7 +91,7 @@ namespace FacePuncher.CartConsole
 
         public override void SetCell(int x, int y, char symbol, ConsoleColor fore = ConsoleColor.Gray, ConsoleColor back = ConsoleColor.Black)
         {
-            CartConsole.Set(x, y, symbol, fore, back);
+            CartConsole.Set(x, y, symbol, _palette[(int) fore], _palette[(int) back]);
         }
 
         public override void Write(int x, int y, string text)

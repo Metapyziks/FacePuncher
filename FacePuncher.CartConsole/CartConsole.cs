@@ -264,11 +264,6 @@ namespace FacePuncher.CartConsole
 			}
 		}
 
-		public static void Set(int X, int Y, char Chr, ConsoleColor FG, ConsoleColor BG)
-		{
-			Set(X, Y, Chr, FG.ToColor(), BG.ToColor());
-		}
-
 		// TODO, switch buffers here/proper double buffering
 		public static void Refresh()
 		{
