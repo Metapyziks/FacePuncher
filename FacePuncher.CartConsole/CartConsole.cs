@@ -17,7 +17,7 @@
  */
 
 // Using SDL2-CS https://github.com/flibitijibibo/SDL2-CS and original SDL2 and SDL2_image files
-// Using tileset http://dwarffortresswiki.org/index.php/Tileset_repository#Anikki
+// Using tileset from http://dwarffortresswiki.org/index.php/Tileset_repository
 
 using System;
 using System.Collections.Generic;
@@ -40,30 +40,6 @@ using CONCLR = SDL2.SDL.SDL_Color;
 
 namespace FacePuncher.CartConsole
 {
-	public struct CartConsoleInput
-	{
-		public bool Ctrl, Shift, Alt;
-		public char Chr;
-		public KeyCode Key;
-
-		public char KeyChar
-		{
-			get
-			{
-				return Chr;
-			}
-		}
-
-		public CartConsoleInput(char Chr, KeyCode Key, bool Ctrl = false, bool Shift = false, bool Alt = false)
-		{
-			this.Chr = Chr;
-			this.Key = Key;
-			this.Ctrl = Ctrl;
-			this.Alt = Alt;
-			this.Shift = Shift;
-		}
-	}
-
 	public static class CartConsole
 	{
 		private static Stopwatch SWatch = new Stopwatch();

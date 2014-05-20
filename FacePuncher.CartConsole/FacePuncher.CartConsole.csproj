@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CartConsole.cs" />
+    <Compile Include="CartConsoleInput_ConsoleInput.cs" />
     <Compile Include="Display.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

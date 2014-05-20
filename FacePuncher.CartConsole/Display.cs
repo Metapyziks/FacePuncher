@@ -1,4 +1,4 @@
-﻿/* Copyright (C) 2014 Saša Barišiæ (cartman300@net.hr)
+﻿/* Copyright (C) 2014 Saša Barišić (cartman300@net.hr)
  * Copyright (C) 2014 James King (metapyziks@gmail.com)
  *
  * This library is free software; you can redistribute it and/or
