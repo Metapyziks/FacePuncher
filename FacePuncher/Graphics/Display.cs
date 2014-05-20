@@ -1,4 +1,5 @@
 /* Copyright (C) 2014 James King (metapyziks@gmail.com)
+ * Copyright (C) 2014 Saša Barišiæ (cartman300@net.hr)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +25,9 @@ using FacePuncher.Geometry;
 
 using Microsoft.Win32.SafeHandles;
 
+using FacePuncher.CartConsole;
+using CartCon = FacePuncher.CartConsole.CartConsole;
+
 namespace FacePuncher.Graphics
 {
     /// <summary>
@@ -33,6 +37,7 @@ namespace FacePuncher.Graphics
     static class Display
     {
         #region Nasty Windows Specific Stuff
+        /*
         [DllImport("Kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         static extern SafeFileHandle CreateFile(
             string fileName,
@@ -90,6 +95,7 @@ namespace FacePuncher.Graphics
         {
             return (short) ((int) fore | ((int) back << 4));
         }
+        //*/
         #endregion
 
         public static Rectangle Rect { get; private set; }
@@ -118,7 +124,7 @@ namespace FacePuncher.Graphics
         {
             Rect = new Rectangle(0, 0, width, height);
 
-            _sHandle = CreateFile("CONOUT$", 0x40000000, 2, IntPtr.Zero, FileMode.Open, 0, IntPtr.Zero);
+            /*_sHandle = CreateFile("CONOUT$", 0x40000000, 2, IntPtr.Zero, FileMode.Open, 0, IntPtr.Zero);
 
             Console.SetWindowSize(Math.Min(width, Console.WindowWidth), Math.Min(height, Console.WindowHeight));
 
@@ -128,7 +134,12 @@ namespace FacePuncher.Graphics
             Console.CursorVisible = false;
 
             _sBuffer = new CharInfo[width * height];
-            _sRect = new SmallRect { Left = 0, Top = 0, Right = (short) width, Bottom = (short) height };
+            _sRect = new SmallRect { Left = 0, Top = 0, Right = (short) width, Bottom = (short) height };*/
+
+            CartCon.Initialize("Data/font.png");
+            CartCon.Title = "FacePuncher";
+
+            CartCon.SetSize(width, height);
 
             Clear();
         }
@@ -138,10 +149,11 @@ namespace FacePuncher.Graphics
         /// </summary>
         public static void Clear()
         {
-            for (int i = 0; i < _sBuffer.Length; ++i) {
+           /* for (int i = 0; i < _sBuffer.Length; ++i) {
                 _sBuffer[i].Char = ' ';
                 _sBuffer[i].Attributes = GetAttributes(ConsoleColor.Black, ConsoleColor.Black);
-            }
+            }*/
+            CartCon.Clear();
         }
 
         /// <summary>
@@ -154,12 +166,13 @@ namespace FacePuncher.Graphics
         /// <param name="back">Background color of the character.</param>
         public static void SetCell(int x, int y, char symbol, ConsoleColor fore = ConsoleColor.Gray, ConsoleColor back = ConsoleColor.Black)
         {
-            if (x < 0 || y < 0 || x >= _sRect.Right || y >= _sRect.Bottom) return;
+           /* if (x < 0 || y < 0 || x >= _sRect.Right || y >= _sRect.Bottom) return;
 
             int index = x + y * _sRect.Right;
 
             _sBuffer[index].Char = symbol;
-            _sBuffer[index].Attributes = GetAttributes(fore, back);
+            _sBuffer[index].Attributes = GetAttributes(fore, back);*/
+            CartCon.Set(x, y, symbol, fore, back);
         }
 
         /// <summary>
@@ -179,11 +192,12 @@ namespace FacePuncher.Graphics
         /// </summary>
         public static void Refresh()
         {
-            var rect = _sRect;
+           /* var rect = _sRect;
 
             WriteConsoleOutput(_sHandle, _sBuffer,
                 new Coord(_sRect.Right, _sRect.Bottom),
-                new Coord(0, 0), ref rect);
+                new Coord(0, 0), ref rect);*/
+            CartCon.Refresh();
         }
     }
 }
