@@ -99,5 +99,21 @@ namespace FacePuncher.Win32ConsoleRenderer
         {
             return TryReadKey(_sNavigationKeys, out result);
         }
+
+        public override ConsoleKeyInfo ReadKey()
+        {
+            return Console.ReadKey(intercept: true);
+        }
+
+        public override bool TryReadKey(out ConsoleKeyInfo result)
+        {
+            result = default(ConsoleKeyInfo);
+
+            if (!Console.KeyAvailable) return false;
+
+            result = Console.ReadKey(intercept: true);
+
+            return true;
+        }
     }
 }

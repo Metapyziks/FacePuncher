@@ -96,9 +96,7 @@ namespace FacePuncher
 
             Program.Draw(this);
 
-            Console.CursorTop = 0;
-            Console.CursorLeft = 0;
-            Console.Write(Time);
+            Interface.Display.Write(0, 0, Time.ToString());
         }
 
         /// <summary>

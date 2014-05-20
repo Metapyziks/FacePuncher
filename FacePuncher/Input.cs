@@ -16,6 +16,8 @@
  * USA
  */
 
+using System;
+
 using FacePuncher.Geometry;
 using FacePuncher.UI;
 
@@ -30,5 +32,10 @@ namespace FacePuncher
         public abstract UINavigation ReadUINavigation();
 
         public abstract bool TryReadUINavigation(out UINavigation result);
+
+        // TODO: Replace ConsoleKeyInfo with bespoke structure?
+        public abstract ConsoleKeyInfo ReadKey();
+
+        public abstract bool TryReadKey(out ConsoleKeyInfo result);
     }
 }

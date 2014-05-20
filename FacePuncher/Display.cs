@@ -83,6 +83,8 @@ namespace FacePuncher
             SetCell(pos.X, pos.Y, symbol, fore, back);
         }
 
+        public abstract void Write(int x, int y, String text);
+
         /// <summary>
         /// Send the display buffer to the display window.
         /// </summary>

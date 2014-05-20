@@ -148,5 +148,11 @@ namespace FacePuncher.Win32ConsoleRenderer
                 new Coord(_rect.Right, _rect.Bottom),
                 new Coord(0, 0), ref rect);
         }
+
+        public override void Write(int x, int y, string text)
+        {
+            Console.SetCursorPosition(x, y);
+            Console.Write(text);
+        }
     }
 }

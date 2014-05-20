@@ -70,10 +70,9 @@ namespace FacePuncher.UI
                 bc = ForegroundColor;
             }
 
-            if (_isEdited && Console.KeyAvailable)
+            ConsoleKeyInfo info;
+            if (_isEdited && Interface.Input.TryReadKey(out info))
             {
-                ConsoleKeyInfo info = Console.ReadKey(true);
-
                 // ASCII code of pressed key
                 int asciiCode = (int)info.KeyChar;
 
