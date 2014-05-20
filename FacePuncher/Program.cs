@@ -80,24 +80,18 @@ namespace FacePuncher
             UIManager.AddChild(select);
             UIManager.CalculateSelectableWidgets();
 
-            while (true)
-            {
-                if (server == null)
-                {
+            Direction direc = Direction.None;
+
+            while (true) {
+                if (server == null) {
                     Draw(null);
                     await Task.Delay(100);
-                }
-                else if (Console.KeyAvailable)
-                {
-                    Direction direc = Direction.None;
-                    if (Input.TryReadMovement(out direc)) {
-                        server.SendIntent(new MoveIntent(direc));
-                    }
-                }
-                else
-                {
+                } else if (Input.TryReadMovement(out direc)) {
+                    server.SendIntent(new MoveIntent(direc));
+                } else {
                     await Task.Delay(100);
                 }
+
                 await Task.Yield();
             }
         }

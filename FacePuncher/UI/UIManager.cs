@@ -71,9 +71,10 @@ namespace FacePuncher.UI
             if (_selectableWidgets.Count > 0)
                 _selectableWidgets[_selectedId].IsSelected = false;
 
-            if (!IsInputBlocked && Console.KeyAvailable)
+            UINavigation nav;
+            if (!IsInputBlocked && Input.TryReadUINavigation(out nav))
             {
-                switch (Input.ReadUINavigation()) {
+                switch (nav) {
                     case UINavigation.Up:
                         _selectedId--; break;
                     case UINavigation.Down:

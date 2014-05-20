@@ -35,14 +35,17 @@ namespace FacePuncher
 
         private static bool TryReadKey<T>(Dictionary<ConsoleKey, T> keyMap, out T result)
         {
+            result = default(T);
+
+            if (!Console.KeyAvailable) return false;
+
             ConsoleKey key = Console.ReadKey(intercept: true).Key;
             if (keyMap.ContainsKey(key)) {
                 result = keyMap[key];
                 return true;
-            } else {
-                result = default(T);
-                return false;
             }
+            
+            return false;
         }
 
         public static readonly Dictionary<ConsoleKey, Direction> MovementKeys
