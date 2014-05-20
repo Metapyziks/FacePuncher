@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Drawing;
 using System.Diagnostics;
+using System.IO;
 
 using KeyCode = SDL2.SDL.SDL_Keycode;
 
@@ -62,6 +63,7 @@ namespace FacePuncher.CartConsole
 		private static IntPtr Wind, Rend, FontTex, PixelFormat;
 
 		private static bool Open = false, Ctrl = false, Shift = false, Alt = false, Initialized = false, DoRefresh = true;
+		private static bool FontDirty = false;
 		private static KeyCode KC;
 		private static Queue<CartConsoleInput> InputQueue;
 
@@ -101,7 +103,6 @@ namespace FacePuncher.CartConsole
 			PixelFormat = SDL.SDL_AllocFormat(SDL.SDL_GetWindowPixelFormat(Wind));
 
 			SetFont(FontPath);
-			SetSize(W, H);
 		}
 
 		private unsafe static void Main()
@@ -214,6 +215,11 @@ namespace FacePuncher.CartConsole
 				SWatch.Stop();
 				FrameTime = SWatch.ElapsedMilliseconds;
 				SWatch.Restart();
+
+				if (FontDirty) {
+					FontDirty = false;
+					SetFont(CartConsole.FontPath, CharCountX, CharCountY);
+				}
 			}
 
 			SDL.SDL_DestroyRenderer(Rend);
@@ -369,6 +375,27 @@ namespace FacePuncher.CartConsole
 			}
 		}
 
+		private static FileSystemWatcher FntWatcher;
+
+		public static void FontWatcher(bool Enable = true)
+		{
+			if (Enable) {
+				FntWatcher = new FileSystemWatcher(Path.GetDirectoryName(Path.GetFullPath(CartConsole.FontPath)));
+				FntWatcher.Changed += (S, E) => {
+					if (E.Name == "font.png") {
+						if (E.ChangeType != WatcherChangeTypes.Changed)
+							throw new Exception("Font file has been moved/renamed/deleted!");
+						FontDirty = true;
+					}
+				};
+				FntWatcher.EnableRaisingEvents = true;
+			} else if (FntWatcher != null) {
+				FntWatcher.EnableRaisingEvents = false;
+				FntWatcher.Dispose();
+				FntWatcher = null;
+			}
+		}
+
 		public static void SetFont(string Path, int CharCountX = 16, int CharCountY = 16)
 		{
 			CartConsole.FontPath = Path;
@@ -386,7 +413,9 @@ namespace FacePuncher.CartConsole
 
 			SDL.SDL_SetColorKey(FontTex, 1, SDL.SDL_MapRGB(PixelFormat, 255, 0, 255));
 			SDL.SDL_SetSurfaceBlendMode(FontTex, SDL.SDL_BlendMode.SDL_BLENDMODE_NONE);
-			FontTex = SDL.SDL_CreateTextureFromSurface(Rend, FontTex);
+			var FontTexTmp = SDL.SDL_CreateTextureFromSurface(Rend, FontTex);
+			SDL.SDL_FreeSurface(FontTex);
+			FontTex = FontTexTmp;
 
 			uint Format = 0;
 			int Access = 0;
@@ -402,6 +431,8 @@ namespace FacePuncher.CartConsole
 
 			TEXPOS.w = POS.w = CharW = FontW / CharCountX;
 			TEXPOS.h = POS.h = CharH = FontH / CharCountY;
+
+			SetSize(W, H);
 		}
 
 		public static void Write(int X, int Y, string S, Color FG, Color BG)

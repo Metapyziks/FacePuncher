@@ -140,6 +140,7 @@ namespace FacePuncher.Graphics
             CartCon.Title = "FacePuncher";
 
             CartCon.SetSize(width, height);
+            CartCon.FontWatcher();
 
             Clear();
         }
