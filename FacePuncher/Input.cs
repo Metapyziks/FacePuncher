@@ -22,81 +22,85 @@ using System.Collections.Generic;
 using FacePuncher.Geometry;
 using FacePuncher.UI;
 
+using FacePuncher.CartConsole;
+using Console = FacePuncher.CartConsole.CartConsole;
+using ConsoleKey = SDL2.SDL.SDL_Keycode;
+
 namespace FacePuncher
 {
-    static class Input
-    {
-        private static T ReadKey<T>(Dictionary<ConsoleKey, T> keyMap)
-        {
-            T result;
-            while (!TryReadKey(keyMap, out result)) ;
-            return result;
-        }
+	static class Input
+	{
+		private static T ReadKey<T>(Dictionary<ConsoleKey, T> keyMap)
+		{
+			T result;
+			while (!TryReadKey(keyMap, out result))
+				;
+			return result;
+		}
 
-        private static bool TryReadKey<T>(Dictionary<ConsoleKey, T> keyMap, out T result)
-        {
-            result = default(T);
+		private static bool TryReadKey<T>(Dictionary<ConsoleKey, T> keyMap, out T result)
+		{
+			result = default(T);
 
-            if (!Console.KeyAvailable) return false;
+			if (!Console.KeyAvailable)
+				return false;
 
-            ConsoleKey key = Console.ReadKey(intercept: true).Key;
-            if (keyMap.ContainsKey(key)) {
-                result = keyMap[key];
-                return true;
-            }
-            
-            return false;
-        }
+			ConsoleKey key = Console.ReadKey(intercept: true).Key;
+			if (keyMap.ContainsKey(key)) {
+				result = keyMap[key];
+				return true;
+			}
 
-        public static readonly Dictionary<ConsoleKey, Direction> MovementKeys
-            = new Dictionary<ConsoleKey, Direction> {
-            { ConsoleKey.NumPad7, Direction.NorthWest },
-            { ConsoleKey.NumPad8, Direction.North },
-            { ConsoleKey.UpArrow, Direction.North },
-            { ConsoleKey.NumPad9, Direction.NorthEast },
-            { ConsoleKey.NumPad4, Direction.West },
-            { ConsoleKey.LeftArrow, Direction.West },
-            { ConsoleKey.NumPad5, Direction.None },
-            { ConsoleKey.NumPad6, Direction.East },
-            { ConsoleKey.RightArrow, Direction.East },
-            { ConsoleKey.NumPad1, Direction.SouthWest },
-            { ConsoleKey.NumPad2, Direction.South },
-            { ConsoleKey.DownArrow, Direction.South },
-            { ConsoleKey.NumPad3, Direction.SouthEast }
-        };
+			return false;
+		}
 
-        public static Direction ReadMovement()
-        {
-            return ReadKey(MovementKeys);
-        }
+		public static readonly Dictionary<ConsoleKey, Direction> MovementKeys
+			= new Dictionary<ConsoleKey, Direction> {
+			{ ConsoleKey.SDLK_KP_7, Direction.NorthWest },
+			{ ConsoleKey.SDLK_KP_8, Direction.North },
+			{ ConsoleKey.SDLK_UP, Direction.North },
+			{ ConsoleKey.SDLK_KP_9, Direction.NorthEast },
+			{ ConsoleKey.SDLK_KP_4, Direction.West },
+			{ ConsoleKey.SDLK_LEFT, Direction.West },
+			{ ConsoleKey.SDLK_KP_5, Direction.None },
+			{ ConsoleKey.SDLK_KP_6, Direction.East },
+			{ ConsoleKey.SDLK_RIGHT, Direction.East },
+			{ ConsoleKey.SDLK_KP_1, Direction.SouthWest },
+			{ ConsoleKey.SDLK_KP_2, Direction.South },
+			{ ConsoleKey.SDLK_DOWN, Direction.South },
+			{ ConsoleKey.SDLK_KP_3, Direction.SouthEast }
+		};
 
-        public static bool TryReadMovement(out Direction result)
-        {
-            return TryReadKey(MovementKeys, out result);
-        }
+		public static Direction ReadMovement()
+		{
+			return ReadKey(MovementKeys);
+		}
 
-        public static readonly Dictionary<ConsoleKey, UINavigation> NavigationKeys = new Dictionary<ConsoleKey, UINavigation> {
-            { ConsoleKey.W, UINavigation.Up },
-            { ConsoleKey.UpArrow, UINavigation.Up },
-            { ConsoleKey.NumPad8, UINavigation.Up },
-            { ConsoleKey.Subtract, UINavigation.Up },
+		public static bool TryReadMovement(out Direction result)
+		{
+			return TryReadKey(MovementKeys, out result);
+		}
 
-            { ConsoleKey.S, UINavigation.Down },
-            { ConsoleKey.DownArrow, UINavigation.Down },
-            { ConsoleKey.NumPad2, UINavigation.Down },
-            { ConsoleKey.Add, UINavigation.Down },
+		public static readonly Dictionary<ConsoleKey, UINavigation> NavigationKeys = new Dictionary<ConsoleKey, UINavigation> {
+			{ ConsoleKey.SDLK_w, UINavigation.Up },
+			{ ConsoleKey.SDLK_UP, UINavigation.Up },
+			{ ConsoleKey.SDLK_KP_8, UINavigation.Up },
+			{ ConsoleKey.SDLK_KP_MINUS, UINavigation.Up },
+			{ ConsoleKey.SDLK_s, UINavigation.Down },
+			{ ConsoleKey.SDLK_DOWN, UINavigation.Down },
+			{ ConsoleKey.SDLK_KP_2, UINavigation.Down },
+			{ ConsoleKey.SDLK_KP_PLUS, UINavigation.Down },
+			{ ConsoleKey.SDLK_RETURN, UINavigation.Select }
+		};
 
-            { ConsoleKey.Enter, UINavigation.Select }
-        };
+		public static UINavigation ReadUINavigation()
+		{
+			return ReadKey(NavigationKeys);
+		}
 
-        public static UINavigation ReadUINavigation()
-        {
-            return ReadKey(NavigationKeys);
-        }
-
-        public static bool TryReadUINavigation(out UINavigation result)
-        {
-            return TryReadKey(NavigationKeys, out result);
-        }
-    }
+		public static bool TryReadUINavigation(out UINavigation result)
+		{
+			return TryReadKey(NavigationKeys, out result);
+		}
+	}
 }

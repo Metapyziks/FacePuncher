@@ -98,22 +98,44 @@ namespace FacePuncher.Graphics
         //*/
         #endregion
 
-        public static Rectangle Rect { get; private set; }
+        public static Rectangle Rect
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Horizontal size of the display in characters.
         /// </summary>
-        public static int Width { get { return Rect.Width; } }
+        public static int Width
+        {
+            get
+            {
+                return Rect.Width;
+            }
+        }
 
         /// <summary>
         /// Vertical size of the display in characters.
         /// </summary>
-        public static int Height { get { return Rect.Height; } }
+        public static int Height
+        {
+            get
+            {
+                return Rect.Height;
+            }
+        }
 
         /// <summary>
         /// Position of the center of the display.
         /// </summary>
-        public static Position Center { get { return new Position(Width / 2, Height / 2); } }
+        public static Position Center
+        {
+            get
+            {
+                return new Position(Width / 2, Height / 2);
+            }
+        }
 
         /// <summary>
         /// Prepare the display for rendering.
@@ -142,6 +164,8 @@ namespace FacePuncher.Graphics
             CartCon.SetSize(width, height);
             CartCon.FontWatcher();
 
+            Console.SetWindowSize(10, 1);
+
             Clear();
         }
 
@@ -150,10 +174,10 @@ namespace FacePuncher.Graphics
         /// </summary>
         public static void Clear()
         {
-           /* for (int i = 0; i < _sBuffer.Length; ++i) {
-                _sBuffer[i].Char = ' ';
-                _sBuffer[i].Attributes = GetAttributes(ConsoleColor.Black, ConsoleColor.Black);
-            }*/
+            /* for (int i = 0; i < _sBuffer.Length; ++i) {
+                 _sBuffer[i].Char = ' ';
+                 _sBuffer[i].Attributes = GetAttributes(ConsoleColor.Black, ConsoleColor.Black);
+             }*/
             CartCon.Clear();
         }
 
@@ -167,12 +191,12 @@ namespace FacePuncher.Graphics
         /// <param name="back">Background color of the character.</param>
         public static void SetCell(int x, int y, char symbol, ConsoleColor fore = ConsoleColor.Gray, ConsoleColor back = ConsoleColor.Black)
         {
-           /* if (x < 0 || y < 0 || x >= _sRect.Right || y >= _sRect.Bottom) return;
+            /* if (x < 0 || y < 0 || x >= _sRect.Right || y >= _sRect.Bottom) return;
 
-            int index = x + y * _sRect.Right;
+             int index = x + y * _sRect.Right;
 
-            _sBuffer[index].Char = symbol;
-            _sBuffer[index].Attributes = GetAttributes(fore, back);*/
+             _sBuffer[index].Char = symbol;
+             _sBuffer[index].Attributes = GetAttributes(fore, back);*/
             CartCon.Set(x, y, symbol, fore, back);
         }
 
@@ -193,11 +217,11 @@ namespace FacePuncher.Graphics
         /// </summary>
         public static void Refresh()
         {
-           /* var rect = _sRect;
+            /* var rect = _sRect;
 
-            WriteConsoleOutput(_sHandle, _sBuffer,
-                new Coord(_sRect.Right, _sRect.Bottom),
-                new Coord(0, 0), ref rect);*/
+             WriteConsoleOutput(_sHandle, _sBuffer,
+                 new Coord(_sRect.Right, _sRect.Bottom),
+                 new Coord(0, 0), ref rect);*/
             CartCon.Refresh();
         }
     }

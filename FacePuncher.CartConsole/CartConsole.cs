@@ -46,6 +46,14 @@ namespace FacePuncher.CartConsole
 		public char Chr;
 		public KeyCode Key;
 
+		public char KeyChar
+		{
+			get
+			{
+				return Chr;
+			}
+		}
+
 		public CartConsoleInput(char Chr, KeyCode Key, bool Ctrl = false, bool Shift = false, bool Alt = false)
 		{
 			this.Chr = Chr;
@@ -146,8 +154,13 @@ namespace FacePuncher.CartConsole
 								CartConsole.KC = KC;
 
 								switch (KC) {
+									case KeyCode.SDLK_UP:
+									case KeyCode.SDLK_DOWN:
+									case KeyCode.SDLK_LEFT:
+									case KeyCode.SDLK_RIGHT:
 									case KeyCode.SDLK_RETURN:
 									case KeyCode.SDLK_RETURN2:
+									case KeyCode.SDLK_BACKSPACE:
 										InputQueue.Enqueue(new CartConsoleInput('\n', KC, Ctrl, Shift, Alt));
 										break;
 									default:
@@ -445,7 +458,7 @@ namespace FacePuncher.CartConsole
 			}
 		}
 
-		public static CartConsoleInput ReadKey()
+		public static CartConsoleInput ReadKey(bool intercept = false)
 		{
 			while (!KeyAvailable)
 				;
@@ -460,6 +473,11 @@ namespace FacePuncher.CartConsole
 			while ((CCI.Key != KeyCode.SDLK_RETURN) && (CCI.Key != KeyCode.SDLK_RETURN2)) {
 				if (CCI.Chr != '\0')
 					Input.Append(CCI.Chr);
+				if (CCI.Key == KeyCode.SDLK_BACKSPACE) {
+					string In = Input.ToString(0, Input.Length - 1);
+					Input.Clear();
+					Input.Append(In);
+				}
 				CCI = ReadKey();
 			}
 
