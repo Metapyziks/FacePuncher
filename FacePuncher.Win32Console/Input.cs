@@ -22,7 +22,7 @@ using System.Collections.Generic;
 using FacePuncher.Geometry;
 using FacePuncher.UI;
 
-namespace FacePuncher.Win32ConsoleRenderer
+namespace FacePuncher.Win32Console
 {
     public class Input : FacePuncher.Input
     {

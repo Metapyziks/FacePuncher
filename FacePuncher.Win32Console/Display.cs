@@ -24,7 +24,7 @@ using Microsoft.Win32.SafeHandles;
 
 using FacePuncher.Geometry;
 
-namespace FacePuncher.Win32ConsoleRenderer
+namespace FacePuncher.Win32Console
 {
     public class Display : FacePuncher.Display
     {
@@ -46,6 +46,15 @@ namespace FacePuncher.Win32ConsoleRenderer
           Coord dwBufferSize,
           Coord dwBufferCoord,
           ref SmallRect lpWriteRegion);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern bool AllocConsole();
+
+        [DllImport("kernel32.dll")]
+        static extern IntPtr GetConsoleWindow();
+
+        [DllImport("user32.dll")]
+        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
         [StructLayout(LayoutKind.Sequential)]
         struct Coord
@@ -78,6 +87,9 @@ namespace FacePuncher.Win32ConsoleRenderer
             public short Bottom;
         }
 
+        const int SW_HIDE = 0;
+        const int SW_SHOW = 5;
+
         static short GetAttributes(ConsoleColor fore, ConsoleColor back)
         {
             return (short) ((int) fore | ((int) back << 4));
@@ -95,6 +107,14 @@ namespace FacePuncher.Win32ConsoleRenderer
         /// <param name="height">Desired vertical size of the display in characters.</param>
         protected override void OnInitialize(int width, int height)
         {
+            var handle = GetConsoleWindow();
+
+            if (handle == IntPtr.Zero) {
+                AllocConsole();
+            } else {
+                ShowWindow(handle, SW_SHOW);
+            }
+
             _handle = CreateFile("CONOUT$", 0x40000000, 2, IntPtr.Zero, FileMode.Open, 0, IntPtr.Zero);
 
             Console.SetWindowSize(Math.Min(width, Console.WindowWidth), Math.Min(height, Console.WindowHeight));

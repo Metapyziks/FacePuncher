@@ -16,7 +16,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2F1A9C
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FacePuncher.Win32ConsoleRenderer", "FacePuncher.Win32ConsoleRenderer\FacePuncher.Win32ConsoleRenderer.csproj", "{FF159D0D-4DA7-4D24-AB72-D2077EF1729F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FacePuncher.Win32Console", "FacePuncher.Win32Console\FacePuncher.Win32Console.csproj", "{FF159D0D-4DA7-4D24-AB72-D2077EF1729F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FacePuncher.CartConsole", "FacePuncher.CartConsole\FacePuncher.CartConsole.csproj", "{C8DE2059-24EE-4AB3-859F-E8F829E2AF19}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,6 +42,10 @@ Global
 		{FF159D0D-4DA7-4D24-AB72-D2077EF1729F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF159D0D-4DA7-4D24-AB72-D2077EF1729F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF159D0D-4DA7-4D24-AB72-D2077EF1729F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8DE2059-24EE-4AB3-859F-E8F829E2AF19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8DE2059-24EE-4AB3-859F-E8F829E2AF19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8DE2059-24EE-4AB3-859F-E8F829E2AF19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8DE2059-24EE-4AB3-859F-E8F829E2AF19}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

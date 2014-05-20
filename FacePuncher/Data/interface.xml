@@ -1,4 +1,13 @@
-﻿<client:interface dll="FacePuncher.Win32ConsoleRenderer.dll">
-    <Display>FacePuncher.Win32ConsoleRenderer.Display</Display>
-    <Input>FacePuncher.Win32ConsoleRenderer.Input</Input>
-</client:interface>
+﻿<!---->
+    <client:interface dll="FacePuncher.Win32Console.dll">
+        <Display>FacePuncher.Win32Console.Display</Display>
+        <Input>FacePuncher.Win32Console.Input</Input>
+    </client:interface>
+<!---->
+
+<!--
+    <client:interface dll="FacePuncher.CartConsole.dll">
+        <Display>FacePuncher.CartConsole.Display</Display>
+        <Input>FacePuncher.CartConsole.Input</Input>
+    </client:interface>
+-->

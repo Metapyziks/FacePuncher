@@ -1,4 +1,4 @@
-﻿/* Copyright (C) 2014 James King (metapyziks@gmail.com)
+﻿/* Copyright (C) 2014 Saša Barišić (cartman300@net.hr)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,11 +23,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("FacePuncher.Win32ConsoleRenderer")]
+[assembly: AssemblyTitle("FacePuncher.CartConsole")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("FacePuncher.Win32ConsoleRenderer")]
+[assembly: AssemblyProduct("FacePuncher.CartConsole")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -38,7 +38,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("8ed9b52b-5203-4297-997f-c4c67b379e12")]
+[assembly: Guid("89f11eea-d295-439d-9ac8-f337b7e338a6")]
 
 // Version information for an assembly consists of the following four values:
 //
