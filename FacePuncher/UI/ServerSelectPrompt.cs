@@ -1,4 +1,5 @@
 ﻿/* Copyright (C) 2014 James King (metapyziks@gmail.com)
+ * Copyright (C) 2014 Saša Barišić (cartman300@net.hr)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -53,11 +54,16 @@ namespace FacePuncher.UI
             var txtPort = new TextBox("txt_port", Position + new Position(3, 8), 5, "14242");
 
             var btnConnect = new Button("btn_connect", Position + new Position(3, 10), "Connect");
+            var btnQuit = new Button("btn_quit", Position + new Position(btnConnect.Text.Length + 19, 10), "Quit", ConsoleColor.DarkRed);
 
             btnConnect.Used += (sender, e) => {
                 int port;
                 if (!int.TryParse(txtPort.Text, out port) || port >= ushort.MaxValue) return;
                 Connect(this, new AttemptConnectEventArgs(txtHostName.Text, port));
+            };
+
+            btnQuit.Used += (sender, e) => {
+                Environment.Exit(0);
             };
 
             AddChild(lblHostName);
@@ -67,6 +73,7 @@ namespace FacePuncher.UI
             AddChild(txtPort);
 
             AddChild(btnConnect);
+            AddChild(btnQuit);
         }
     }
 }

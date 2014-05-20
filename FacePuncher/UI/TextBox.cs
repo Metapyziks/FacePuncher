@@ -1,4 +1,5 @@
 ﻿/* Copyright (C) 2014 Michał Ferchow (deseteral@gmail.com)
+ * Copyright (C) 2014 Saša Barišić (cartman300@net.hr)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -71,31 +72,38 @@ namespace FacePuncher.UI
             }
 
             ConsoleKeyInfo info;
-            if (_isEdited && Interface.Input.TryReadKey(out info))
-            {
+            if (_isEdited && Interface.Input.TryReadKey(out info)) {
                 // ASCII code of pressed key
                 int asciiCode = (int)info.KeyChar;
 
                 // If pressed key is enter - stop editing
-                if (info.Key == ConsoleKey.Enter)
-                {
+                if (info.Key == ConsoleKey.Enter) {
                     _isEdited = false;
                     UIManager.IsInputBlocked = false;
                 }
-                // If pressed key is backspace - remove last char
-                else if (info.Key == ConsoleKey.Backspace)
-                {
-                    Text = Text.Remove(Text.Length - 1);
+                    // If pressed key is backspace - remove last char
+                else if (info.Key == ConsoleKey.Backspace) {
+                    if (Text.Length > 0)
+                        Text = Text.Remove(Text.Length - 1);
                 }
-                // If pressed key is a printable char
-                // add this char to text
-                else if (asciiCode >= 32 && asciiCode <= 126)
-                {
+                    // If pressed key is a printable char
+                    // add this char to text
+                else if (asciiCode >= 32 && asciiCode <= 126) {
                     Text += info.KeyChar.ToString();
                 }
             }
 
             UIManager.DrawString(Position, "[" + Text + "]", fc, bc);
+
+            if (_isEdited) {
+                var CursorPos = new Position(Position.X + Text.Length + 1, Position.Y);
+
+                var cfc = fc;
+                if (((long)Tools.CurTime()) % 2 == 0)
+                    cfc = bc;
+
+                UIManager.DrawString(CursorPos, "_", cfc, bc);
+            }
         }
     }
 }

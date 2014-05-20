@@ -24,6 +24,7 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 using FacePuncher.Geometry;
 using FacePuncher.Network;
@@ -32,6 +33,14 @@ namespace FacePuncher
 {
     public static class Tools
     {
+        private static Stopwatch SWatch;
+
+        static Tools()
+        {
+            SWatch = new Stopwatch();
+            SWatch.Start();
+        }
+
         public static readonly Random Random = new Random();
 
         public static readonly Direction[] Directions = new[] {
@@ -60,6 +69,11 @@ namespace FacePuncher
             if ((dir & Direction.West)  == Direction.West)  offset -= Position.UnitX;
             if ((dir & Direction.North) == Direction.North) offset -= Position.UnitY;
             return offset;
+        }
+
+        public static double CurTime()
+        {
+            return SWatch.Elapsed.TotalSeconds;
         }
 
         public static Direction Left(this Direction dir)
