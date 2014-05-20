@@ -19,6 +19,11 @@
 using System;
 using FacePuncher.Geometry;
 
+using FacePuncher.CartConsole;
+using Console = FacePuncher.CartConsole.CartConsole;
+using ConsoleKey = SDL2.SDL.SDL_Keycode;
+using ConsoleKeyInfo = FacePuncher.CartConsole.CartConsoleInput;
+
 namespace FacePuncher.UI
 {
     /// <summary>
@@ -78,13 +83,13 @@ namespace FacePuncher.UI
                 int asciiCode = (int)info.KeyChar;
 
                 // If pressed key is enter - stop editing
-                if (info.Key == ConsoleKey.Enter)
+                if (info.Key == ConsoleKey.SDLK_RETURN)
                 {
                     _isEdited = false;
                     UIManager.IsInputBlocked = false;
                 }
                 // If pressed key is backspace - remove last char
-                else if (info.Key == ConsoleKey.Backspace)
+                else if (info.Key == ConsoleKey.SDLK_BACKSPACE)
                 {
                     Text = Text.Remove(Text.Length - 1);
                 }

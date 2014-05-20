@@ -1,19 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D420FA6C-37CD-4041-B9F2-E57D0BD671FA}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{C8DE2059-24EE-4AB3-859F-E8F829E2AF19}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FacePuncher</RootNamespace>
-    <AssemblyName>FacePuncher</AssemblyName>
+    <RootNamespace>FacePuncher.CartConsole</RootNamespace>
+    <AssemblyName>FacePuncher.CartConsole</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -21,15 +20,16 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="SDL2-CS">
@@ -45,36 +45,35 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Geometry\RoomVisibility.cs" />
-    <Compile Include="Graphics\Display.cs" />
-    <Compile Include="Graphics\Rendering.cs" />
-    <Compile Include="Input.cs" />
-    <Compile Include="UI\Button.cs" />
-    <Compile Include="UI\ServerSelectPrompt.cs" />
-    <Compile Include="UI\UIManager.cs" />
-    <Compile Include="UI\IWidgetContainer.cs" />
-    <Compile Include="UI\Label.cs" />
-    <Compile Include="UI\ProgressBar.cs" />
-    <Compile Include="UI\TextBox.cs" />
-    <Compile Include="UI\UsableWidget.cs" />
-    <Compile Include="UI\Widget.cs" />
-    <Compile Include="UI\Frame.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="CartConsole.cs" />
+    <Compile Include="ConsoleColorToColor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServerConnection.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\FacePuncher.CartConsole\FacePuncher.CartConsole.csproj">
-      <Project>{c8de2059-24ee-4ab3-859f-e8f829e2af19}</Project>
-      <Name>FacePuncher.CartConsole</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\FacePuncher.Shared\FacePuncher.Shared.csproj">
-      <Project>{4e2355af-f51d-4913-9eb0-845eb7759bb3}</Project>
-      <Name>FacePuncher.Shared</Name>
-    </ProjectReference>
+    <Content Include="Data\font.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libjpeg-9.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libpng16-16.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libtiff-5.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libwebp-4.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SDL2.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SDL2_image.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="zlib1.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
