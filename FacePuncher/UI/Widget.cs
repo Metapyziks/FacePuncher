@@ -56,6 +56,11 @@ namespace FacePuncher.UI
         /// </summary>
         public ConsoleColor BackgroundColor { get; set; }
 
+        /// <summary>
+        /// Widgets parent.
+        /// </summary>
+        public Widget Parent { get; set; }
+
         protected Rectangle rectangle;
 
         /// <summary>

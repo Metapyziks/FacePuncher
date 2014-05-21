@@ -1,5 +1,6 @@
 ﻿/* Copyright (C) 2014 James King (metapyziks@gmail.com)
  * Copyright (C) 2014 Saša Barišić (cartman300@net.hr)
+ * Copyright (C) 2014 Michał Ferchow (deseteral@gmail.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -47,14 +48,14 @@ namespace FacePuncher.UI
             : base(name, Interface.Display.Center - new Position(Size.X / 2, Size.Y / 2),
                 Size.X, Size.Y, "Connect to Server")
         {
-            var lblHostName = new Label("lbl_hostname", Position + new Position(2, 2), "Host name", ConsoleColor.DarkGray);
-            var txtHostName = new TextBox("txt_hostname", Position + new Position(3, 4), 28, "localhost");
+            var lblHostName = new Label("lbl_hostname", new Position(2, 2), "Host name", ConsoleColor.DarkGray);
+            var txtHostName = new TextBox("txt_hostname", new Position(3, 4), 28, "localhost");
 
-            var lblPort = new Label("lbl_port", Position + new Position(2, 6), "Port number", ConsoleColor.DarkGray);
-            var txtPort = new TextBox("txt_port", Position + new Position(3, 8), 5, "14242");
+            var lblPort = new Label("lbl_port", new Position(2, 6), "Port number", ConsoleColor.DarkGray);
+            var txtPort = new TextBox("txt_port", new Position(3, 8), 5, "14242");
 
-            var btnConnect = new Button("btn_connect", Position + new Position(3, 10), "Connect");
-            var btnQuit = new Button("btn_quit", Position + new Position(btnConnect.Text.Length + 19, 10), "Quit", ConsoleColor.DarkRed);
+            var btnConnect = new Button("btn_connect", new Position(3, 10), "Connect");
+            var btnQuit = new Button("btn_quit", new Position(btnConnect.Text.Length + 19, 10), "Quit", ConsoleColor.DarkRed);
 
             btnConnect.Used += (sender, e) => {
                 int port;

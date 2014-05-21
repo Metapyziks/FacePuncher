@@ -59,7 +59,7 @@ namespace FacePuncher.UI
                 bc = ForegroundColor;
             }
 
-            UIManager.DrawString(Position, Text, fc, bc);
+            UIManager.DrawString(Parent.Position + Position, Text, fc, bc);
         }
     }
 }

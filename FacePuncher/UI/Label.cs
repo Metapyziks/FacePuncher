@@ -48,7 +48,7 @@ namespace FacePuncher.UI
 
         public override void Draw()
         {
-            UIManager.DrawString(Position, Text, ForegroundColor, BackgroundColor);
+            UIManager.DrawString(Parent.Position + Position, Text, ForegroundColor, BackgroundColor);
         }
     }
 }
