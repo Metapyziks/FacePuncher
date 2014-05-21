@@ -93,10 +93,11 @@ namespace FacePuncher.UI
                 }
             }
 
-            UIManager.DrawString(Position, "[" + Text + "]", fc, bc);
+            UIManager.DrawString(Parent.Position + Position, "[" + Text + "]", fc, bc);
 
             if (_isEdited) {
-                var CursorPos = new Position(Position.X + Text.Length + 1, Position.Y);
+                var CursorPos = Parent.Position + Position;
+                CursorPos.X += Text.Length + 1;
 
                 var cfc = fc;
                 if (((long)Tools.CurTime()) % 2 == 0)

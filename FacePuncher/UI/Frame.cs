@@ -64,28 +64,31 @@ namespace FacePuncher.UI
         {
             DrawChildren();
 
+            var parentX = Parent.Position.X;
+            var parentY = Parent.Position.Y;
+
             // Render frame corners
-            Interface.Display.SetCell(rectangle.TopLeft, _frameChars[2], ForegroundColor, BackgroundColor);
-            Interface.Display.SetCell(rectangle.TopRight, _frameChars[3], ForegroundColor, BackgroundColor);
-            Interface.Display.SetCell(rectangle.BottomLeft, _frameChars[4], ForegroundColor, BackgroundColor);
-            Interface.Display.SetCell(rectangle.BottomRight, _frameChars[5], ForegroundColor, BackgroundColor);
+            Interface.Display.SetCell(Parent.Position + rectangle.TopLeft, _frameChars[2], ForegroundColor, BackgroundColor);
+            Interface.Display.SetCell(Parent.Position + rectangle.TopRight, _frameChars[3], ForegroundColor, BackgroundColor);
+            Interface.Display.SetCell(Parent.Position + rectangle.BottomLeft, _frameChars[4], ForegroundColor, BackgroundColor);
+            Interface.Display.SetCell(Parent.Position + rectangle.BottomRight, _frameChars[5], ForegroundColor, BackgroundColor);
 
             // Render horizontal line
             for (var x = 0; x < rectangle.Width - 1; x++)
             {
-                Interface.Display.SetCell(x + rectangle.Left + 1, rectangle.Top, _frameChars[0], ForegroundColor, BackgroundColor);
-                Interface.Display.SetCell(x + rectangle.Left + 1, rectangle.Bottom, _frameChars[0], ForegroundColor, BackgroundColor);
+                Interface.Display.SetCell(parentX + x + rectangle.Left + 1, parentY + rectangle.Top, _frameChars[0], ForegroundColor, BackgroundColor);
+                Interface.Display.SetCell(parentX + x + rectangle.Left + 1, parentY + rectangle.Bottom, _frameChars[0], ForegroundColor, BackgroundColor);
             }
 
             // Render vertical line
             for (var y = 0; y < rectangle.Height - 1; y++)
             {
-                Interface.Display.SetCell(rectangle.Left, y + rectangle.Top + 1, _frameChars[1], ForegroundColor, BackgroundColor);
-                Interface.Display.SetCell(rectangle.Right, y + rectangle.Top + 1, _frameChars[1], ForegroundColor, BackgroundColor);
+                Interface.Display.SetCell(parentX + rectangle.Left, parentY + y + rectangle.Top + 1, _frameChars[1], ForegroundColor, BackgroundColor);
+                Interface.Display.SetCell(parentX + rectangle.Right, parentY + y + rectangle.Top + 1, _frameChars[1], ForegroundColor, BackgroundColor);
             }
 
             // Render title
-            UIManager.DrawString(new Position(Position.X + 2, Position.Y), Title);
+            UIManager.DrawString(new Position(parentX + Position.X + 2, parentY + Position.Y), Title);
         }
 
         public override List<Widget> GetSelectableWidgets()
@@ -103,6 +106,7 @@ namespace FacePuncher.UI
 
         public void AddChild(Widget w)
         {
+            w.Parent = this;
             Children.Add(w.Name, w);
         }
 
