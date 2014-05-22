@@ -44,14 +44,19 @@ namespace FacePuncher.UI
         private List<Widget> _selectableWidgets;
         private int _selectedId;
 
+        private readonly Frame _parent;
+
         /// <summary>
         /// Creates empty manager.
         /// </summary>
         public UIManager()
         {
             Children = new Dictionary<string, Widget>();
+
             _selectableWidgets = new List<Widget>();
             _selectedId = 0;
+
+            _parent = new Frame("ui", new Position(), Interface.Display.Width, Interface.Display.Height);
         }
 
         public Dictionary<string, Widget> Children
@@ -149,6 +154,7 @@ namespace FacePuncher.UI
 
         public void AddChild(Widget w)
         {
+            w.Parent = _parent;
             Children.Add(w.Name, w);
         }
 
