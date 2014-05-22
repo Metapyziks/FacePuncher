@@ -118,6 +118,12 @@ namespace FacePuncher
             return val < min ? min : val > max ? max : val;
         }
 
+        public static int Wrap(this int val, int max)
+        {
+            int offset = val < 0 ? 1 : 0;
+            return val - ((val + offset) / max - offset) * max;
+        }
+
         public static void Write(this NetworkStream stream, Position pos)
         {
             stream.Write(pos.X);
