@@ -18,14 +18,15 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 using FacePuncher.Entities;
 using FacePuncher.Geometry;
 using FacePuncher.Network;
-using System.Threading.Tasks;
 
 namespace FacePuncher
 {
@@ -42,7 +43,7 @@ namespace FacePuncher
         const int MaxVisibilityRange = 12;
 
         private TcpClient _socket;
-        private RoomVisibility[] _visibility;
+        private Dictionary<Room, RoomVisibility> _visibility;
 
         /// <summary>
         /// The client's player entity.
@@ -68,8 +69,7 @@ namespace FacePuncher
             Level = level;
 
             _visibility = level
-                .Select(x => new RoomVisibility(x))
-                .ToArray();
+                .ToDictionary(x => x, x => new RoomVisibility(x));
 
             Player = Entity.Create("player");
             Player.GetComponent<PlayerControl>().Client = this;
@@ -100,14 +100,18 @@ namespace FacePuncher
 
             var time = Level.Time + timeOffset;
 
-
             _stream.Write(time);
             _stream.Write(Player.Position);
 
             lock (Level)
             {
-                var visibleRooms = _visibility
-                    .Where(x => x.UpdateVisibility(Player.Position, MaxVisibilityRange, time))
+                foreach (var tile in Visibility.Cast(Player.Tile, MaxVisibilityRange)) {
+                    if (tile.Room == null) continue;
+                    _visibility[tile.Room].Reveal(tile.RelativePosition, time);
+                }
+
+                var visibleRooms = _visibility.Values
+                    .Where(x => x.LastVisibleTime == time)
                     .ToArray();
 
                 _stream.Write(visibleRooms.Length);

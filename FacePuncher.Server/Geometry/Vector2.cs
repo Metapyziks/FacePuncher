@@ -102,6 +102,11 @@ namespace FacePuncher.Geometry
             {
                 return new Vector2(vec.X / div, vec.Y / div);
             }
+
+            public override string ToString()
+            {
+                return String.Format("({0} {1})", X, Y);
+            }
         }
     }
 }

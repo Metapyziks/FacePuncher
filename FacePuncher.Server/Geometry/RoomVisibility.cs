@@ -65,41 +65,6 @@ namespace FacePuncher.Geometry
         }
 
         /// <summary>
-        /// Updates the visibility of each tile within the room from a specified
-        /// origin of sight, with a given maximum view radius.
-        /// </summary>
-        /// <param name="origin">Position of the observer.</param>
-        /// <param name="maxRadius">Maximum view radius.</param>
-        /// <param name="time">Time at which visibility is being tested.</param>
-        /// <returns>True if any tiles are currently visible, and false otherwise.</returns>
-        public bool UpdateVisibility(Position origin, int maxRadius, ulong time)
-        {
-            if ((Room.Rect.NearestPosition(origin) - origin).LengthSquared > maxRadius * maxRadius) {
-                return false;
-            }
-
-            foreach (var pos in Room.Rect.Positions) {
-                if ((pos - origin).LengthSquared > maxRadius * maxRadius) continue;
-
-                var rel = pos - Room.Rect.TopLeft;
-
-                if (_mask[rel.X, rel.Y] >= time) continue;
-
-                foreach (var mid in origin.BresenhamLine(pos)) {
-                    rel = mid - Room.Rect.TopLeft;
-
-                    if (Room.RelativeRect.Intersects(rel)) {
-                        Reveal(rel, time);
-                    }
-
-                    if (Room[rel].State != TileState.Floor) break;
-                }
-            }
-
-            return LastVisibleTime >= time;
-        }
-
-        /// <summary>
         /// Gets a set of all tiles within the room that were visible at the
         /// specified time.
         /// </summary>

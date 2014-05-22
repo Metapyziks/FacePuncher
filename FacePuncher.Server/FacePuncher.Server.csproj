@@ -69,7 +69,7 @@
     <Compile Include="Geometry\RoomVisibility.cs" />
     <Compile Include="Geometry\Tile.cs" />
     <Compile Include="Geometry\Vector2.cs" />
-    <Compile Include="Geometry\VisRay.cs" />
+    <Compile Include="Geometry\Visibility.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
