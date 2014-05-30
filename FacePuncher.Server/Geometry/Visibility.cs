@@ -24,7 +24,7 @@ namespace FacePuncher.Geometry
 {
     static partial class Visibility
     {
-        public static IEnumerable<Tile> Cast(Tile tile, int radius)
+        public static IEnumerable<Tile> Cast(Tile tile, float radius)
         {
             var pos = tile.Position + new Vector2(0.5f, 0.5f);
 
@@ -35,7 +35,7 @@ namespace FacePuncher.Geometry
                 .Concat(Cast(tile,  pos, -Vector2.UnitY,  Vector2.UnitX, radius));
         }
 
-        private static IEnumerable<Tile> Cast(Tile tile, Vector2 origin, Vector2 l, Vector2 r, int radius)
+        private static IEnumerable<Tile> Cast(Tile tile, Vector2 origin, Vector2 l, Vector2 r, float radius)
         {
             const float error = 1 / 256f;
 
@@ -60,7 +60,7 @@ namespace FacePuncher.Geometry
 
             bool rightLeading = xadd != yadd;
 
-            int ymax = yorg + (radius + 1) * yadd;
+            int ymax = yorg + (int) Math.Floor(radius + 1) * yadd;
             for (int y = ymin; y != ymax; y += yadd) {
                 int dy = y - yorg;
 

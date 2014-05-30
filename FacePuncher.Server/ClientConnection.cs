@@ -40,7 +40,7 @@ namespace FacePuncher
         /// 
         /// TODO: Move to become a property of the player character.
         /// </summary>
-        const int MaxVisibilityRange = 12;
+        const float MaxVisibilityRange = 8.5f;
 
         private TcpClient _socket;
         private Dictionary<Room, RoomVisibility> _visibility;
