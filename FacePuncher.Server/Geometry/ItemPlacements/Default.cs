@@ -19,12 +19,51 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace FacePuncher.Geometry.ItemPlacements
 {
     class Default : ItemPlacement
     {
+        private Dictionary<ItemGenerator, int> _itemGenerators;
+
+        [ScriptDefinable]
+        public float MinFrequency { get; set; }
+
+        [ScriptDefinable]
+        public float MaxFrequency { get; set; }
+
+        public Default()
+        {
+            MinFrequency = 0;
+            MaxFrequency = 0;
+        }
+
+        public override void LoadFromDefinition(XElement elem)
+        {
+            base.LoadFromDefinition(elem);
+
+            _itemGenerators = elem.Elements("Item")
+                .ToFrequencyDictionary(x => ItemGenerator.Get(x));
+        }
+
+        public override void Generate(IEnumerable<Room> rooms, Random rand)
+        {
+            var tiles = rooms
+                .SelectMany(x => x
+                    .Where(y => y.State == TileState.Floor))
+                .ToArray();
+
+            int count = (int) Math.Round(rand.NextFloat(MinFrequency, MaxFrequency) * tiles.Length);
+
+            tiles = tiles
+                .OrderBy(x => rand.Next())
+                .Take(count)
+                .ToArray();
+
+            foreach (var tile in tiles) {
+                _itemGenerators.SelectRandom(rand).Generate(tile, rand);
+            }
+        }
     }
 }

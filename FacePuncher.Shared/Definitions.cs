@@ -61,6 +61,11 @@ namespace FacePuncher
     [AttributeUsage(AttributeTargets.Property)]
     public class ScriptDefinableAttribute : Attribute { }
 
+    public interface IDefinitionLoadable
+    {
+        void LoadFromDefinition(XElement elem);
+    }
+
     /// <summary>
     /// Utility class for loading and handling definitions
     /// loaded from XML files.

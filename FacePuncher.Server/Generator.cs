@@ -18,13 +18,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
 
 namespace FacePuncher
 {
-    abstract class GenerationWorker
+    abstract class GenerationWorker : IDefinitionLoadable
     {
         public virtual void LoadFromDefinition(XElement elem)
         {
@@ -117,8 +116,7 @@ namespace FacePuncher
         }
     }
 
-    class GeneratorCollection<T>
-        : IEnumerable<T>
+    class GeneratorCollection<T> : IEnumerable<T>
         where T : Generator<T>, new()
     {
         private Dictionary<String, T> _generators;

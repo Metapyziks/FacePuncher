@@ -53,9 +53,10 @@ namespace FacePuncher.Geometry
                 ItemPlacement ?? new ItemPlacements.Default());
         }
 
-        public IEnumerable<Room> Generate(Level level, Rectangle rect, Rectangle[] doors, Random rand)
+        public void Generate(Level level, Rectangle rect, Rectangle[] doors, Random rand)
         {
-            return RoomLayout.Generate(level, rect, doors, rand);
+            var rooms = RoomLayout.Generate(level, rect, doors, rand);
+            ItemPlacement.Generate(rooms, rand);
         }
     }
 }

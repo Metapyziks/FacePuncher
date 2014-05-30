@@ -18,13 +18,32 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Xml.Linq;
+
+using FacePuncher.Entities;
 
 namespace FacePuncher.Geometry.EntitySelectors
 {
     class Default : EntitySelector
     {
+        private Dictionary<String, int> _classes;
+
+        public Default()
+        {
+            _classes = new Dictionary<string, int>();
+        }
+
+        public override void LoadFromDefinition(XElement elem)
+        {
+            base.LoadFromDefinition(elem);
+
+            _classes = elem.Elements("Entity")
+                .ToFrequencyDictionary(x => x);
+        }
+
+        public override Entity Select(Random rand)
+        {
+            return Entity.Create(_classes.SelectRandom(rand));
+        }
     }
 }

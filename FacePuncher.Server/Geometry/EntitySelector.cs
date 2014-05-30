@@ -17,14 +17,13 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using FacePuncher.Entities;
 
 namespace FacePuncher.Geometry
 {
-    abstract class EntitySelector
+    abstract class EntitySelector : GenerationWorker
     {
+        public abstract Entity Select(Random rand);
     }
 }

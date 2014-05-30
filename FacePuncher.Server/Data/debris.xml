@@ -1,7 +1,7 @@
 <server:entity name="dust">
     <StaticDrawable>
         <Layer>Debris</Layer>
-        <ForeColor>DarkBlue</ForeColor>
+        <ForeColor>DarkGray</ForeColor>
     </StaticDrawable>
 </server:entity>
 

@@ -25,28 +25,13 @@ namespace FacePuncher.Geometry.RoomPlacements
 {
     class Default : RoomPlacement
     {
-        private class RoomGeneratorInfo
-        {
-            public RoomGenerator Generator { get; private set; }
-
-            [ScriptDefinable]
-            public int Frequency { get; set; }
-
-            public void Initialize(XElement elem)
-            {
-                Generator = RoomGenerator.Get(elem.Attribute("class").Value);
-
-                Definitions.LoadProperties(this, elem);
-            }
-        }
-
         private struct Hub
         {
             public Position Position;
             public int Density;
         }
 
-        private List<RoomGeneratorInfo> _roomGenerators;
+        private Dictionary<RoomGenerator, int> _roomGenerators;
 
         [ScriptDefinable]
         public int MinArea { get; set; }
@@ -85,27 +70,14 @@ namespace FacePuncher.Geometry.RoomPlacements
 
             MinHubDensity = 64;
             MaxHubDensity = 64;
-
-            _roomGenerators = new List<RoomGeneratorInfo>();
         }
 
         public override void LoadFromDefinition(XElement elem)
         {
             base.LoadFromDefinition(elem);
 
-            foreach (var room in elem.Elements("Room")) {
-                var info = new RoomGeneratorInfo();
-                info.Initialize(room);
-                _roomGenerators.Add(info);
-            }
-        }
-
-        protected RoomGenerator GetRandomGenerator(Random rand)
-        {
-            int total = _roomGenerators.Sum(x => x.Frequency);
-            int index = rand.Next(total);
-
-            return _roomGenerators.First(x => (index -= x.Frequency) < 0).Generator;
+            _roomGenerators = elem.Elements("Room")
+                .ToFrequencyDictionary(x => RoomGenerator.Get(x));
         }
 
         private Rectangle GenerateAdjacentRect(Rectangle a, Rectangle b, Random rand)
@@ -254,7 +226,7 @@ namespace FacePuncher.Geometry.RoomPlacements
 
             int area = 0;
             while (area < destArea) {
-                var generator = GetRandomGenerator(rand);
+                var generator = _roomGenerators.SelectRandom(rand);
                 var size = new Rectangle(Position.Zero, generator.RoomLayout.GenerateSize(rand));
 
                 var hub = hubs[rand.Next(hubs.Length)];

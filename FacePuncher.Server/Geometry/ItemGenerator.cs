@@ -17,14 +17,37 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace FacePuncher.Geometry
 {
-    class ItemGenerator
+    class ItemGenerator : Generator<ItemGenerator>
     {
+        static GeneratorCollection<ItemGenerator> _generators;
+
+        static ItemGenerator()
+        {
+            _generators = new GeneratorCollection<ItemGenerator>();
+
+            Definitions.RegisterType("item", _generators.Add);
+        }
+
+        public static ItemGenerator Get(String type)
+        {
+            return _generators[type];
+        }
+
+        public EntitySelector EntitySelector { get; private set; }
+
+        protected override void OnLoadFromDefinition(XElement elem)
+        {
+            EntitySelector = LoadWorkerFromDefinition<EntitySelector>(elem,
+                EntitySelector ?? new EntitySelectors.Default());
+        }
+
+        public void Generate(Tile tile, Random rand)
+        {
+            EntitySelector.Select(rand).Place(tile);
+        }
     }
 }

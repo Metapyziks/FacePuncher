@@ -189,6 +189,36 @@ namespace FacePuncher
             return min + (float) rand.NextDouble() * (max - min);
         }
 
+        public static Dictionary<T, int> ToFrequencyDictionary<T>(this IEnumerable<XElement> elems,
+            Func<String, T> keySelector)
+        {
+            return elems.ToDictionary(x => {
+                var key = keySelector(x.Attribute("class").Value);
+
+                if (key is IDefinitionLoadable) {
+                    ((IDefinitionLoadable) key).LoadFromDefinition(x);
+                }
+
+                return key;
+            }, x => {
+                int freq = 1;
+
+                if (x.HasAttribute("freq")) {
+                    int.TryParse(x.Attribute("freq").Value, out freq);
+                }
+
+                return freq;
+            });
+        }
+
+        public static T SelectRandom<T>(this Dictionary<T, int> frequencies, Random rand)
+        {
+            int total = frequencies.Values.Sum();
+            int index = rand.Next(total);
+
+            return frequencies.First(x => (index -= x.Value) < 0).Key;
+        }
+
         private class NodeInfo<T>
         {
             private float _heuristic;
