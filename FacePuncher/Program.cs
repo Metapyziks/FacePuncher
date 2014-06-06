@@ -85,7 +85,7 @@ namespace FacePuncher
             UIManager.AddChild(select);
             UIManager.CalculateSelectableWidgets();
 
-            Direction direc = Direction.None;
+            var direc = Direction.None;
 
             while (true) {
                 if (server == null) {

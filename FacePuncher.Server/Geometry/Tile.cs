@@ -73,7 +73,7 @@ namespace FacePuncher.Geometry
         private TileState _state;
         private List<Entity> _entities;
         private TileAppearance _appearance;
-        private ulong _lastAppearance;
+        private double _lastAppearance;
 
         /// <summary>
         /// Parent room containing this tile.
@@ -238,19 +238,6 @@ namespace FacePuncher.Geometry
         public Tile GetNeighbour(Direction dir)
         {
             return GetNeighbour(dir.GetOffset());
-        }
-
-        /// <summary>
-        /// Instructs each entity within the tile to perform a single think step.
-        /// </summary>
-        public void Think()
-        {
-            for (int i = _entities.Count - 1; i >= 0; --i) {
-                // In case more than one entity was removed from the tile
-                if (i >= _entities.Count) continue;
-
-                _entities[i].Think();
-            }
         }
 
         /// <summary>

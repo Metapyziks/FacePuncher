@@ -27,6 +27,7 @@ using System.IO;
 using System.Reflection;
 
 using FacePuncher.Geometry;
+using System.Diagnostics;
 
 namespace FacePuncher.Server
 {
@@ -96,19 +97,27 @@ namespace FacePuncher.Server
 
             RunListenerLoop();
 
+            var timer = new Stopwatch();
+            var originTime = 0.0;
+
             while (true)
             {
                 if (_clients.Count > 0)
                 {
-                    _level.Think();
-                    await Task.Delay(10);
+                    if (!timer.IsRunning) {
+                        timer.Restart();
+                    }
+
+                    _level.Think(timer.Elapsed.TotalSeconds + originTime - _level.Time);
+                    await Task.Delay(100);
                 }
                 else
                 {
+                    originTime = _level.Time;
                     await Task.Delay(100);
                 }
 
-                Console.WriteLine(_level.Time);
+                Console.WriteLine("{0:F2}", _level.Time);
                 Console.CursorTop -= 1;
 
                 await Task.Yield();

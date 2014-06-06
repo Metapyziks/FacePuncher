@@ -25,12 +25,30 @@ namespace FacePuncher.Entities
     /// </summary>
     class VerminControl : AgentControl
     {
-        public override void OnThink()
-        {
-            if (!CanMove || Tools.Random.NextDouble() < 0.5) return;
+        [ScriptDefinable]
+        public double MinMovePeriod { get; set; }
 
+        [ScriptDefinable]
+        public double MaxMovePeriod { get; set; }
+        
+        public override void LoadFromDefinition(System.Xml.Linq.XElement elem)
+        {
+            base.LoadFromDefinition(elem);
+
+            MovePeriod = Tools.Random.NextDouble() * (MaxMovePeriod - MinMovePeriod) + MinMovePeriod;
+        }
+
+        public override void OnPlace()
+        {
+            Entity.Wake();
+        }
+
+        protected override void OnNextMove()
+        {
             var valid = Tools.Directions.Where(x => Entity.CanMove(x)).ToArray();
             Move(valid[Tools.Random.Next(valid.Length)]);
+
+            base.OnNextMove();
         }
     }
 }

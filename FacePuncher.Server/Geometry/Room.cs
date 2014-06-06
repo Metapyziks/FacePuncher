@@ -166,37 +166,6 @@ namespace FacePuncher.Geometry
             }
         }
 
-        private bool IsAcceptableThinkProbe(Entity ent)
-        {
-            return ent != null
-                && ent.IsValid
-                && ent.Room == this
-                && ent.CanThink;
-        }
-
-        internal void UpdateThinkProbe(Entity ent)
-        {
-            if (_thinkProbe != ent && !IsAcceptableThinkProbe(_thinkProbe) && IsAcceptableThinkProbe(ent)) {
-                _thinkProbe = ent;
-            } else if (_thinkProbe == ent && !IsAcceptableThinkProbe(ent)) {
-                _thinkProbe = this
-                    .SelectMany(x => x)
-                    .FirstOrDefault(x => IsAcceptableThinkProbe(x));
-            }
-        }
-
-        /// <summary>
-        /// Instructs each entity within the room to perform a single think step.
-        /// </summary>
-        public void Think()
-        {
-            if (!IsAcceptableThinkProbe(_thinkProbe)) return;
-
-            foreach (var tile in _tiles) {
-                tile.Think();
-            }
-        }
-
         /// <summary>
         /// Gets an enumerator that iterates through each tile in the room.
         /// </summary>

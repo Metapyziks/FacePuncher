@@ -6,6 +6,7 @@
     </StaticDrawable>
 
     <VerminControl>
-        <MovePeriod>75</MovePeriod>
+        <MinMovePeriod>0.5</MinMovePeriod>
+        <MaxMovePeriod>1.0</MaxMovePeriod>
     </VerminControl>
 </server:entity>

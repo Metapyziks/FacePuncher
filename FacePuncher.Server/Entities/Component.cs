@@ -31,9 +31,6 @@ namespace FacePuncher.Entities
     /// </summary>
     public abstract class Component
     {
-        private static Dictionary<Type, bool> _sThinkingTypes
-            = new Dictionary<Type, bool>();
-
         /// <summary>
         /// Creates a component for the specified entity.
         /// </summary>
@@ -65,10 +62,6 @@ namespace FacePuncher.Entities
             if (c == null) {
                 throw new MissingMethodException(
                     String.Format("Type {0} is missing a valid constructor.", t.FullName));
-            }
-
-            if (!_sThinkingTypes.ContainsKey(t)) {
-                _sThinkingTypes.Add(t, t.GetMethod("OnThink").DeclaringType != typeof(Component));
             }
 
             var comp = (Component) c.Invoke(new object[0]);
@@ -112,9 +105,9 @@ namespace FacePuncher.Entities
         }
 
         /// <summary>
-        /// Gets the current game time in ticks.
+        /// Gets the current game time.
         /// </summary>
-        protected ulong Time
+        protected double Time
         {
             get { return Level.Time; }
         }
@@ -136,11 +129,6 @@ namespace FacePuncher.Entities
         {
             get { return Entity.Position; }
         }
-
-        /// <summary>
-        /// Tests to see if this component has overridden the OnThink method.
-        /// </summary>
-        public bool CanThink { get { return _sThinkingTypes[GetType()]; } }
 
         /// <summary>
         /// Gets the host entity.
@@ -176,14 +164,30 @@ namespace FacePuncher.Entities
         public virtual void OnUpdateComponents() { }
 
         /// <summary>
-        /// Called once per game step.
+        /// Called when the parent entity becomes active.
         /// </summary>
-        public virtual void OnThink() { }
+        public virtual void OnWake() { }
+
+        /// <summary>
+        /// Called when the parent entity becomes inactive.
+        /// </summary>
+        public virtual void OnSleep() { }
 
         /// <summary>
         /// Called when either the component is removed from its
         /// entity or the entity is removed from the world.
         /// </summary>
         public virtual void OnRemove() { }
+
+        /// <summary>
+        /// Adds a delayed action to the action queue of the level.
+        /// </summary>
+        /// <param name="delay">Amount of time units until the action
+        /// is to be performed.</param>
+        /// <param name="action">Action to perform.</param>
+        protected void Schedule(double delay, Action action)
+        {
+            Level.Schedule(delay, this, action);
+        }
     }
 }

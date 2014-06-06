@@ -27,22 +27,25 @@ namespace FacePuncher.Entities
     /// </summary>
     abstract class AgentControl : Component
     {
-        private ulong _nextMove;
-
         /// <summary>
         /// Gets or sets the number of game ticks between
         /// movements for this entity.
         /// </summary>
         [ScriptDefinable]
-        public ulong MovePeriod { get; set; }
+        public double MovePeriod { get; set; }
 
-        /// <summary>
-        /// Checks to see if the entity can move at the
-        /// current time.
-        /// </summary>
-        protected bool CanMove
+        public override void OnWake()
         {
-            get { return Time >= _nextMove; }
+            if (MovePeriod > 0) {
+                Schedule(MovePeriod, OnNextMove);
+            }
+        }
+
+        protected virtual void OnNextMove()
+        {
+            if (MovePeriod > 0) {
+                Schedule(MovePeriod, OnNextMove);
+            }
         }
 
         /// <summary>
@@ -52,10 +55,9 @@ namespace FacePuncher.Entities
         /// <returns>Whether the move was successful.</returns>
         protected bool Move(Direction dir)
         {
-            if (MovePeriod == 0 || !CanMove || !Entity.CanMove(dir)) return false;
+            if (!Entity.CanMove(dir)) return false;
 
             Entity.Move(dir);
-            _nextMove = Time + MovePeriod;
             return true;
         }
     }

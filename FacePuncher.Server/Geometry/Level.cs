@@ -16,9 +16,12 @@
  * along with FacePuncher. If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+
+using FacePuncher.Entities;
 
 namespace FacePuncher.Geometry
 {
@@ -27,12 +30,14 @@ namespace FacePuncher.Geometry
     /// </summary>
     public class Level : IEnumerable<Room>
     {
+
         private List<Room> _rooms;
+        private ScheduleQueue _schedule;
 
         /// <summary>
-        /// Gets or sets the current game time in steps.
+        /// Gets or sets the current game time.
         /// </summary>
-        public ulong Time { get; set; }
+        public double Time { get { return _schedule.Time; } }
 
         /// <summary>
         /// Gets a rectangle enclosing all rooms in this level.
@@ -48,8 +53,7 @@ namespace FacePuncher.Geometry
         public Level()
         {
             _rooms = new List<Room>();
-
-            Time = 1;
+            _schedule = new ScheduleQueue();
         }
 
         /// <summary>
@@ -66,6 +70,11 @@ namespace FacePuncher.Geometry
             _rooms.Add(room);
 
             return room;
+        }
+
+        internal void Schedule(double delay, Component comp, Action action)
+        {
+            _schedule.Add(delay, comp, action);
         }
 
         /// <summary>
@@ -106,13 +115,15 @@ namespace FacePuncher.Geometry
         }
 
         /// <summary>
-        /// Perform a single think step and increment the time counter.
+        /// Perform the next queued action and increase the current time.
         /// </summary>
-        public void Think()
+        public void Think(double dt)
         {
-            foreach (var room in _rooms) room.Think();
+            var time = Time + dt;
 
-            ++Time;
+            while (Time <= time) {
+                _schedule.Act();
+            }
         }
 
         /// <summary>

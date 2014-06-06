@@ -27,7 +27,7 @@ namespace FacePuncher.Geometry
     /// </summary>
     public class RoomVisibility
     {
-        private ulong[,] _mask;
+        private double[,] _mask;
 
         /// <summary>
         /// Room this instance is recording the visibility of.
@@ -37,7 +37,7 @@ namespace FacePuncher.Geometry
         /// <summary>
         /// Gets the latest time any tile within the room was seen.
         /// </summary>
-        public ulong LastVisibleTime { get; private set; }
+        public double LastVisibleTime { get; private set; }
 
         /// <summary>
         /// Creates a new RoomVisibility instance to track the visibility
@@ -49,7 +49,7 @@ namespace FacePuncher.Geometry
             Room = room;
             LastVisibleTime = 0;
 
-            _mask = new ulong[room.Width, room.Height];
+            _mask = new double[room.Width, room.Height];
         }
         
         /// <summary>
@@ -58,7 +58,7 @@ namespace FacePuncher.Geometry
         /// </summary>
         /// <param name="pos">Position of the tile to mark as visible.</param>
         /// <param name="time">Time at which the tile was seen.</param>
-        public void Reveal(Position pos, ulong time)
+        public void Reveal(Position pos, double time)
         {
             _mask[pos.X, pos.Y] = Math.Max(_mask[pos.X, pos.Y], time);
             LastVisibleTime = Math.Max(LastVisibleTime, time);
@@ -70,7 +70,7 @@ namespace FacePuncher.Geometry
         /// </summary>
         /// <param name="time">Time at which to compare visibility.</param>
         /// <returns>A set of visible tiles.</returns>
-        public IEnumerable<Tile> GetVisible(ulong time)
+        public IEnumerable<Tile> GetVisible(double time)
         {
             if (LastVisibleTime < time) return Enumerable.Empty<Tile>();
 

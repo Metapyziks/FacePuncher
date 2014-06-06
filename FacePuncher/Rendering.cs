@@ -76,7 +76,7 @@ namespace FacePuncher
         /// of the rectangle should be drawn to.</param>
         /// <param name="attribs">Attributes to be used when drawing tiles
         /// and entities.</param>
-        public static void Draw(this RoomVisibility vis, Rectangle rect, Position screenPos, DrawAttributes attribs, ulong time)
+        public static void Draw(this RoomVisibility vis, Rectangle rect, Position screenPos, DrawAttributes attribs, double time)
         {
             var subRect = vis.Rect.Intersection(rect);
             var roomPos = vis.Rect.TopLeft;

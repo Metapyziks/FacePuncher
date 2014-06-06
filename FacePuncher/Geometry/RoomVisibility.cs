@@ -29,7 +29,7 @@ namespace FacePuncher.Geometry
     /// </summary>
     public class RoomVisibility
     {
-        private ulong[,] _mask;
+        private double[,] _mask;
         private TileAppearance[,] _tiles;
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace FacePuncher.Geometry
         /// <summary>
         /// Gets the latest time any tile within the room was seen.
         /// </summary>
-        public ulong LastVisibleTime { get; private set; }
+        public double LastVisibleTime { get; private set; }
 
         /// <summary>
         /// Creates a new RoomVisibility instance to track the visibility
@@ -52,7 +52,7 @@ namespace FacePuncher.Geometry
             Rect = rect;
             LastVisibleTime = 0;
 
-            _mask = new ulong[Rect.Width, Rect.Height];
+            _mask = new double[Rect.Width, Rect.Height];
             _tiles = new TileAppearance[Rect.Width, Rect.Height];
         }
         
@@ -64,7 +64,7 @@ namespace FacePuncher.Geometry
         /// <param name="appearance">Appearance of the tile at the time
         /// of being seen.</param>
         /// <param name="time">Time at which the tile was seen.</param>
-        public void Reveal(Position pos, TileAppearance appearance, ulong time)
+        public void Reveal(Position pos, TileAppearance appearance, double time)
         {
             _mask[pos.X, pos.Y] = Math.Max(_mask[pos.X, pos.Y], time);
             _tiles[pos.X, pos.Y] = appearance;
@@ -78,7 +78,7 @@ namespace FacePuncher.Geometry
         /// </summary>
         /// <param name="time">Time at which to compare visibility.</param>
         /// <returns>A set of visible tiles.</returns>
-        public IEnumerable<TileAppearance> GetVisible(ulong time)
+        public IEnumerable<TileAppearance> GetVisible(double time)
         {
             if (LastVisibleTime < time) return Enumerable.Empty<TileAppearance>();
 
@@ -93,7 +93,7 @@ namespace FacePuncher.Geometry
         /// </summary>
         /// <param name="time">Time at which to compare visibility.</param>
         /// <returns>A set of previously seen tiles.</returns>
-        public IEnumerable<TileAppearance> GetRemembered(ulong time)
+        public IEnumerable<TileAppearance> GetRemembered(double time)
         {
             if (LastVisibleTime == 0) return Enumerable.Empty<TileAppearance>();
 

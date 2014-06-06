@@ -29,6 +29,8 @@ namespace FacePuncher.Entities
     /// </summary>
     class PlayerControl : AgentControl
     {
+        const double VisibilityUpdatePeriod = 0.25;
+
         /// <summary>
         /// Gets or sets the client that dictates the actions of this entity.
         /// </summary>
@@ -41,24 +43,30 @@ namespace FacePuncher.Entities
             set { _intent = value; }
         }
 
-        public override void OnThink()
+        public override void OnWake()
         {
-            Intent.HandleIntent(ref _intent, (MoveIntent mi) => HandleMove(mi)); // This isn't quite optimal
+            base.OnWake();
 
-            if (Time % 10 == 0) Client.SendVisibleLevelState();
+            Schedule(VisibilityUpdatePeriod, VisibilityUpdate);
+        }
+
+        private void VisibilityUpdate()
+        {
+            Client.SendVisibleLevelState();
+
+            Schedule(VisibilityUpdatePeriod, VisibilityUpdate);
+        }
+
+        protected override void OnNextMove()
+        {
+            Intent.HandleIntent<MoveIntent>(ref _intent, HandleMove);
+
+            base.OnNextMove();
         }
 
         private bool HandleMove(MoveIntent intent)
         {
-            var success = Move(intent.Direction);
-
-            if (success)
-            {
-                // Let the client know what they can see in their new position.
-                Client.SendVisibleLevelState(timeOffset: 1);
-            }
-
-            return success;
+            return Move(intent.Direction);
         }
     }
 }

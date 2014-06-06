@@ -310,9 +310,6 @@ namespace FacePuncher.Entities
         private List<Component> _comps;
         private Dictionary<Type, Component> _compDict;
         private List<Entity> _children;
-        private bool _compsChanged;
-        private ulong _lastThink;
-        private Component _thinkProbe;
 
         /// <summary>
         /// Gets the numeric identifier for this entity.
@@ -369,12 +366,9 @@ namespace FacePuncher.Entities
         }
 
         /// <summary>
-        /// If true, this entity contains a component that overrides OnThink().
+        /// If true, the components of this entity may schedule actions.
         /// </summary>
-        public bool CanThink
-        {
-            get { return _thinkProbe != null || _children.Any(x => x.CanThink); }
-        }
+        public bool IsActive { get; private set; }
 
         /// <summary>
         /// Gets the position of this entity relative to its
@@ -407,8 +401,6 @@ namespace FacePuncher.Entities
             _compDict = new Dictionary<Type, Component>();
 
             _children = new List<Entity>();
-
-            _compsChanged = false;
         }
 
         /// <summary>
@@ -471,16 +463,12 @@ namespace FacePuncher.Entities
         /// <returns>The component, for convenience.</returns>
         private Component AddComponent(Component comp, Type type)
         {
-            if (_thinkProbe == null && comp.CanThink) {
-                _thinkProbe = comp;
-            }
-
             do _compDict.Add(type, comp);
             while ((type = type.BaseType) != typeof(Component));
 
             _comps.Add(comp);
 
-            _compsChanged = true;
+            UpdateComponents();
 
             return comp;
         }
@@ -521,11 +509,7 @@ namespace FacePuncher.Entities
 
             _comps.Remove(comp);
 
-            if (_thinkProbe == comp) {
-                _thinkProbe = _comps.FirstOrDefault(x => x.CanThink);
-            }
-
-            _compsChanged = true;
+            UpdateComponents();
         }
 
         /// <summary>
@@ -632,15 +616,9 @@ namespace FacePuncher.Entities
         /// </summary>
         private void UpdateComponents()
         {
-            if (!_compsChanged) return;
-
             foreach (var other in _comps) {
                 other.OnUpdateComponents();
             }
-
-            Room.UpdateThinkProbe(this);
-
-            _compsChanged = false;
         }
 
         /// <summary>
@@ -660,8 +638,6 @@ namespace FacePuncher.Entities
             foreach (var comp in _comps) {
                 comp.OnPlace();
             }
-
-            Room.UpdateThinkProbe(this);
         }
 
         /// <summary>
@@ -670,8 +646,6 @@ namespace FacePuncher.Entities
         /// </summary>
         private void OnRemove()
         {
-            Room.UpdateThinkProbe(this);
-
             foreach (var comp in this) comp.OnRemove();
             foreach (var child in _children) child.OnRemove();
         }
@@ -691,6 +665,36 @@ namespace FacePuncher.Entities
                     var tile = Tile; _tile = null;
                     tile.RemoveEntity(this);
                 }
+            }
+        }
+
+        public void Wake()
+        {
+            if (IsActive) return;
+
+            IsActive = true;
+
+            foreach (var comp in this) {
+                comp.OnWake();
+            }
+
+            foreach (var child in Children) {
+                child.Wake();
+            }
+        }
+
+        public void Sleep()
+        {
+            if (!IsActive) return;
+
+            IsActive = false;
+
+            foreach (var comp in this) {
+                comp.OnSleep();
+            }
+
+            foreach (var child in Children) {
+                child.Sleep();
             }
         }
 
@@ -725,16 +729,8 @@ namespace FacePuncher.Entities
             var orig = Tile;
             _tile = dest;
 
-            if (dest.Room != orig.Room) {
-                Room.UpdateThinkProbe(this);
-            }
-
             orig.RemoveEntity(this);
             Tile.AddEntity(this);
-            
-            if (dest.Room != orig.Room) {
-                Room.UpdateThinkProbe(this);
-            }
         }
 
         /// <summary>
@@ -744,25 +740,6 @@ namespace FacePuncher.Entities
         public void Move(Direction dir)
         {
             Move(Tile.GetNeighbour(dir));
-        }
-
-        /// <summary>
-        /// Gives each component of this entity an opportunity to perform some
-        /// actions, while also recursively invoking this method on any child
-        /// entities.
-        /// </summary>
-        public void Think()
-        {
-            if (!CanThink || _lastThink >= Level.Time) return;
-
-            _lastThink = Level.Time;
-
-            UpdateComponents();
-
-            for (int i = _comps.Count - 1; i >= 0; --i)
-                _comps[i].OnThink();
-
-            foreach (var child in _children) child.Think();
         }
 
         /// <summary>

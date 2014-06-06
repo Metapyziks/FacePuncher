@@ -41,7 +41,7 @@ namespace FacePuncher
 
         public bool LoadedLevel { get; private set; }
 
-        public ulong Time { get; private set; }
+        public double Time { get; private set; }
 
         /// <summary>
         /// Gets a set of visibility masks for rooms that are either
@@ -65,7 +65,7 @@ namespace FacePuncher
         /// </summary>
         private async Task ReadVisibleLevelState(NetworkStream stream)
         {
-            Time = await _stream.ReadUInt64();
+            Time = await _stream.ReadDouble();
             PlayerPosition = await _stream.ReadPosition();
 
             // removed lock
@@ -93,10 +93,9 @@ namespace FacePuncher
 
             LoadedLevel = true;
 
-
             Program.Draw(this);
 
-            Interface.Display.Write(0, 0, Time.ToString());
+            Interface.Display.Write(0, 0, String.Format("{0:F2}", Time));
         }
 
         /// <summary>

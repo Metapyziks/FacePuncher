@@ -85,6 +85,7 @@ namespace FacePuncher
                 .ToArray();
 
             Player.Place(tiles[Tools.Random.Next(tiles.Length)]);
+            Player.Wake();
         }
 
         /// <summary>
@@ -93,7 +94,7 @@ namespace FacePuncher
         /// <param name="timeOffset">How far into the future the level time
         /// sent should be offset.</param>
         /// <param name="level">Level to send.</param>
-        public void SendVisibleLevelState(ulong timeOffset = 0)
+        public void SendVisibleLevelState(double timeOffset = 0)
         {
             _stream.Write((byte)0); // Pushed packet
             _stream.Write((byte)ServerPacketType.LevelState);
