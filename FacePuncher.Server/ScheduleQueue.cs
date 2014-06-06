@@ -55,6 +55,8 @@ namespace FacePuncher
 
         public double Time { get; private set; }
 
+        public double NextTime { get { return _heap.Count > 0 ? _heap[0].Time : Time; } }
+
         public int Count { get { return _heap.Count; } }
 
         public ScheduleQueue()

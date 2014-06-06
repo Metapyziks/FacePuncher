@@ -121,7 +121,7 @@ namespace FacePuncher.Geometry
         {
             var time = Time + dt;
 
-            while (Time <= time) {
+            while (_schedule.NextTime <= time) {
                 _schedule.Act();
             }
         }

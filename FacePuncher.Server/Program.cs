@@ -109,7 +109,7 @@ namespace FacePuncher.Server
                     }
 
                     _level.Think(timer.Elapsed.TotalSeconds + originTime - _level.Time);
-                    await Task.Delay(100);
+                    await Task.Delay(10);
                 }
                 else
                 {

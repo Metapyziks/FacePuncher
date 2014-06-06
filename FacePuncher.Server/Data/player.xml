@@ -13,6 +13,6 @@
     </StaticDrawable>
 
     <PlayerControl>
-        <MovePeriod>1</MovePeriod>
+        <MovePeriod>0.5</MovePeriod>
     </PlayerControl>
 </server:entity>
