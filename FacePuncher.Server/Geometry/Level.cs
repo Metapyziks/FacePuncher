@@ -55,7 +55,7 @@ namespace FacePuncher.Geometry
             _rooms = new List<Room>();
             _queue = new DelayQueue();
 
-            Time = 0;
+            Time = 1;
         }
 
         /// <summary>
