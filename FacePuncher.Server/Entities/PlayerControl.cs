@@ -61,8 +61,9 @@ namespace FacePuncher.Entities
         private async void MovementLoop()
         {
             while (IsActive) {
-                if (Intent.HandleIntent<MoveIntent>(ref _intent, async x => await Move(x.Direction))) {
-                    Client.SendVisibleLevelState();
+                var direc = Direction.None;
+                if (Intent.HandleIntent<MoveIntent>(ref _intent, x => direc = x.Direction) && CanMove(direc)) {
+                    await Move(direc);
                 } else {
                     await Delay(MovementLoopPeriod);
                 }

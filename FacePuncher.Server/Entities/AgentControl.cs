@@ -17,6 +17,8 @@
  * along with FacePuncher. If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
+
 using FacePuncher.Geometry;
 
 namespace FacePuncher.Entities
@@ -34,6 +36,11 @@ namespace FacePuncher.Entities
         [ScriptDefinable]
         public double MovePeriod { get; set; }
         
+        protected bool CanMove(Direction dir)
+        {
+            return Entity.CanMove(dir);
+        }
+
         /// <summary>
         /// Attempts to move the entity in the specified direction.
         /// </summary>
@@ -45,7 +52,7 @@ namespace FacePuncher.Entities
 
             Entity.Move(dir);
 
-            return Delay(MovePeriod);
+            return Delay(MovePeriod * Math.Sqrt(dir.GetOffset().LengthSquared));
         }
     }
 }
