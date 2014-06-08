@@ -48,7 +48,12 @@ namespace FacePuncher.Entities
         {
             while (IsActive) {
                 var valid = Tools.Directions.Where(x => Entity.CanMove(x)).ToArray();
-                await Move(valid[Tools.Random.Next(valid.Length)]);
+
+                if (valid.Length > 0) {
+                    await Move(valid[Tools.Random.Next(valid.Length)]);
+                } else {
+                    await Delay(MovePeriod);
+                }
             }
         }
     }
