@@ -45,28 +45,27 @@ namespace FacePuncher.Entities
 
         public override void OnWake()
         {
-            base.OnWake();
-
-            Schedule(VisibilityUpdatePeriod, VisibilityUpdate);
+            VisibilityUpdateLoop();
+            MovementLoop();
         }
 
-        private void VisibilityUpdate()
+        private async void VisibilityUpdateLoop()
         {
-            Client.SendVisibleLevelState();
-
-            Schedule(VisibilityUpdatePeriod, VisibilityUpdate);
+            while (IsActive) {
+                Client.SendVisibleLevelState();
+                await Delay(0.25);
+            }
         }
 
-        protected override void OnNextMove()
+        private async void MovementLoop()
         {
-            Intent.HandleIntent<MoveIntent>(ref _intent, HandleMove);
-
-            base.OnNextMove();
-        }
-
-        private bool HandleMove(MoveIntent intent)
-        {
-            return Move(intent.Direction);
+            while (IsActive) {
+                if (Intent.HandleIntent<MoveIntent>(ref _intent, async x => await Move(x.Direction))) {
+                    Client.SendVisibleLevelState();
+                } else {
+                    await Delay(0.1);
+                }
+            }
         }
     }
 }

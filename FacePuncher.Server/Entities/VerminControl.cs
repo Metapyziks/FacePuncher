@@ -16,6 +16,7 @@
  * along with FacePuncher. If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using System.Linq;
 
 namespace FacePuncher.Entities
@@ -43,12 +44,12 @@ namespace FacePuncher.Entities
             Entity.Wake();
         }
 
-        protected override void OnNextMove()
+        public override async void OnWake()
         {
-            var valid = Tools.Directions.Where(x => Entity.CanMove(x)).ToArray();
-            Move(valid[Tools.Random.Next(valid.Length)]);
-
-            base.OnNextMove();
+            while (IsActive) {
+                var valid = Tools.Directions.Where(x => Entity.CanMove(x)).ToArray();
+                await Move(valid[Tools.Random.Next(valid.Length)]);
+            }
         }
     }
 }

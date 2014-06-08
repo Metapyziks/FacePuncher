@@ -130,6 +130,10 @@ namespace FacePuncher.Entities
             get { return Entity.Position; }
         }
 
+        public bool IsValid { get { return Entity.IsValid && Entity.Contains(this); } }
+
+        public bool IsActive { get { return Entity.IsActive && IsValid; } }
+
         /// <summary>
         /// Gets the host entity.
         /// </summary>
@@ -185,9 +189,9 @@ namespace FacePuncher.Entities
         /// <param name="delay">Amount of time units until the action
         /// is to be performed.</param>
         /// <param name="action">Action to perform.</param>
-        protected void Schedule(double delay, Action action)
+        protected Delay Delay(double delay)
         {
-            Level.Schedule(delay, this, action);
+            return Level.Delay(delay, this);
         }
     }
 }

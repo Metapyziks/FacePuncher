@@ -19,15 +19,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.IO;
-using System.Reflection;
 
 using FacePuncher.Geometry;
-using System.Diagnostics;
 
 namespace FacePuncher.Server
 {
@@ -108,7 +108,7 @@ namespace FacePuncher.Server
                         timer.Restart();
                     }
 
-                    _level.Think(timer.Elapsed.TotalSeconds + originTime - _level.Time);
+                    _level.Advance(timer.Elapsed.TotalSeconds + originTime - _level.Time);
                     await Task.Delay(10);
                 }
                 else

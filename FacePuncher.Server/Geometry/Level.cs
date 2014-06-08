@@ -32,12 +32,12 @@ namespace FacePuncher.Geometry
     {
 
         private List<Room> _rooms;
-        private ScheduleQueue _schedule;
+        private DelayQueue _queue;
 
         /// <summary>
         /// Gets or sets the current game time.
         /// </summary>
-        public double Time { get { return _schedule.Time; } }
+        public double Time { get; private set; }
 
         /// <summary>
         /// Gets a rectangle enclosing all rooms in this level.
@@ -53,7 +53,9 @@ namespace FacePuncher.Geometry
         public Level()
         {
             _rooms = new List<Room>();
-            _schedule = new ScheduleQueue();
+            _queue = new DelayQueue();
+
+            Time = 0;
         }
 
         /// <summary>
@@ -72,9 +74,9 @@ namespace FacePuncher.Geometry
             return room;
         }
 
-        internal void Schedule(double delay, Component comp, Action action)
+        internal Delay Delay(double delay, Component comp)
         {
-            _schedule.Add(delay, comp, action);
+            return new Delay(_queue, delay, comp);
         }
 
         /// <summary>
@@ -115,14 +117,12 @@ namespace FacePuncher.Geometry
         }
 
         /// <summary>
-        /// Perform the next queued action and increase the current time.
+        /// Advances time by the specified amount of time units.
         /// </summary>
-        public void Think(double dt)
+        public void Advance(double dt)
         {
-            var time = Time + dt;
-
-            while (_schedule.Count > 0 && _schedule.NextTime <= time) {
-                _schedule.Act();
+            while (dt > 0.0) {
+                Time += _queue.AdvanceOnce(ref dt);
             }
         }
 

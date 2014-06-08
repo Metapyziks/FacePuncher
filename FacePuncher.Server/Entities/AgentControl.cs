@@ -33,32 +33,19 @@ namespace FacePuncher.Entities
         /// </summary>
         [ScriptDefinable]
         public double MovePeriod { get; set; }
-
-        public override void OnWake()
-        {
-            if (MovePeriod > 0) {
-                Schedule(MovePeriod, OnNextMove);
-            }
-        }
-
-        protected virtual void OnNextMove()
-        {
-            if (MovePeriod > 0) {
-                Schedule(MovePeriod, OnNextMove);
-            }
-        }
-
+        
         /// <summary>
         /// Attempts to move the entity in the specified direction.
         /// </summary>
         /// <param name="dir">Direction to move.</param>
         /// <returns>Whether the move was successful.</returns>
-        protected bool Move(Direction dir)
+        protected Delay Move(Direction dir)
         {
-            if (!Entity.CanMove(dir)) return false;
+            if (!Entity.CanMove(dir)) return Delay(0);
 
             Entity.Move(dir);
-            return true;
+
+            return Delay(MovePeriod);
         }
     }
 }

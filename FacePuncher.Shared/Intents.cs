@@ -30,14 +30,17 @@ namespace FacePuncher
     [ProtoInclude(1, typeof(MoveIntent))]
     public abstract class Intent
     {
-        public static void HandleIntent<THandled>(ref Intent intent, Func<THandled, bool> handler) where THandled : Intent
+        public static bool HandleIntent<THandled>(ref Intent intent, Action<THandled> handler) where THandled : Intent
         {
             var castIntent = intent as THandled;
             if (castIntent != null)
             {
-                if (handler(castIntent))
-                { intent = null; }
+                handler(castIntent);
+                intent = null;
+                return true;
             }
+
+            return false;
         }
     }
 
