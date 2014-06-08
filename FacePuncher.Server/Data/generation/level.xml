@@ -9,15 +9,9 @@
         <MinHubDensity>64</MinHubDensity>
         <MaxHubDensity>256</MaxHubDensity>
 
-        <Room class="huge_room">
-            <Frequency>1</Frequency>
-        </Room>
-        <Room class="big_room">
-            <Frequency>16</Frequency>
-        </Room>
-        <Room class="hallway">
-            <Frequency>32</Frequency>
-        </Room>
+        <Room class="huge_room" freq="1" />
+        <Room class="big_room" freq="16" />
+        <Room class="hallway" freq="32" />
     </RoomPlacement>
 </server:level>
 
