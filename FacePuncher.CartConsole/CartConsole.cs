@@ -366,7 +366,7 @@ namespace FacePuncher.CartConsole
 			if (Enable) {
 				FntWatcher = new FileSystemWatcher(Path.GetDirectoryName(Path.GetFullPath(CartConsole.FontPath)));
 				FntWatcher.Changed += (S, E) => {
-					if (E.Name == "font.png") {
+                    if (E.Name == CartConsole.FontPath) {
 						if (E.ChangeType != WatcherChangeTypes.Changed)
 							throw new Exception("Font file has been moved/renamed/deleted!");
 						FontDirty = true;
