@@ -27,6 +27,8 @@
         <MaxBreadth>16</MaxBreadth>
     </RoomLayout>
     <ItemPlacement class="Default">
+        <MinFrequency>0.25</MinFrequency>
+        <MaxFrequency>0.5</MaxFrequency>
         <Item class="debris" freq="1" />
     </ItemPlacement>
 </server:room>
@@ -40,6 +42,8 @@
         <MaxBreadth>8</MaxBreadth>
     </RoomLayout>
     <ItemPlacement class="Default">
+        <MinFrequency>0.25</MinFrequency>
+        <MaxFrequency>0.5</MaxFrequency>
         <Item class="debris" freq="1" />
     </ItemPlacement>
 </server:room>
@@ -53,6 +57,8 @@
         <MaxBreadth>4</MaxBreadth>
     </RoomLayout>
     <ItemPlacement class="Default">
+        <MinFrequency>0.25</MinFrequency>
+        <MaxFrequency>0.5</MaxFrequency>
         <Item class="debris" freq="1" />
     </ItemPlacement>
 </server:room>
