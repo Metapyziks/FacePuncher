@@ -2,10 +2,13 @@
     <RoomPlacement class="Default">
         <MinArea>12000</MinArea>
         <MaxArea>16000</MaxArea>
+        
         <MinHubs>8</MinHubs>
         <MaxHubs>12</MaxHubs>
+        
         <MinConnectivity>0.5</MinConnectivity>
         <MaxConnectivity>0.8</MaxConnectivity>
+        
         <MinHubDensity>64</MinHubDensity>
         <MaxHubDensity>256</MaxHubDensity>
 
@@ -19,11 +22,12 @@
     <RoomLayout class="Default">
         <MinLength>16</MinLength>
         <MaxLength>20</MaxLength>
+        
         <MinBreadth>12</MinBreadth>
         <MaxBreadth>16</MaxBreadth>
     </RoomLayout>
     <ItemPlacement class="Default">
-        <Debris>debris</Debris>
+        <Item class="debris" freq="1" />
     </ItemPlacement>
 </server:room>
 
@@ -31,11 +35,12 @@
     <RoomLayout class="Default">
         <MinLength>8</MinLength>
         <MaxLength>12</MaxLength>
+        
         <MinBreadth>6</MinBreadth>
         <MaxBreadth>8</MaxBreadth>
     </RoomLayout>
     <ItemPlacement class="Default">
-        <Debris>debris</Debris>
+        <Item class="debris" freq="1" />
     </ItemPlacement>
 </server:room>
 
@@ -43,11 +48,12 @@
     <RoomLayout class="Default">
         <MinLength>6</MinLength>
         <MaxLength>12</MaxLength>
+        
         <MinBreadth>3</MinBreadth>
         <MaxBreadth>4</MaxBreadth>
     </RoomLayout>
     <ItemPlacement class="Default">
-        <Debris>debris</Debris>
+        <Item class="debris" freq="1" />
     </ItemPlacement>
 </server:room>
 
@@ -57,5 +63,6 @@
         <Entity class="dust_1" freq="25" />
         <Entity class="dust_2" freq="25" />
         <Entity class="dust_3" freq="25" />
+        <Entity class="vermin" freq="25" />
     </EntitySelector>
 </server:item>

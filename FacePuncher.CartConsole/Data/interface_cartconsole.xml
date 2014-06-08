@@ -1,4 +1,4 @@
-﻿<client:interface dll="FacePuncher.CartConsole.dll" active="true">
+﻿<client:interface dll="FacePuncher.CartConsole.dll">
     <Display class="FacePuncher.CartConsole.Display">
         <Tileset>font2.png</Tileset>
         <Palette>
