@@ -388,6 +388,8 @@ namespace FacePuncher.Entities
             get { return Tile.Position; }
         }
 
+        public int WakeIndex { get; private set; }
+
         /// <summary>
         /// Constructs an empty entity instance with the
         /// specified numeric identifier.
@@ -396,6 +398,8 @@ namespace FacePuncher.Entities
         private Entity(uint id)
         {
             ID = id;
+
+            WakeIndex = 0;
 
             _comps = new List<Component>();
             _compDict = new Dictionary<Type, Component>();
@@ -673,6 +677,8 @@ namespace FacePuncher.Entities
             if (IsActive) return;
 
             IsActive = true;
+
+            ++WakeIndex;
 
             foreach (var comp in this) {
                 comp.OnWake();

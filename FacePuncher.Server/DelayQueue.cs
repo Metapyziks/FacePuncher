@@ -38,13 +38,15 @@ namespace FacePuncher
 
         public Component Component { get; set; }
 
+        public int WakeIndex { get; private set; }
+
         public bool IsCompleted { get; private set; }
 
         public bool IsValid
         {
             get
             {
-                return Component.IsActive;
+                return Component.IsActive && WakeIndex == Component.Entity.WakeIndex;
             }
         }
 
@@ -55,6 +57,7 @@ namespace FacePuncher
             Queue = queue;
             Delta = delta;
             Component = comp;
+            WakeIndex = comp.Entity.WakeIndex;
 
             if (forceYeild || delta > 0) {
                 Queue.Enqueue(this);
@@ -149,9 +152,9 @@ namespace FacePuncher
             }
 
             delta = -delay.Delta;
-            delay.NotifyCompletion();
-
+            
             _queue.RemoveFirst();
+            delay.NotifyCompletion();
 
             return temp;
         }
