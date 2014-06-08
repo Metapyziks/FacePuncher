@@ -29,7 +29,8 @@ namespace FacePuncher.Entities
     /// </summary>
     class PlayerControl : AgentControl
     {
-        const double VisibilityUpdatePeriod = 0.25;
+        const double VisibilityLoopPeriod = 0.25;
+        const double MovementLoopPeriod = 0.25;
 
         /// <summary>
         /// Gets or sets the client that dictates the actions of this entity.
@@ -53,7 +54,7 @@ namespace FacePuncher.Entities
         {
             while (IsActive) {
                 Client.SendVisibleLevelState();
-                await Delay(0.25);
+                await Delay(VisibilityLoopPeriod);
             }
         }
 
@@ -63,7 +64,7 @@ namespace FacePuncher.Entities
                 if (Intent.HandleIntent<MoveIntent>(ref _intent, async x => await Move(x.Direction))) {
                     Client.SendVisibleLevelState();
                 } else {
-                    await Delay(0.1);
+                    await Delay(MovementLoopPeriod);
                 }
             }
         }
