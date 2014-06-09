@@ -74,11 +74,11 @@ namespace FacePuncher.Geometry
             return room;
         }
 
-        internal Delay Delay(double delay, Component comp)
+        internal Delay Delay(double delay, Component comp, bool forceYield = false)
         {
-            return new Delay(_queue, delay, comp);
+            return new Delay(_queue, delay, comp, forceYield);
         }
-
+        
         /// <summary>
         /// Gets the set of rooms that intersect a given rectangle.
         /// </summary>

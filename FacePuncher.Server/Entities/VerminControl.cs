@@ -39,12 +39,7 @@ namespace FacePuncher.Entities
             MovePeriod = Tools.Random.NextDouble() * (MaxMovePeriod - MinMovePeriod) + MinMovePeriod;
         }
 
-        public override void OnPlace()
-        {
-            Entity.Wake();
-        }
-
-        public override async void OnWake()
+        protected override async void OnWake()
         {
             while (IsActive) {
                 var valid = Tools.Directions.Where(x => Entity.CanMove(x)).ToArray();

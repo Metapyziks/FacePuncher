@@ -16,6 +16,7 @@
  * along with FacePuncher. If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -76,7 +77,6 @@ namespace FacePuncher.Geometry
         public int Height { get { return Rect.Height; } }
         
         private Tile[,] _tiles;
-        private Entity _thinkProbe;
 
         /// <summary>
         /// Constructs a new room instance within the given
@@ -96,8 +96,6 @@ namespace FacePuncher.Geometry
                     _tiles[x, y] = new Tile(this, x, y);
                 }
             }
-
-            _thinkProbe = null;
         }
 
         /// <summary>

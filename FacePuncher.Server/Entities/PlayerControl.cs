@@ -44,7 +44,12 @@ namespace FacePuncher.Entities
             set { _intent = value; }
         }
 
-        public override void OnWake()
+        public override void OnPlace()
+        {
+            Entity.Wake();
+        }
+
+        protected override void OnWake()
         {
             VisibilityUpdateLoop();
             MovementLoop();

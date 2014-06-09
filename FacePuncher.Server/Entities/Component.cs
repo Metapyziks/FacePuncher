@@ -170,12 +170,12 @@ namespace FacePuncher.Entities
         /// <summary>
         /// Called when the parent entity becomes active.
         /// </summary>
-        public virtual void OnWake() { }
+        protected virtual void OnWake() { }
 
         /// <summary>
         /// Called when the parent entity becomes inactive.
         /// </summary>
-        public virtual void OnSleep() { }
+        protected virtual void OnSleep() { }
 
         /// <summary>
         /// Called when either the component is removed from its
@@ -183,15 +183,27 @@ namespace FacePuncher.Entities
         /// </summary>
         public virtual void OnRemove() { }
 
+        public async void Wake()
+        {
+            await Delay(0.0, true);
+            OnWake();
+        }
+
+        public async void Sleep()
+        {
+            await Delay(0.0, true);
+            OnSleep();
+        }
+
         /// <summary>
         /// Adds a delayed action to the action queue of the level.
         /// </summary>
         /// <param name="delay">Amount of time units until the action
         /// is to be performed.</param>
         /// <param name="action">Action to perform.</param>
-        protected Delay Delay(double delay)
+        protected Delay Delay(double delay, bool forceYield = false)
         {
-            return Level.Delay(delay, this);
+            return Level.Delay(delay, this, forceYield);
         }
     }
 }

@@ -85,7 +85,6 @@ namespace FacePuncher
                 .ToArray();
 
             Player.Place(tiles[Tools.Random.Next(tiles.Length)]);
-            Player.Wake();
         }
 
         /// <summary>
@@ -108,7 +107,7 @@ namespace FacePuncher
             {
                 foreach (var tile in Visibility.Cast(Player.Tile, MaxVisibilityRange)) {
                     if (tile.Room == null) continue;
-                    _visibility[tile.Room].Reveal(tile.RelativePosition, time);
+                    _visibility[tile.Room].Reveal(tile, time);
                 }
 
                 var visibleRooms = _visibility.Values

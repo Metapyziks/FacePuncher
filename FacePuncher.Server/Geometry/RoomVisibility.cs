@@ -58,10 +58,16 @@ namespace FacePuncher.Geometry
         /// </summary>
         /// <param name="pos">Position of the tile to mark as visible.</param>
         /// <param name="time">Time at which the tile was seen.</param>
-        public void Reveal(Position pos, double time)
+        public void Reveal(Tile tile, double time)
         {
+            var pos = tile.RelativePosition;
+
             _mask[pos.X, pos.Y] = Math.Max(_mask[pos.X, pos.Y], time);
             LastVisibleTime = Math.Max(LastVisibleTime, time);
+
+            foreach (var ent in tile) {
+                ent.Wake();
+            }
         }
 
         /// <summary>

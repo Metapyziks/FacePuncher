@@ -681,7 +681,7 @@ namespace FacePuncher.Entities
             ++WakeIndex;
 
             foreach (var comp in this) {
-                comp.OnWake();
+                comp.Wake();
             }
 
             foreach (var child in Children) {
@@ -696,7 +696,7 @@ namespace FacePuncher.Entities
             IsActive = false;
 
             foreach (var comp in this) {
-                comp.OnSleep();
+                comp.Sleep();
             }
 
             foreach (var child in Children) {
