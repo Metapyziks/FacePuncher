@@ -29,7 +29,11 @@ namespace FacePuncher.UI
         /// <summary>
         /// Text of the label.
         /// </summary>
+        [ScriptDefinable]
         public string Text { get; set; }
+
+        public Label(String name)
+            : this(name, Position.Zero, "Label") { }
 
         /// <summary>
         /// Creates new label.
@@ -48,7 +52,7 @@ namespace FacePuncher.UI
 
         public override void Draw()
         {
-            UIManager.DrawString(Parent.Position + Position, Text, ForegroundColor, BackgroundColor);
+            UIManager.DrawString(Parent.Position + Position, Text, ForeColor, BackColor);
         }
     }
 }

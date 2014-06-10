@@ -42,6 +42,9 @@ namespace FacePuncher.UI
             (char)200, (char)188  // down-left, down-right
         };
 
+        public Frame(String name)
+            : this(name, Position.Zero, 0, 0) { }
+
         /// <summary>
         /// Creates empty frame.
         /// </summary>
@@ -68,23 +71,23 @@ namespace FacePuncher.UI
             var parentY = Parent.Position.Y;
 
             // Render frame corners
-            Interface.Display.SetCell(Parent.Position + rectangle.TopLeft, _frameChars[2], ForegroundColor, BackgroundColor);
-            Interface.Display.SetCell(Parent.Position + rectangle.TopRight, _frameChars[3], ForegroundColor, BackgroundColor);
-            Interface.Display.SetCell(Parent.Position + rectangle.BottomLeft, _frameChars[4], ForegroundColor, BackgroundColor);
-            Interface.Display.SetCell(Parent.Position + rectangle.BottomRight, _frameChars[5], ForegroundColor, BackgroundColor);
+            Interface.Display.SetCell(Parent.Position + rectangle.TopLeft, _frameChars[2], ForeColor, BackColor);
+            Interface.Display.SetCell(Parent.Position + rectangle.TopRight, _frameChars[3], ForeColor, BackColor);
+            Interface.Display.SetCell(Parent.Position + rectangle.BottomLeft, _frameChars[4], ForeColor, BackColor);
+            Interface.Display.SetCell(Parent.Position + rectangle.BottomRight, _frameChars[5], ForeColor, BackColor);
 
             // Render horizontal line
             for (var x = 0; x < rectangle.Width - 1; x++)
             {
-                Interface.Display.SetCell(parentX + x + rectangle.Left + 1, parentY + rectangle.Top, _frameChars[0], ForegroundColor, BackgroundColor);
-                Interface.Display.SetCell(parentX + x + rectangle.Left + 1, parentY + rectangle.Bottom, _frameChars[0], ForegroundColor, BackgroundColor);
+                Interface.Display.SetCell(parentX + x + rectangle.Left + 1, parentY + rectangle.Top, _frameChars[0], ForeColor, BackColor);
+                Interface.Display.SetCell(parentX + x + rectangle.Left + 1, parentY + rectangle.Bottom, _frameChars[0], ForeColor, BackColor);
             }
 
             // Render vertical line
             for (var y = 0; y < rectangle.Height - 1; y++)
             {
-                Interface.Display.SetCell(parentX + rectangle.Left, parentY + y + rectangle.Top + 1, _frameChars[1], ForegroundColor, BackgroundColor);
-                Interface.Display.SetCell(parentX + rectangle.Right, parentY + y + rectangle.Top + 1, _frameChars[1], ForegroundColor, BackgroundColor);
+                Interface.Display.SetCell(parentX + rectangle.Left, parentY + y + rectangle.Top + 1, _frameChars[1], ForeColor, BackColor);
+                Interface.Display.SetCell(parentX + rectangle.Right, parentY + y + rectangle.Top + 1, _frameChars[1], ForeColor, BackColor);
             }
 
             // Render title

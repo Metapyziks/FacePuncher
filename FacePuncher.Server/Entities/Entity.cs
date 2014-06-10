@@ -137,9 +137,9 @@ namespace FacePuncher.Entities
                 var compTypes = components.Select(x => x.Item1).ToArray();
 
                 if (elem.Attributes("base").Count() > 0) {
-                    Entity.Register(elem.Attribute("name").Value, elem.Attribute("base").Value, ctor, compTypes);
+                    Register(elem.Attribute("name").Value, elem.Attribute("base").Value, ctor, compTypes);
                 } else {
-                    Entity.Register(elem.Attribute("name").Value, ctor, compTypes);
+                    Register(elem.Attribute("name").Value, ctor, compTypes);
                 }
             });
         }
@@ -269,8 +269,8 @@ namespace FacePuncher.Entities
         /// <returns>An entity instance of the specified class.</returns>
         public static Entity Create(String type)
         {
-            ClassInfo info = _sEntCtors[type];
-            Entity ent = (info.Base != null ? Create(info.Base) : Create());
+            var info = _sEntCtors[type];
+            var ent = (info.Base != null ? Create(info.Base) : Create());
             ent.ClassName = info.Name;
             info.Constructor(ent);
             return ent;

@@ -1,4 +1,5 @@
 /* Copyright (c) 2014 Michał Ferchow [deseteral@gmail.com]
+ * Copyright (c) 2014 James King [metapyziks@gmail.com]
  * 
  * This file is part of FacePuncher.
  * 
@@ -26,10 +27,24 @@ namespace FacePuncher.UI
     /// </summary>
     class Button : UsableWidget
     {
+        private String _text;
+
         /// <summary>
         /// The text shown on the button.
         /// </summary>
-        public string Text { get; set; }
+        [ScriptDefinable]
+        public string Text
+        {
+            get { return _text; }
+            set
+            {
+                _text = value;
+                Width = value.Length;
+            }
+        }
+
+        public Button(String name)
+            : this(name, Position.Zero, "Button") { }
 
         /// <summary>
         /// Creates new button.
@@ -48,15 +63,15 @@ namespace FacePuncher.UI
 
         public override void Draw()
         {
-            ConsoleColor fc = ForegroundColor;
-            ConsoleColor bc = BackgroundColor;
+            ConsoleColor fc = ForeColor;
+            ConsoleColor bc = BackColor;
 
             // If widget is selected
             // swap colors
             if (IsSelectable && IsSelected)
             {
-                fc = BackgroundColor;
-                bc = ForegroundColor;
+                fc = BackColor;
+                bc = ForeColor;
             }
 
             UIManager.DrawString(Parent.Position + Position, Text, fc, bc);

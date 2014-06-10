@@ -1,71 +1,57 @@
 <client:widget name="ServerSelect" base="Frame">
     <Title>Connect to Server</Title>
 
-    <Size>
-        <Width>32</Width>
-        <Height>12</Height>
-    </Size>
+    <Width>32</Width>
+    <Height>12</Height>
 
-    <CenterToScreen />
+    <CenterToParent />
 
     <Children>
         <Label name="lbl_hostname">
             <Text>Host name</Text>
             <ForeColor>DarkGray</ForeColor>
 
-            <Position>
-                <X>2</X>
-                <Y>2</Y>
-            </Position>
+            <Left>2</Left>
+            <Top>2</Top>
         </Label>
 
         <TextBox name="txt_hostname">
             <Text>localhost</Text>
             <Length>28</Length>
 
-            <Position>
-                <X>3</X>
-                <Y>4</Y>
-            </Position>
+            <Left>3</Left>
+            <Top>4</Top>
         </TextBox>
 
         <Label name="lbl_port">
             <Text>Port number</Text>
             <ForeColor>DarkGray</ForeColor>
 
-            <Position>
-                <X>2</X>
-                <Y>6</Y>
-            </Position>
+            <Left>2</Left>
+            <Top>6</Top>
         </Label>
 
         <TextBox name="txt_port">
             <Text>14242</Text>
             <Length>5</Length>
 
-            <Position>
-                <X>3</X>
-                <Y>8</Y>
-            </Position>
+            <Left>3</Left>
+            <Top>8</Top>
         </TextBox>
 
         <Button name="btn_connect">
             <Text>Connect</Text>
 
-            <Position>
-                <X>3</X>
-                <Y>10</Y>
-            </Position>
+            <Left>3</Left>
+            <Top>10</Top>
         </Button>
 
         <Button name="btn_quit">
             <Text>Quit</Text>
             <ForeColor>DarkRed</ForeColor>
 
-            <Position>
-                <X>26</X>
-                <Y>10</Y>
-            </Position>
+            <Left>26</Left>
+            <Top>10</Top>
         </Button>
     </Children>
 </client:widget>

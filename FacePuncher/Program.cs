@@ -71,15 +71,26 @@ namespace FacePuncher
 
             UIManager = new UIManager();
 
-            var select = new ServerSelectPrompt("serverselect");
-            select.Connect += (sender, e) => {
+            var select = (Frame) Widget.Create("ServerSelect", "serverselect");
+
+            ((Button) select.Children["btn_connect"]).Used += (sender, e) => {
+                var txtHost = ((TextBox) select.Children["txt_hostname"]);
+                var txtPort = ((TextBox) select.Children["txt_port"]);
+
+                int port;
+                if (!int.TryParse(txtPort.Text, out port) || port >= ushort.MaxValue) return;
+
                 UIManager.IsInputBlocked = true;
 
-                server = new ServerConnection("localhost", 14242);
+                server = new ServerConnection(txtHost.Text, port);
                 server.Run();
 
                 UIManager.RemoveChild(select);
                 UIManager.CalculateSelectableWidgets();
+            };
+
+            ((Button) select.Children["btn_quit"]).Used += (sender, e) => {
+                Environment.Exit(0);
             };
 
             UIManager.AddChild(select);

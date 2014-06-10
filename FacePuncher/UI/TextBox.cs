@@ -30,9 +30,20 @@ namespace FacePuncher.UI
         /// <summary>
         /// Current value.
         /// </summary>
+        [ScriptDefinable]
         public string Text { get; set; }
 
+        [ScriptDefinable]
+        public int Length
+        {
+            get { return Width; }
+            set { Width = value; }
+        }
+
         private bool _isEdited;
+
+        public TextBox(String name)
+            : this(name, Position.Zero, 8, "Text Box") { }
 
         /// <summary>
         /// Creates empty text box.
@@ -60,15 +71,15 @@ namespace FacePuncher.UI
 
         public override void Draw()
         {
-            ConsoleColor fc = ForegroundColor;
-            ConsoleColor bc = BackgroundColor;
+            ConsoleColor fc = ForeColor;
+            ConsoleColor bc = BackColor;
 
             // If widget is selected
             // swap colors
             if (IsSelectable && IsSelected && !_isEdited)
             {
-                fc = BackgroundColor;
-                bc = ForegroundColor;
+                fc = BackColor;
+                bc = ForeColor;
             }
 
             ConsoleKeyInfo info;

@@ -1,4 +1,5 @@
 /* Copyright (c) 2014 Michał Ferchow [deseteral@gmail.com]
+ * Copyright (c) 2014 James King [metapyziks@gmail.com]
  * 
  * This file is part of FacePuncher.
  * 
@@ -18,15 +19,98 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Xml.Linq;
 using FacePuncher.Geometry;
 
 namespace FacePuncher.UI
 {
+    delegate void WidgetConstructorDelegate(Widget widget);
+
     /// <summary>
     /// Base class for every widget.
     /// </summary>
-    abstract class Widget
+    abstract class Widget : IDefinitionLoadable
     {
+        private sealed class ClassInfo
+        {
+            public String Name { get; private set; }
+
+            public String Base { get; private set; }
+
+            public WidgetConstructorDelegate Constructor { get; private set; }
+            
+            public ClassInfo(String name, String baseName, WidgetConstructorDelegate ctor)
+            {
+                Name = name;
+                Base = baseName;
+                Constructor = ctor;
+            }
+        }
+
+        private static Dictionary<String, ClassInfo> _sWidgetCtors
+            = new Dictionary<string, ClassInfo>();
+
+        private static Dictionary<String, ConstructorInfo> _sBaseCtors
+            = new Dictionary<string, ConstructorInfo>();
+
+        static Widget()
+        {
+            foreach (var type in Assembly.GetExecutingAssembly().GetTypes()) {
+                if (!typeof(Widget).IsAssignableFrom(type)) continue;
+                if (type.IsAbstract) continue;
+
+                var ctor = type.GetConstructor(new Type[] { typeof(String) });
+                if (ctor == null) continue;
+
+                _sBaseCtors.Add(type.Name, ctor);
+            }
+
+            Definitions.RegisterType("widget", elem => {
+                WidgetConstructorDelegate ctor = widget => {
+                    widget.LoadFromDefinition(elem);
+                };
+                
+                var typeName = elem.Attribute("name").Value;
+                var baseName = elem.HasAttribute("base") ? elem.Attribute("base").Value : "Frame";
+
+                Register(typeName, baseName, ctor);
+            });
+        }
+
+        public static void Register(String typeName, String baseName, WidgetConstructorDelegate ctor)
+        {
+            _sWidgetCtors.Add(typeName, new ClassInfo(typeName, baseName, ctor));
+        }
+
+        public static String GetBaseName(String className)
+        {
+            return _sWidgetCtors[className].Base;
+        }
+
+        public static bool Extends(String className, String baseName)
+        {
+            if (className == baseName) return true;
+            if (!_sWidgetCtors.ContainsKey(className)) return false;
+
+            return Extends(_sWidgetCtors[className].Base, baseName);
+        }
+
+        public static Widget Create(String typeName, String name)
+        {
+            Widget widget;
+
+            if (_sWidgetCtors.ContainsKey(typeName)) {
+                var info = _sWidgetCtors[typeName];
+                widget = Create(info.Base, name);
+                info.Constructor(widget);
+            } else {
+                widget = (Widget) _sBaseCtors[typeName].Invoke(new Object[] { name });
+            }
+
+            return widget;
+        }
+
         /// <summary>
         /// Name of the widget.
         /// </summary>
@@ -49,12 +133,14 @@ namespace FacePuncher.UI
         /// <summary>
         /// Widgets foreground color.
         /// </summary>
-        public ConsoleColor ForegroundColor { get; set; }
+        [ScriptDefinable]
+        public ConsoleColor ForeColor { get; set; }
 
         /// <summary>
         /// Widgets background color.
         /// </summary>
-        public ConsoleColor BackgroundColor { get; set; }
+        [ScriptDefinable]
+        public ConsoleColor BackColor { get; set; }
 
         /// <summary>
         /// Widgets parent.
@@ -80,8 +166,8 @@ namespace FacePuncher.UI
 
             this.rectangle = new Rectangle(pos, new Position(pos.X + width, pos.Y + height));
 
-            this.ForegroundColor = fc;
-            this.BackgroundColor = bc;
+            this.ForeColor = fc;
+            this.BackColor = bc;
 
             _isSelectable = isSelectable;
         }
@@ -92,22 +178,41 @@ namespace FacePuncher.UI
         public Position Position
         {
             get { return rectangle.TopLeft; }
+            set { rectangle.TopLeft = value; }
+        }
+
+        [ScriptDefinable]
+        public int Left
+        {
+            get { return rectangle.Left; }
+            set { rectangle.Left = value; }
+        }
+
+        [ScriptDefinable]
+        public int Top
+        {
+            get { return rectangle.Top; }
+            set { rectangle.Top = value; }
         }
 
         /// <summary>
         /// Widget's width.
         /// </summary>
+        [ScriptDefinable]
         public int Width
         {
             get { return rectangle.Width; }
+            set { rectangle.Width = value; }
         }
 
         /// <summary>
         /// Widget's height.
         /// </summary>
+        [ScriptDefinable]
         public int Height
         {
             get { return rectangle.Height; }
+            set { rectangle.Height = value; }
         }
 
         /// <summary>
@@ -126,5 +231,28 @@ namespace FacePuncher.UI
         /// Function used to render widget.
         /// </summary>
         abstract public void Draw();
+
+        public virtual void LoadFromDefinition(XElement elem)
+        {
+            Definitions.LoadProperties(this, elem);
+
+            if (elem.HasElement("CenterToParent")) {
+                int parentWidth = Parent != null ? Parent.Width : Interface.Display.Width;
+                int parentHeight = Parent != null ? Parent.Height : Interface.Display.Height;
+
+                Left = (parentWidth - Width) / 2;
+                Top = (parentHeight - Height) / 2;
+            }
+
+            if (this is IWidgetContainer && elem.HasElement("Children")) {
+                var container = (IWidgetContainer) this;
+
+                foreach (var childElem in elem.Element("Children").Elements()) {
+                    var child = Create(childElem.Name.LocalName, childElem.Attribute("name").Value);
+                    child.LoadFromDefinition(childElem);
+                    container.AddChild(child);
+                }
+            }
+        }
     }
 }

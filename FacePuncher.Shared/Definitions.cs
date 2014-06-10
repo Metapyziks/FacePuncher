@@ -221,7 +221,7 @@ namespace FacePuncher
                 var prop = type.GetProperty(ident);
 
                 if (prop == null) continue;
-                if (prop.GetCustomAttributes<ScriptDefinableAttribute>().Count() == 0) return;
+                if (prop.GetCustomAttributes<ScriptDefinableAttribute>().Count() == 0) continue;
 
                 prop.SetValue(obj, elem.Element(sub.Name, prop.PropertyType));
             }

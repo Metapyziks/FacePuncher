@@ -48,7 +48,6 @@
     <Compile Include="Interface.cs" />
     <Compile Include="Rendering.cs" />
     <Compile Include="UI\Button.cs" />
-    <Compile Include="UI\ServerSelectPrompt.cs" />
     <Compile Include="UI\UIManager.cs" />
     <Compile Include="UI\IWidgetContainer.cs" />
     <Compile Include="UI\Label.cs" />
@@ -69,6 +68,11 @@
       <Project>{4e2355af-f51d-4913-9eb0-845eb7759bb3}</Project>
       <Name>FacePuncher.Shared</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Data\ui.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
