@@ -48,6 +48,7 @@
     <Compile Include="Entities\Component.cs" />
     <Compile Include="Entities\Drawable.cs" />
     <Compile Include="Entities\Entity.cs" />
+    <Compile Include="Entities\Damageable.cs" />
     <Compile Include="Entities\PlayerControl.cs" />
     <Compile Include="Entities\StaticDrawable.cs" />
     <Compile Include="Entities\VerminControl.cs" />

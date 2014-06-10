@@ -4,6 +4,10 @@
         <Symbol>&#0001;</Symbol>
         <ForeColor>White</ForeColor>
     </StaticDrawable>
+
+    <Damageable>
+        <MaxHealth>10</MaxHealth>
+    </Damageable>
 </server:entity>
 
 <server:entity name="player" base="character">
