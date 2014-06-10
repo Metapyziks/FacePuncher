@@ -248,9 +248,17 @@ namespace FacePuncher.UI
                 var container = (IWidgetContainer) this;
 
                 foreach (var childElem in elem.Element("Children").Elements()) {
-                    var child = Create(childElem.Name.LocalName, childElem.Attribute("name").Value);
+                    var name = childElem.Attribute("name").Value;
+                    Widget child;
+
+                    if (container.Children.ContainsKey(name)) {
+                        child = container.Children[name];
+                    } else {
+                        child = Create(childElem.Name.LocalName, name);
+                        container.AddChild(child);
+                    }
+
                     child.LoadFromDefinition(childElem);
-                    container.AddChild(child);
                 }
             }
         }
