@@ -300,15 +300,32 @@ namespace FacePuncher.Geometry
                 .Select(x => x.GetComponent<Drawable>())
                 .ToArray();
 
+            var layer = DrawableLayer.Debris;
+
             if (drawables.Length > 0) {
-                var layer = (DrawableLayer) drawables.Max(x => x.GetLayer());
+                layer = (DrawableLayer) drawables.Max(x => x.GetLayer());
 
                 _appearance.Entities = drawables
                     .Where(x => x.GetLayer() == layer)
                     .Select(x => x.GetAppearance())
                     .ToArray();
-            } else if (_appearance.EntityCount > 0) {
-                _appearance.Entities = new EntityAppearance[0];
+            } else {
+                if (_appearance.EntityCount > 0) {
+                    _appearance.Entities = new EntityAppearance[0];
+                }
+            }
+
+            var coating = _entities
+                .FirstOrDefault(x => x.HasComponent<Coating>());
+
+            if (coating != null) {
+                _appearance.ForeColor = coating
+                    .GetComponent<Coating>()
+                    .Color;
+
+                _appearance.Coating = _appearance.Entities.Length > 0 && layer == DrawableLayer.Debris;
+            } else {
+                _appearance.Coating = false;
             }
         }
 

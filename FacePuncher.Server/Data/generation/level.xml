@@ -29,7 +29,8 @@
     <ItemPlacement class="Default">
         <MinFrequency>0.25</MinFrequency>
         <MaxFrequency>0.5</MaxFrequency>
-        <Item class="debris" freq="1" />
+        <Item class="debris" freq="10" />
+        <Item class="mob" freq="1" />
     </ItemPlacement>
 </server:room>
 
@@ -44,7 +45,8 @@
     <ItemPlacement class="Default">
         <MinFrequency>0.25</MinFrequency>
         <MaxFrequency>0.5</MaxFrequency>
-        <Item class="debris" freq="1" />
+        <Item class="debris" freq="20" />
+        <Item class="mob" freq="1" />
     </ItemPlacement>
 </server:room>
 
@@ -70,5 +72,11 @@
         <Entity class="dust_2" freq="25" />
         <Entity class="dust_3" freq="25" />
         <Entity class="vermin" freq="1" />
+    </EntitySelector>
+</server:item>
+
+<server:item name="mob">
+    <EntitySelector class="Default">
+        <Entity class="kobold" freq="1" />
     </EntitySelector>
 </server:item>

@@ -1,6 +1,6 @@
 <server:entity name="vermin">
     <StaticDrawable>
-        <Layer>Debris</Layer>
+        <Layer>Items</Layer>
         <Symbol>.</Symbol>
         <ForeColor>DarkYellow</ForeColor>
     </StaticDrawable>

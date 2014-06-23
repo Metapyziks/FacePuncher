@@ -46,6 +46,10 @@ namespace FacePuncher.Entities
 
                 if (valid.Length > 0) {
                     await Move(valid[Tools.Random.Next(valid.Length)]);
+
+                    if (!Tile.Entities.Any(x => x.HasComponent<Coating>())) {
+                        Entity.Create("coating_blood").Place(Tile);
+                    }
                 } else {
                     await Delay(MovePeriod);
                 }

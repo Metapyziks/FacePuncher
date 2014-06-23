@@ -98,6 +98,12 @@ namespace FacePuncher.Graphics
                 stream.WriteAppearance(Symbol, ForeColor, BackColor);
                 stream.WriteByte((byte)Duration);
             }
+
+            public void WriteToStream(Stream stream, ConsoleColor foreOverride)
+            {
+                stream.WriteAppearance(Symbol, foreOverride, BackColor);
+                stream.WriteByte((byte) Duration);
+            }
         }
 
         private List<Frame> _frames;
@@ -159,11 +165,19 @@ namespace FacePuncher.Graphics
 
         public void WriteToStream(Stream stream)
         {
+            stream.WriteByte((byte) FrameCount);
+
+            foreach (var frame in this) {
+                frame.WriteToStream(stream);
+            }
+        }
+
+        public void WriteToStream(Stream stream, ConsoleColor foreOverride)
+        {
             stream.WriteByte((byte)FrameCount);
 
-            foreach (var frame in this)
-            {
-                frame.WriteToStream(stream);
+            foreach (var frame in this) {
+                frame.WriteToStream(stream, foreOverride);
             }
         }
 

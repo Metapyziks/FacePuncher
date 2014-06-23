@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="ClientConnection.cs" />
     <Compile Include="Entities\AgentControl.cs" />
+    <Compile Include="Entities\Coating.cs" />
     <Compile Include="Entities\Component.cs" />
     <Compile Include="Entities\Drawable.cs" />
     <Compile Include="Entities\Entity.cs" />
@@ -85,13 +86,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Data\character.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\coating.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data\debris.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\generation\level.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\player.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\vermin.xml">

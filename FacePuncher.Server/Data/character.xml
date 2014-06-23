@@ -10,6 +10,18 @@
     </Damageable>
 </server:entity>
 
+<server:entity name="kobold" base="character">
+    <StaticDrawable>
+        <Layer>Characters</Layer>
+        <Symbol>k</Symbol>
+        <ForeColor>DarkYellow</ForeColor>
+    </StaticDrawable>
+
+    <Damageable>
+        <MaxHealth>5</MaxHealth>
+    </Damageable>
+</server:entity>
+
 <server:entity name="player" base="character">
     <StaticDrawable>
         <Symbol>@</Symbol>

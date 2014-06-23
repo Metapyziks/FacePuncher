@@ -1,0 +1,5 @@
+﻿<server:entity name="coating_blood">
+    <Coating>
+        <Color>DarkRed</Color>
+    </Coating>
+</server:entity>

@@ -41,7 +41,9 @@ namespace FacePuncher.Graphics
         public EntityAppearance[] Entities { get; set; }
 
         public int EntityCount { get { return Entities.Length; } }
-        
+
+        public bool Coating { get; set; }
+
         public EntityAppearance this[int index]
         {
             get { return Entities[index]; }
@@ -87,8 +89,14 @@ namespace FacePuncher.Graphics
             stream.WriteAppearance(Symbol, ForeColor, BackColor);
             stream.WriteByte((byte) EntityCount);
 
-            foreach (var ent in this) {
-                ent.WriteToStream(stream);
+            if (Coating) {
+                foreach (var ent in this) {
+                    ent.WriteToStream(stream, ForeColor);
+                }
+            } else {
+                foreach (var ent in this) {
+                    ent.WriteToStream(stream);
+                }
             }
         }
 

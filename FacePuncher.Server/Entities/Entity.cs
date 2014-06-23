@@ -18,10 +18,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
-
 using FacePuncher.Geometry;
 
 namespace FacePuncher.Entities
@@ -764,6 +764,25 @@ namespace FacePuncher.Entities
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public void Save(BinaryWriter writer)
+        {
+            writer.Write((ushort) _comps.Count);
+            foreach (var component in _comps) {
+                writer.Write(component.TypeID);
+                component.Save(writer);
+            }
+
+            writer.Write((ushort) _children.Count);
+            foreach (var child in _children) {
+                child.Save(writer);
+            }
+        }
+
+        public void Load(BinaryReader reader)
+        {
+
         }
 
         /// <summary>

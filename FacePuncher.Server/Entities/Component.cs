@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
@@ -31,6 +32,20 @@ namespace FacePuncher.Entities
     /// </summary>
     public abstract class Component
     {
+        private static List<Type> _sCompTypes = new List<Type>();
+        private static Dictionary<Type, ushort> _sTypeIDs = new Dictionary<Type, ushort>();
+
+        static Component()
+        {
+            foreach (var type in Assembly.GetExecutingAssembly().GetTypes()) {
+                if (!typeof(Component).IsAssignableFrom(type)) continue;
+                if (type.IsAbstract) continue;
+
+                _sTypeIDs.Add(type, (ushort) _sCompTypes.Count);
+                _sCompTypes.Add(type);
+            }
+        }
+
         /// <summary>
         /// Creates a component for the specified entity.
         /// </summary>
@@ -70,6 +85,30 @@ namespace FacePuncher.Entities
             comp.OnInitialize();
 
             return comp;
+        }
+
+        internal static void WriteComponentDict(BinaryWriter writer)
+        {
+            writer.Write((ushort) _sCompTypes.Count);
+            foreach (var type in _sCompTypes) {
+                writer.Write(type.FullName);
+            }
+        }
+
+        internal static void LoadComponentDict(BinaryReader reader)
+        {
+            _sCompTypes.Clear();
+            _sTypeIDs.Clear();
+
+            var asm = Assembly.GetExecutingAssembly();
+
+            ushort types = reader.ReadUInt16();
+            for (ushort i = 0; i < types; ++i) {
+                var type = asm.GetType(reader.ReadString());
+
+                _sTypeIDs.Add(type, i);
+                _sCompTypes.Add(type);
+            }
         }
 
         /// <summary>
@@ -138,6 +177,8 @@ namespace FacePuncher.Entities
         /// Gets the host entity.
         /// </summary>
         public Entity Entity { get; private set; }
+
+        public ushort TypeID { get { return _sTypeIDs[GetType()]; } }
         
         /// <summary>
         /// Loads state information from an XML definition.
@@ -194,6 +235,10 @@ namespace FacePuncher.Entities
             await Delay(0.0, true);
             OnSleep();
         }
+
+        public virtual void Save(BinaryWriter writer) { }
+
+        public virtual void Load(BinaryReader reader) { }
 
         /// <summary>
         /// Adds a delayed action to the action queue of the level.
