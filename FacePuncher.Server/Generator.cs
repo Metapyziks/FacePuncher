@@ -95,11 +95,11 @@ namespace FacePuncher
                 var typeName = String.Format("FacePuncher.Geometry.{0}s.{1}", subName, name);
 
                 var type = Assembly.GetEntryAssembly().GetType(typeName);
-                if (type == null) throw new Exception("Invalid RoomPlacement type specified.");
+                if (type == null) throw new Exception("Invalid type specified.");
 
                 if (fallback.GetType() != type) {
                     var ctor = type.GetConstructor(new Type[0]);
-                    if (ctor == null) throw new Exception(String.Format("RoomPlacement type {0} has no valid constructor.", name));
+                    if (ctor == null) throw new Exception(String.Format("Type {0} has no valid constructor.", name));
 
                     fallback = (T) ctor.Invoke(new Object[0]);
                 }

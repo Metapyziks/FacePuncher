@@ -4,6 +4,6 @@
 	<Value>10</Value>
 	<Color>DarkYellow</Color>
 
-	<Damage class="Piercing">1</Damage>
-	<Damage class="Blunt">1.25</Damage>
+	<DamageModifier type="Piercing">1</DamageModifier>
+  <DamageModifier type="Blunt">1.25</DamageModifier>
 </server:material>

@@ -41,12 +41,16 @@ namespace FacePuncher.Entities
 
         public Entity Inflictor { get; set; }
 
-        public DamageInfo(int baseDamage)
+        public String[] DamageTypes { get; set; }
+
+        public DamageInfo(int baseDamage, params String[] damageTypes)
         {
             DamageMultiplier = 1f;
 
             BaseDamage = baseDamage;
             MaxDamage = int.MaxValue;
+
+            DamageTypes = damageTypes;
         }
 
         public void Add(int damage)
