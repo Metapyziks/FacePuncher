@@ -322,7 +322,7 @@ namespace FacePuncher.Entities
         /// instance of.
         /// </summary>
         public String ClassName { get; private set; }
-
+        
         /// <summary>
         /// Gets the parent instance of this entity if it has one, and
         /// null otherwise.
