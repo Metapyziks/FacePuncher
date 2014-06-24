@@ -51,12 +51,8 @@ namespace FacePuncher
         /// <param name="args">An array of command line arguments.</param>
         public static void Main(string[] args)
         {
-            try {
-                var context = new SynchronizationContext();
-                context.Send((x) => TaskMain().Wait(), null);
-            } catch (AggregateException E) {
-                throw E.InnerException;
-            }
+            var context = new SynchronizationContext();
+            context.Send((x) => TaskMain().Wait(), null);
         }
 
         static async Task TaskMain()

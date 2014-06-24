@@ -47,6 +47,7 @@
     <Compile Include="Entities\AgentControl.cs" />
     <Compile Include="Entities\Coating.cs" />
     <Compile Include="Entities\Component.cs" />
+    <Compile Include="Entities\Container.cs" />
     <Compile Include="Entities\Drawable.cs" />
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\Damageable.cs" />

@@ -67,8 +67,26 @@ namespace FacePuncher.Entities
         {
             while (IsActive) {
                 var direc = Direction.None;
+                var action = Interaction.None;
+
                 if (Intent.HandleIntent<MoveIntent>(ref _intent, x => direc = x.Direction) && CanMove(direc)) {
                     await Move(direc);
+                } else if (Intent.HandleIntent<InteractIntent>(ref _intent, x => action = x.Interaction)) {
+                    switch (action) {
+                        case Interaction.PickupItem:
+                            var item = Tile.Entities
+                                .Where(x => x != Entity)
+                                .Where(x => x.HasComponent<InventoryItem>())
+                                .FirstOrDefault();
+
+                            var cont = Entity.GetComponentOrNull<Container>();
+
+                            if (item != null && cont != null && cont.CanAddItem(item)) {
+                                cont.AddItem(item);
+                            }
+                            
+                            break;
+                    }
                 } else {
                     await Delay(MovementLoopPeriod);
                 }

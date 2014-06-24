@@ -82,12 +82,12 @@ namespace FacePuncher.Win32Console
 
         public override Interaction ReadInteraction()
         {
-            throw new NotImplementedException();
+            return ReadKey(_interactionKeys);
         }
 
         public override bool TryReadInteraction(out Interaction result)
         {
-            throw new NotImplementedException();
+            return TryReadKey(_interactionKeys, out result);
         }
 
         public override UINavigation ReadUINavigation()
