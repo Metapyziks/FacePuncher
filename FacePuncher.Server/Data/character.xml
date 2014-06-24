@@ -12,6 +12,11 @@
     <Container>
         <MaxWeight>25</MaxWeight>
     </Container>
+
+    <Equipper>
+        <Slot name="right hand" />
+        <Slot name="left hand" />
+    </Equipper>
 </server:entity>
 
 <server:entity name="kobold" base="character">

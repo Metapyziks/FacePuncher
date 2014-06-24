@@ -51,6 +51,7 @@
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\Damageable.cs" />
     <Compile Include="Entities\Equipable.cs" />
+    <Compile Include="Entities\Equipper.cs" />
     <Compile Include="Entities\InventoryItem.cs" />
     <Compile Include="Entities\Material.cs" />
     <Compile Include="Entities\MaterialDrawable.cs" />

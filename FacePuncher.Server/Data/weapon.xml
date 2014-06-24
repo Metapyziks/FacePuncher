@@ -13,6 +13,9 @@
         <Skill name="blades" weight="1" />
         <Skill name="daggers" weight="2" />
 
+        <Stance><Slot name="left hand" /></Stance>
+        <Stance><Slot name="right hand" /></Stance>
+
         <EquipTime>0.3</EquipTime>
         <UnequipTime>0.4</UnequipTime>
 

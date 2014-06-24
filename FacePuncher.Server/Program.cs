@@ -51,14 +51,10 @@ namespace FacePuncher.Server
             _listener = new TcpListener(IPAddress.Any, 14242);
             _listener.Start();
 
-            while (true)
-            {
-                if (_clients.Count >= _capacity)
-                {
+            while (true) {
+                if (_clients.Count >= _capacity) {
                     await Task.Delay(100);
-                }
-                else
-                {
+                } else {
                     var socket = await _listener.AcceptTcpClientAsync();
                     var client = new ClientConnection(socket, _level);
                     client.Run();
@@ -79,6 +75,7 @@ namespace FacePuncher.Server
             var context = new SynchronizationContext();
             context.Send((x) => AsyncMain().Wait(), null);
         }
+
         private static async Task AsyncMain()
         {
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
@@ -100,19 +97,15 @@ namespace FacePuncher.Server
             var timer = new Stopwatch();
             var originTime = 0.0;
 
-            while (true)
-            {
-                if (_clients.Count > 0)
-                {
+            while (true) {
+                if (_clients.Count > 0) {
                     if (!timer.IsRunning) {
                         timer.Restart();
                     }
 
                     _level.Advance(timer.Elapsed.TotalSeconds + originTime - _level.Time);
                     await Task.Delay(10);
-                }
-                else
-                {
+                } else {
                     originTime = _level.Time;
                     await Task.Delay(100);
                 }

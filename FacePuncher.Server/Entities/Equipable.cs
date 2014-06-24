@@ -16,14 +16,35 @@
  * along with FacePuncher. If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace FacePuncher.Entities
 {
     class Equipable : Component
     {
+        private List<String[]> _stances;
+
         [ScriptDefinable]
         public float EquipTime { get; set; }
 
         [ScriptDefinable]
         public float UnequipTime { get; set; }
+
+        public Equipable()
+        {
+            _stances = new List<String[]>();
+        }
+
+        public override void LoadFromDefinition(System.Xml.Linq.XElement elem)
+        {
+            base.LoadFromDefinition(elem);
+
+            elem.Elements("Stance")
+                .Select(x => x.Elements("Slot")
+                    .Select(y => y.Attribute("name").Value))
+                .ToList();
+        }
     }
 }
