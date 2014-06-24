@@ -4,8 +4,6 @@
         <Symbol>/</Symbol>
     </MaterialDrawable>
 
-    <Material>copper</Material>
-
     <InventoryItem>
         <Weight>0.6</Weight>
         <Value>10</Value>

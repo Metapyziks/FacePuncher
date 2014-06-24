@@ -21,7 +21,7 @@ using System.Xml.Linq;
 
 namespace FacePuncher.Entities
 {
-    public sealed class DamageInfo
+    sealed class DamageInfo
     {
         public float DamageMultiplier { get; set; }
 
@@ -71,7 +71,7 @@ namespace FacePuncher.Entities
         }
     }
 
-    public class DamagedEventArgs : EventArgs
+    class DamagedEventArgs : EventArgs
     {
         public Entity Victim { get; private set; }
 
@@ -84,7 +84,7 @@ namespace FacePuncher.Entities
         }
     }
 
-    public class Damageable : Component
+    class Damageable : Component
     {
         private int _maxHealth;
 

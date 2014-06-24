@@ -21,7 +21,7 @@ using System.Collections.Generic;
 
 namespace FacePuncher.Entities
 {
-    public class Material : Component
+    class Material : Component
     {
         class MaterialClass : IDefinitionLoadable
         {
