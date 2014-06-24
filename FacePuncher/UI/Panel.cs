@@ -45,6 +45,12 @@ namespace FacePuncher.UI
 
         public override void Draw()
         {
+            for (int y = ScreenRectangle.Top; y < ScreenRectangle.Bottom; ++y) {
+                for (int x = ScreenRectangle.Left; x < ScreenRectangle.Right; ++x) {
+                    Interface.Display.SetCell(x, y, ' ', BackColor, BackColor);
+                }
+            }
+
             DrawChildren();
         }
 
