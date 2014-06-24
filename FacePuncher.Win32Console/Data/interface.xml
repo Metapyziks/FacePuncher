@@ -1,4 +1,4 @@
-﻿<client:interface dll="FacePuncher.Win32Console.dll" active="true">
+﻿<client:interface dll="FacePuncher.Win32Console.dll">
     <Display class="FacePuncher.Win32Console.Display" />
     <Input class="FacePuncher.Win32Console.Input">
         <MovementKeys>

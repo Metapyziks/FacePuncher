@@ -59,7 +59,7 @@
     <Content Include="Data\font2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\interface_cartconsole.xml">
+    <Content Include="Data\interface.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="libjpeg-9.dll">

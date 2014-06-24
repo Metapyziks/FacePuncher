@@ -1,0 +1,9 @@
+<server:material name="copper">
+	<Weight>1</Weight>
+	<Durability>3</Durability>
+	<Value>10</Value>
+	<Color>DarkYellow</Color>
+
+	<Damage class="Piercing">1</Damage>
+	<Damage class="Blunt">1.25</Damage>
+</server:material>

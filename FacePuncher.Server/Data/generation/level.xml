@@ -30,7 +30,8 @@
         <MinFrequency>0.25</MinFrequency>
         <MaxFrequency>0.5</MaxFrequency>
         <Item class="debris" freq="10" />
-        <Item class="mob" freq="1" />
+        <Item class="mob" freq="2" />
+        <Item class="weapon" freq="1" />
     </ItemPlacement>
 </server:room>
 
@@ -46,7 +47,8 @@
         <MinFrequency>0.25</MinFrequency>
         <MaxFrequency>0.5</MaxFrequency>
         <Item class="debris" freq="20" />
-        <Item class="mob" freq="1" />
+        <Item class="mob" freq="2" />
+        <Item class="weapon" freq="1" />
     </ItemPlacement>
 </server:room>
 
@@ -78,5 +80,13 @@
 <server:item name="mob">
     <EntitySelector class="Default">
         <Entity class="kobold" freq="1" />
+    </EntitySelector>
+</server:item>
+
+<server:item name="weapon">
+    <EntitySelector class="DefaultMaterial">
+        <Entity class="weapon_dagger" freq="1" />
+
+        <Material class="copper" freq="1" />
     </EntitySelector>
 </server:item>

@@ -34,8 +34,6 @@ namespace FacePuncher
         {
             Definitions.RegisterType("interface", elem => {
                 if (Loaded) return;
-                if (!elem.HasAttribute("active")) return;
-                if (!elem.Attribute("active").Value.ToLower().Equals("true")) return;
 
                 var path = elem.Attribute("dll").Value;
                 var asm = Assembly.LoadFrom(path);
