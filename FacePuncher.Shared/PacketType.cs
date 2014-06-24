@@ -25,7 +25,8 @@ namespace FacePuncher
     /// </summary>
     public enum ServerPacketType : byte
     {
-        LevelState = 1
+        LevelState = 1,
+        InventoryContents = 2
     }
 
     /// <summary>
@@ -34,6 +35,7 @@ namespace FacePuncher
     /// </summary>
     public enum ClientPacketType : byte
     {
-        PlayerIntent = 1
+        PlayerIntent = 1,
+        InventoryRequest = 2
     }
 }

@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using FacePuncher.Entities;
 using FacePuncher.Geometry;
 using FacePuncher.Network;
+using FacePuncher.Graphics;
 
 namespace FacePuncher
 {
@@ -133,12 +134,41 @@ namespace FacePuncher
             _stream.Flush();
         }
 
+        public void SendInventoryContents(int count = 10, int page = 0)
+        {
+            var items = Player
+                .GetComponent<Container>()
+                .Items
+                .Skip(page * count)
+                .Take(count)
+                .ToArray();
+
+            var listing = new InventoryListing();
+
+            foreach (var item in items) {
+                var itm = item.GetComponent<InventoryItem>();
+                var drw = item.GetComponentOrNull<Drawable>();
+                var mat = item.GetComponentOrNull<Material>();
+
+                listing.Add(item.ClassName, itm.Weight, itm.Value,
+                    drw != null ? drw.GetAppearance() : null,
+                    mat != null ? mat.ClassName : null);
+            }
+
+            _stream.Flush();
+        }
+
         protected override async Task HandlePushedPacket()
         {
-            switch ((ClientPacketType)await _stream.ReadByteAsync())
+            switch ((ClientPacketType) await _stream.ReadByteAsync())
             {
                 case ClientPacketType.PlayerIntent:
                     Player.GetComponent<PlayerControl>().Intent = await _stream.ReadProtoBuf<Intent>();
+                    break;
+                case ClientPacketType.InventoryRequest:
+                    int count = await _stream.ReadInt32();
+                    int page = await _stream.ReadInt32();
+                    SendInventoryContents(count, page);
                     break;
                 default:
                     break;

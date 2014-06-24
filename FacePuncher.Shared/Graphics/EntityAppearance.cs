@@ -31,6 +31,17 @@ namespace FacePuncher.Graphics
     {
         public struct Frame
         {
+            public static async Task<Frame> Read(NetworkStream stream)
+            {
+                var appearance = await stream.ReadAppearance();
+                return new Frame() {
+                    Symbol = appearance.Item1,
+                    ForeColor = appearance.Item2,
+                    BackColor = appearance.Item3,
+                    Duration = await stream.ReadByteAsync()
+                };
+            }
+
             public char Symbol;
             public ConsoleColor ForeColor;
             public ConsoleColor BackColor;
@@ -61,18 +72,6 @@ namespace FacePuncher.Graphics
             public static bool operator!=(Frame a, Frame b)
             {
                 return !a.Equals(b);
-            }
-
-            public static async Task<Frame> Read(NetworkStream stream)
-            {
-                var appearance = await stream.ReadAppearance();
-                return new Frame()
-                {
-                    Symbol = appearance.Item1,
-                    ForeColor = appearance.Item2,
-                    BackColor = appearance.Item3,
-                    Duration = await stream.ReadByteAsync()
-                };
             }
 
             public override bool Equals(object obj)
@@ -106,6 +105,16 @@ namespace FacePuncher.Graphics
             }
         }
 
+        public static async Task<EntityAppearance> Read(NetworkStream stream)
+        {
+            int count = await stream.ReadByteAsync();
+            var result = new EntityAppearance();
+            for (int i = 0; i < count; ++i) {
+                result._frames.Add(await Frame.Read(stream));
+            }
+            return result;
+        }
+
         private List<Frame> _frames;
 
         public Frame this[int frame]
@@ -122,17 +131,6 @@ namespace FacePuncher.Graphics
         public EntityAppearance()
         {
             _frames = new List<Frame>();
-        }
-
-        public static async Task<EntityAppearance> Read(NetworkStream stream)
-        {
-            int count = await stream.ReadByteAsync();
-            var result = new EntityAppearance();
-            for (int i = 0; i < count; ++i)
-            {
-                result._frames.Add(await Frame.Read(stream));
-            }
-            return result;
         }
 
         public void Add(Frame frame)

@@ -4,6 +4,16 @@
 	<Value>10</Value>
 	<Color>DarkYellow</Color>
 
-	<DamageModifier type="Piercing">1</DamageModifier>
-	<DamageModifier type="Blunt">1.25</DamageModifier>
+	<DamageModifier type="Piercing">1.25</DamageModifier>
+	<DamageModifier type="Blunt">1</DamageModifier>
+</server:material>
+
+<server:material name="iron">
+	<Weight>1.25</Weight>
+	<Durability>5</Durability>
+	<Value>15</Value>
+	<Color>DarkGray</Color>
+
+	<DamageModifier type="Piercing">1.25</DamageModifier>
+	<DamageModifier type="Blunt">1.5</DamageModifier>
 </server:material>

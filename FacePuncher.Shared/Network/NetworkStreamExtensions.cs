@@ -64,6 +64,7 @@ namespace FacePuncher.Network
         public static async Task<UInt16> ReadUInt16(this NetworkStream stream) { return BitConverter.ToUInt16(Swivel(await stream.ReadBytes(sizeof(UInt16))), 0); }
         public static async Task<UInt32> ReadUInt32(this NetworkStream stream) { return BitConverter.ToUInt32(Swivel(await stream.ReadBytes(sizeof(UInt32))), 0); }
         public static async Task<UInt64> ReadUInt64(this NetworkStream stream) { return BitConverter.ToUInt64(Swivel(await stream.ReadBytes(sizeof(UInt64))), 0); }
+        public static async Task<Single> ReadSingle(this NetworkStream stream) { return BitConverter.ToSingle(Swivel(await stream.ReadBytes(sizeof(Single))), 0); }
         public static async Task<Double> ReadDouble(this NetworkStream stream) { return BitConverter.ToDouble(Swivel(await stream.ReadBytes(sizeof(Double))), 0); }
         public static async Task<string> ReadString(this NetworkStream stream)
         {
@@ -88,6 +89,7 @@ namespace FacePuncher.Network
         public static void Write(this NetworkStream stream, UInt16 value) { stream.Write(Swivel(BitConverter.GetBytes(value))); }
         public static void Write(this NetworkStream stream, UInt32 value) { stream.Write(Swivel(BitConverter.GetBytes(value))); }
         public static void Write(this NetworkStream stream, UInt64 value) { stream.Write(Swivel(BitConverter.GetBytes(value))); }
+        public static void Write(this NetworkStream stream, Single value) { stream.Write(Swivel(BitConverter.GetBytes(value))); }
         public static void Write(this NetworkStream stream, Double value) { stream.Write(Swivel(BitConverter.GetBytes(value))); }
         public static void Write(this NetworkStream stream, string text)
         {

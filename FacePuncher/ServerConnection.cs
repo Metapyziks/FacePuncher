@@ -98,6 +98,12 @@ namespace FacePuncher
             Interface.Display.Write(0, 0, String.Format("{0:F2}", Time));
         }
 
+        private async Task ReadInventoryContents(NetworkStream stream)
+        {
+            int items = await stream.ReadInt32();
+
+        }
+
         /// <summary>
         /// Processes a single packet incident from the server.
         /// </summary>
@@ -109,6 +115,9 @@ namespace FacePuncher
             {
                 case ServerPacketType.LevelState:
                     await ReadVisibleLevelState(_stream);
+                    break;
+                case ServerPacketType.InventoryContents:
+                    await ReadInventoryContents(_stream);
                     break;
                 default:
                     throw new Exception("Unexpected packet type");
