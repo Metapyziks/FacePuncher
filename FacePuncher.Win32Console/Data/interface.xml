@@ -1,45 +1,4 @@
 ﻿<client:interface dll="FacePuncher.Win32Console.dll">
     <Display class="FacePuncher.Win32Console.Display" />
-    <Input class="FacePuncher.Win32Console.Input">
-        <MovementKeys>
-            <Key name="NumPad7">NorthWest</Key>
-
-            <Key name="NumPad8">North</Key>
-            <Key name="UpArrow">North</Key>
-
-            <Key name="NumPad9">NorthEast</Key>
-
-            <Key name="NumPad4">West</Key>
-            <Key name="LeftArrow">West</Key>
-
-            <Key name="NumPad5">None</Key>
-
-            <Key name="NumPad6">East</Key>
-            <Key name="RightArrow">East</Key>
-
-            <Key name="NumPad1">SouthWest</Key>
-
-            <Key name="NumPad2">South</Key>
-            <Key name="DownArrow">South</Key>
-
-            <Key name="NumPad3">SouthEast</Key>
-        </MovementKeys>
-        <InteractionKeys>
-            <Key name="G">PickupItem</Key>
-            <Key name="OemComma">PickupItem</Key>
-        </InteractionKeys>
-        <UINavigationKeys>
-            <Key name="W">Up</Key>
-            <Key name="UpArrow">Up</Key>
-            <Key name="NumPad8">Up</Key>
-            <Key name="Subtract">Up</Key>
-
-            <Key name="S">Down</Key>
-            <Key name="DownArrow">Down</Key>
-            <Key name="NumPad2">Down</Key>
-            <Key name="Add">Down</Key>
-
-            <Key name="Enter">Select</Key>
-        </UINavigationKeys>
-    </Input>
+    <Input class="FacePuncher.Win32Console.Input" />
 </client:interface>

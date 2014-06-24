@@ -130,37 +130,89 @@ namespace FacePuncher
 
     public abstract class Input : Interface
     {
-        protected Dictionary<TKey, TBind> ReadKeyBindings<TKey, TBind>(XElement elem)
+        static Dictionary<ConsoleKey, Direction> _sMovementKeys;
+        static Dictionary<ConsoleKey, Interaction> _sInteractionKeys;
+        static Dictionary<ConsoleKey, UINavigation> _sNavigationKeys;
+
+        static Input()
+        {
+            _sMovementKeys = new Dictionary<ConsoleKey, Direction>();
+            _sInteractionKeys = new Dictionary<ConsoleKey, Interaction>();
+            _sNavigationKeys = new Dictionary<ConsoleKey, UINavigation>();
+
+            Definitions.RegisterType("keybindings", elem => {
+                if (elem.HasElement("MovementKeys")) {
+                    ReadKeyBindings(_sMovementKeys, elem.Element("MovementKeys"));
+                }
+
+                if (elem.HasElement("InteractionKeys")) {
+                    ReadKeyBindings(_sInteractionKeys, elem.Element("InteractionKeys"));
+                }
+
+                if (elem.HasElement("UINavigationKeys")) {
+                    ReadKeyBindings(_sNavigationKeys, elem.Element("UINavigationKeys"));
+                }
+            });
+        }
+
+        static void ReadKeyBindings<TKey, TBind>(Dictionary<TKey, TBind> dict, XElement elem)
         {
             if (!typeof(TKey).IsEnum || !typeof(TBind).IsEnum) {
                 throw new ArgumentException("Enum type arguments expected.");
             }
 
-            var dict = new Dictionary<TKey, TBind>();
-
             foreach (var sub in elem.Elements("Key")) {
                 var key = (TKey) Enum.Parse(typeof(TKey), sub.Attribute("name").Value);
                 var bind = (TBind) Enum.Parse(typeof(TBind), sub.Value);
 
-                dict.Add(key, bind);
+                if (!dict.ContainsKey(key)) {
+                    dict.Add(key, bind);
+                } else {
+                    dict[key] = bind;
+                }
             }
-
-            return dict;
         }
 
-        public abstract Direction ReadMovement();
+        public bool TryReadIntent(out Intent intent)
+        {
+            ConsoleKeyInfo info;
+            if (!TryReadKey(out info)) {
+                intent = null;
+                return false;
+            }
 
-        public abstract bool TryReadMovement(out Direction result);
+            if (_sMovementKeys.ContainsKey(info.Key)) {
+                intent = new MoveIntent(_sMovementKeys[info.Key]);
+                return true;
+            } else if (_sInteractionKeys.ContainsKey(info.Key)) {
+                intent = new InteractIntent(_sInteractionKeys[info.Key]);
+                return true;
+            } else {
+                intent = null;
+                return false;
+            }
+        }
 
-        public abstract Interaction ReadInteraction();
+        public UINavigation ReadUINavigation()
+        {
+            ConsoleKey key;
+            while (!_sNavigationKeys.ContainsKey(key = ReadKey().Key)) ;
 
-        public abstract bool TryReadInteraction(out Interaction result);
+            return _sNavigationKeys[key];
+        }
 
-        public abstract UINavigation ReadUINavigation();
+        public bool TryReadUINavigation(out UINavigation result)
+        {
+            ConsoleKeyInfo info;
+            if (!TryReadKey(out info) || !_sNavigationKeys.ContainsKey(info.Key)) {
+                result = default(UINavigation);
+                return false;
+            }
 
-        public abstract bool TryReadUINavigation(out UINavigation result);
+            result = _sNavigationKeys[info.Key];
+            return true;
+        }
 
-        // TODO: Replace ConsoleKeyInfo with bespoke structure?
         public abstract ConsoleKeyInfo ReadKey();
 
         public abstract bool TryReadKey(out ConsoleKeyInfo result);

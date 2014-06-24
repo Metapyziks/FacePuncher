@@ -20,42 +20,5 @@
             <Color index="15" rgb="ffffff" />
         </Palette>
     </Display>
-    <Input class="FacePuncher.CartConsole.Input">
-        <MovementKeys>
-            <Key name="SDLK_KP_7">NorthWest</Key>
-
-            <Key name="SDLK_KP_8">North</Key>
-            <Key name="SDLK_UP">North</Key>
-
-            <Key name="SDLK_KP_9">NorthEast</Key>
-
-            <Key name="SDLK_KP_4">West</Key>
-            <Key name="SDLK_LEFT">West</Key>
-
-            <Key name="SDLK_KP_5">None</Key>
-
-            <Key name="SDLK_KP_6">East</Key>
-            <Key name="SDLK_RIGHT">East</Key>
-
-            <Key name="SDLK_KP_1">SouthWest</Key>
-
-            <Key name="SDLK_KP_2">South</Key>
-            <Key name="SDLK_DOWN">South</Key>
-
-            <Key name="SDLK_KP_3">SouthEast</Key>
-        </MovementKeys>
-        <UINavigationKeys>
-            <Key name="SDLK_w">Up</Key>
-            <Key name="SDLK_UP">Up</Key>
-            <Key name="SDLK_KP_8">Up</Key>
-            <Key name="SDLK_KP_MINUS">Up</Key>
-
-            <Key name="SDLK_s">Down</Key>
-            <Key name="SDLK_DOWN">Down</Key>
-            <Key name="SDLK_KP_2">Down</Key>
-            <Key name="SDLK_KP_PLUS">Down</Key>
-
-            <Key name="SDLK_RETURN">Select</Key>
-        </UINavigationKeys>
-    </Input>
+    <Input class="FacePuncher.CartConsole.Input" />
 </client:interface>

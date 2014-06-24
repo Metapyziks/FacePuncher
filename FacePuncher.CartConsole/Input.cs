@@ -18,77 +18,11 @@
  */
 
 using System;
-using System.Collections.Generic;
-
-using FacePuncher.Geometry;
-using FacePuncher.UI;
-
-using SDL2;
 
 namespace FacePuncher.CartConsole
 {
 	class Input : FacePuncher.Input
 	{
-		private Dictionary<SDL.SDL_Keycode, Direction> _movementKeys;
-		private Dictionary<SDL.SDL_Keycode, UINavigation> _uiNavigationKeys;
-
-		protected override void OnLoadFromDefinition(System.Xml.Linq.XElement elem)
-		{
-			base.OnLoadFromDefinition(elem);
-
-			if (elem.HasElement("MovementKeys")) {
-				_movementKeys = ReadKeyBindings<SDL.SDL_Keycode, Direction>(elem.Element("MovementKeys"));
-			}
-
-			if (elem.HasElement("UINavigationKeys")) {
-				_uiNavigationKeys = ReadKeyBindings<SDL.SDL_Keycode, UINavigation>(elem.Element("UINavigationKeys"));
-			}
-		}
-
-		private static T ReadKey<T>(Dictionary<SDL.SDL_Keycode, T> keyMap)
-		{
-			T result;
-			while (!TryReadKey(keyMap, out result))
-				;
-			return result;
-		}
-
-		private static bool TryReadKey<T>(Dictionary<SDL.SDL_Keycode, T> keyMap, out T result)
-		{
-			result = default(T);
-
-			if (!CartConsole.KeyAvailable)
-				return false;
-
-			SDL.SDL_Keycode key = CartConsole.ReadKey(intercept: true).Key;
-			if (keyMap.ContainsKey(key)) {
-				result = keyMap[key];
-				return true;
-			}
-
-			return false;
-		}
-
-		public override Direction ReadMovement()
-		{
-			return ReadKey(_movementKeys);
-		}
-
-		public override bool TryReadMovement(out Direction result)
-		{
-			return TryReadKey(_movementKeys, out result);
-		}
-
-		public override UINavigation ReadUINavigation()
-		{
-			return ReadKey(_uiNavigationKeys);
-		}
-
-		public override bool TryReadUINavigation(out UINavigation result)
-		{
-			return TryReadKey(_uiNavigationKeys, out result);
-		}
-
 		public override ConsoleKeyInfo ReadKey()
 		{
 			return CartConsole.ReadKey().ToConsoleKeyInfo();

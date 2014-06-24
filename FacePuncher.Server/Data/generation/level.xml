@@ -29,7 +29,7 @@
     <ItemPlacement class="Default">
         <MinFrequency>0.25</MinFrequency>
         <MaxFrequency>0.5</MaxFrequency>
-        <Item class="debris" freq="10" />
+        <Item class="debris" freq="40" />
         <Item class="mob" freq="2" />
         <Item class="weapon" freq="1" />
     </ItemPlacement>
@@ -46,7 +46,7 @@
     <ItemPlacement class="Default">
         <MinFrequency>0.25</MinFrequency>
         <MaxFrequency>0.5</MaxFrequency>
-        <Item class="debris" freq="20" />
+        <Item class="debris" freq="40" />
         <Item class="mob" freq="2" />
         <Item class="weapon" freq="1" />
     </ItemPlacement>

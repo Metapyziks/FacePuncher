@@ -17,89 +17,11 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Xml.Linq;
-
-using FacePuncher.Geometry;
-using FacePuncher.UI;
 
 namespace FacePuncher.Win32Console
 {
     public class Input : FacePuncher.Input
     {
-        private Dictionary<ConsoleKey, Direction> _movementKeys;
-        private Dictionary<ConsoleKey, Interaction> _interactionKeys;
-        private Dictionary<ConsoleKey, UINavigation> _uiNavigationKeys;
-
-        protected override void OnLoadFromDefinition(System.Xml.Linq.XElement elem)
-        {
-            base.OnLoadFromDefinition(elem);
-
-            if (elem.HasElement("MovementKeys")) {
-                _movementKeys = ReadKeyBindings<ConsoleKey, Direction>(elem.Element("MovementKeys"));
-            }
-
-            if (elem.HasElement("InteractionKeys")) {
-                _interactionKeys = ReadKeyBindings<ConsoleKey, Interaction>(elem.Element("InteractionKeys"));
-            }
-
-            if (elem.HasElement("UINavigationKeys")) {
-                _uiNavigationKeys = ReadKeyBindings<ConsoleKey, UINavigation>(elem.Element("UINavigationKeys"));
-            }
-        }
-
-        private static T ReadKey<T>(Dictionary<ConsoleKey, T> keyMap)
-        {
-            T result;
-            while (!TryReadKey(keyMap, out result)) ;
-            return result;
-        }
-
-        private static bool TryReadKey<T>(Dictionary<ConsoleKey, T> keyMap, out T result)
-        {
-            result = default(T);
-
-            if (!Console.KeyAvailable) return false;
-
-            ConsoleKey key = Console.ReadKey(intercept: true).Key;
-            if (keyMap.ContainsKey(key)) {
-                result = keyMap[key];
-                return true;
-            }
-
-            return false;
-        }
-        
-        public override Direction ReadMovement()
-        {
-            return ReadKey(_movementKeys);
-        }
-
-        public override bool TryReadMovement(out Direction result)
-        {
-            return TryReadKey(_movementKeys, out result);
-        }
-
-        public override Interaction ReadInteraction()
-        {
-            return ReadKey(_interactionKeys);
-        }
-
-        public override bool TryReadInteraction(out Interaction result)
-        {
-            return TryReadKey(_interactionKeys, out result);
-        }
-
-        public override UINavigation ReadUINavigation()
-        {
-            return ReadKey(_uiNavigationKeys);
-        }
-
-        public override bool TryReadUINavigation(out UINavigation result)
-        {
-            return TryReadKey(_uiNavigationKeys, out result);
-        }
-
         public override ConsoleKeyInfo ReadKey()
         {
             return Console.ReadKey(intercept: true);
