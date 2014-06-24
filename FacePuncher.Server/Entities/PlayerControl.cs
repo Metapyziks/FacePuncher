@@ -73,7 +73,7 @@ namespace FacePuncher.Entities
                     await Move(direc);
                 } else if (Intent.HandleIntent<InteractIntent>(ref _intent, x => action = x.Interaction)) {
                     switch (action) {
-                        case Interaction.PickupItem:
+                        case Interaction.PickupItem: {
                             var item = Tile.Entities
                                 .Where(x => x != Entity)
                                 .Where(x => x.HasComponent<InventoryItem>())
@@ -84,8 +84,10 @@ namespace FacePuncher.Entities
                             if (item != null && cont != null && cont.CanAddItem(item)) {
                                 cont.AddItem(item);
                             }
-                            
-                            break;
+                        } break;
+                        case Interaction.ViewInventory: {
+                            Client.SendInventoryContents(Entity);
+                        } break;
                     }
                 } else {
                     await Delay(MovementLoopPeriod);

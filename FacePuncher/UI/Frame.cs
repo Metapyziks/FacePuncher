@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using FacePuncher.Geometry;
 using FacePuncher.Graphics;
 
@@ -26,15 +27,12 @@ namespace FacePuncher.UI
     /// <summary>
     /// Frame widget.
     /// </summary>
-    class Frame : Widget, IWidgetContainer
+    class Frame : Panel
     {
         /// <summary>
         /// Frame title.
         /// </summary>
         public string Title { get; set; }
-
-        public Dictionary<string, Widget> Children
-        { get; set; }
 
         static readonly char[] _frameChars = new[] {
             (char)205, (char)186, // horizontal, vertical
@@ -57,15 +55,14 @@ namespace FacePuncher.UI
         /// <param name="bc">Background color (default black).</param>
         public Frame(string name, Position pos, int width, int height, string title = "",
             ConsoleColor fc = ConsoleColor.Gray, ConsoleColor bc = ConsoleColor.Black)
-            : base(name, pos, width, height, false, fc, bc)
+            : base(name, pos, width, height, fc, bc)
         {
-            Children = new Dictionary<string, Widget>();
             Title = title;
         }
 
         public override void Draw()
         {
-            DrawChildren();
+            base.Draw();
 
             var parentX = Parent.Position.X;
             var parentY = Parent.Position.Y;
@@ -92,33 +89,6 @@ namespace FacePuncher.UI
 
             // Render title
             UIManager.DrawString(new Position(parentX + Position.X + 2, parentY + Position.Y), Title);
-        }
-
-        public override List<Widget> GetSelectableWidgets()
-        {
-            List<Widget> list = new List<Widget>();
-            if (IsSelectable) list.Add(this);
-
-            foreach (var widget in Children)
-            {
-                list.AddRange(widget.Value.GetSelectableWidgets());
-            }
-
-            return list;
-        }
-
-        public void AddChild(Widget w)
-        {
-            w.Parent = this;
-            Children.Add(w.Name, w);
-        }
-
-        public void DrawChildren()
-        {
-            foreach (var w in Children)
-            {
-                w.Value.Draw();
-            }
         }
     }
 }

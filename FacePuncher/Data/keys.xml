@@ -25,6 +25,8 @@
     <InteractionKeys>
         <Key name="G">PickupItem</Key>
         <Key name="OemComma">PickupItem</Key>
+
+        <Key name="I">ViewInventory</Key>
     </InteractionKeys>
     <UINavigationKeys>
         <Key name="W">Up</Key>

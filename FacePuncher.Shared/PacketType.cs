@@ -35,7 +35,6 @@ namespace FacePuncher
     /// </summary>
     public enum ClientPacketType : byte
     {
-        PlayerIntent = 1,
-        InventoryRequest = 2
+        PlayerIntent = 1
     }
 }

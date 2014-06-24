@@ -82,6 +82,8 @@ namespace FacePuncher.Graphics
         {
             int count = await stream.ReadInt32();
             var result = new InventoryListing();
+            result.Offset = await stream.ReadInt32();
+            result.Total = await stream.ReadInt32();
             for (int i = 0; i < count; ++i) {
                 result._entries.Add(await InventoryEntry.Read(stream));
             }
@@ -94,6 +96,10 @@ namespace FacePuncher.Graphics
         {
             get { return _entries.Count; }
         }
+
+        public int Offset { get; set; }
+
+        public int Total { get; set; }
 
         public InventoryEntry this[int index]
         {
@@ -134,6 +140,8 @@ namespace FacePuncher.Graphics
         public void WriteToStream(NetworkStream stream)
         {
             stream.Write(Count);
+            stream.Write(Offset);
+            stream.Write(Total);
             foreach (var entry in this) {
                 entry.WriteToStream(stream);
             }

@@ -26,19 +26,17 @@ namespace FacePuncher.UI
     /// </summary>
     interface IWidgetContainer
     {
-        /// <summary>
-        /// Stored widgets.
-        /// 
-        /// key - name of the widget.
-        /// value - stored widget.
-        /// </summary>
-        Dictionary<string, Widget> Children { get; set; }
+        Widget this[String name] { get; }
 
         /// <summary>
         /// Adds widget.
         /// </summary>
         /// <param name="w">Widget to store.</param>
         void AddChild(Widget w);
+
+        void RemoveChild(Widget w);
+
+        bool ContainsChild(String name);
 
         /// <summary>
         /// Renders stored widgets.

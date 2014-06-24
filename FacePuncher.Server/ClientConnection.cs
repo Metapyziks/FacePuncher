@@ -134,26 +134,32 @@ namespace FacePuncher
             _stream.Flush();
         }
 
-        public void SendInventoryContents(int count = 10, int page = 0)
+        public void SendInventoryContents(Entity ent, int count = 10, int page = 0)
         {
-            var items = Player
-                .GetComponent<Container>()
-                .Items
-                .Skip(page * count)
-                .Take(count)
-                .ToArray();
-
             var listing = new InventoryListing();
 
-            foreach (var item in items) {
-                var itm = item.GetComponent<InventoryItem>();
-                var drw = item.GetComponentOrNull<Drawable>();
-                var mat = item.GetComponentOrNull<Material>();
+            var cont = ent.GetComponentOrNull<Container>();
+            if (cont != null && ent.IsValid) {
+                var items = cont.Items
+                    .Skip(page * count)
+                    .Take(count)
+                    .ToArray();
 
-                listing.Add(item.ClassName, itm.Weight, itm.Value,
-                    drw != null ? drw.GetAppearance() : null,
-                    mat != null ? mat.ClassName : null);
+                listing.Offset = page * count;
+                listing.Total = cont.Items.Count();
+
+                foreach (var item in items) {
+                    var itm = item.GetComponent<InventoryItem>();
+                    var drw = item.GetComponentOrNull<Drawable>();
+                    var mat = item.GetComponentOrNull<Material>();
+
+                    listing.Add(item.ClassName, itm.Weight, itm.Value,
+                        drw != null ? drw.GetAppearance() : null,
+                        mat != null ? mat.ClassName : null);
+                }
             }
+
+            listing.WriteToStream(_stream);
 
             _stream.Flush();
         }
@@ -164,11 +170,6 @@ namespace FacePuncher
             {
                 case ClientPacketType.PlayerIntent:
                     Player.GetComponent<PlayerControl>().Intent = await _stream.ReadProtoBuf<Intent>();
-                    break;
-                case ClientPacketType.InventoryRequest:
-                    int count = await _stream.ReadInt32();
-                    int page = await _stream.ReadInt32();
-                    SendInventoryContents(count, page);
                     break;
                 default:
                     break;

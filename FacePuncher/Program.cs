@@ -69,9 +69,9 @@ namespace FacePuncher
 
             var select = (Frame) Widget.Create("ServerSelect", "serverselect");
 
-            ((Button) select.Children["btn_connect"]).Used += (sender, e) => {
-                var txtHost = ((TextBox) select.Children["txt_hostname"]);
-                var txtPort = ((TextBox) select.Children["txt_port"]);
+            ((Button) select["btn_connect"]).Used += (sender, e) => {
+                var txtHost = ((TextBox) select["txt_hostname"]);
+                var txtPort = ((TextBox) select["txt_port"]);
 
                 int port;
                 if (!int.TryParse(txtPort.Text, out port) || port >= ushort.MaxValue) return;
@@ -85,7 +85,7 @@ namespace FacePuncher
                 UIManager.CalculateSelectableWidgets();
             };
 
-            ((Button) select.Children["btn_quit"]).Used += (sender, e) => {
+            ((Button) select["btn_quit"]).Used += (sender, e) => {
                 Environment.Exit(0);
             };
 

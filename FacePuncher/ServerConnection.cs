@@ -43,6 +43,8 @@ namespace FacePuncher
 
         public double Time { get; private set; }
 
+        public InventoryListing ViewedInventory { get; private set; }
+
         /// <summary>
         /// Gets a set of visibility masks for rooms that are either
         /// currently visible or have been seen in the past.
@@ -58,6 +60,12 @@ namespace FacePuncher
             : base(new TcpClient(hostname, port))
         {
             _visibility = new List<RoomVisibility>();
+            ViewedInventory = null;
+        }
+
+        public void CloseInventory()
+        {
+            ViewedInventory = null;
         }
 
         /// <summary>
@@ -100,8 +108,7 @@ namespace FacePuncher
 
         private async Task ReadInventoryContents(NetworkStream stream)
         {
-            int items = await stream.ReadInt32();
-
+            ViewedInventory = await InventoryListing.Read(stream);
         }
 
         /// <summary>

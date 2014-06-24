@@ -251,8 +251,8 @@ namespace FacePuncher.UI
                     var name = childElem.Attribute("name").Value;
                     Widget child;
 
-                    if (container.Children.ContainsKey(name)) {
-                        child = container.Children[name];
+                    if (container.ContainsChild(name)) {
+                        child = container[name];
                     } else {
                         child = Create(childElem.Name.LocalName, name);
                         container.AddChild(child);

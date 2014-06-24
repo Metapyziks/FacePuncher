@@ -27,7 +27,8 @@ namespace FacePuncher
     public enum Interaction : byte
     {
         None = 0,
-        PickupItem = 1
+        PickupItem = 1,
+        ViewInventory = 2
     }
 
     [ProtoContract]

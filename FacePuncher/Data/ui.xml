@@ -55,3 +55,90 @@
         </Button>
     </Children>
 </client:widget>
+
+<client:widget name="InventoryEntry" base="Frame">
+  <Title>Inventory Listing</Title>
+
+  <Width>92</Width>
+  <Height>28</Height>
+
+  <CenterToParent />
+
+  <Children>
+    <Label name="lbl_name">
+      <Text>Name</Text>
+      <ForeColor>DarkGray</ForeColor>
+
+      <Left>2</Left>
+      <Top>2</Top>
+    </Label>
+
+    <Label name="lbl_weight">
+      <Text>Weight</Text>
+      <ForeColor>DarkGray</ForeColor>
+
+      <Left>20</Left>
+      <Top>2</Top>
+    </Label>
+
+    <Label name="lbl_value">
+      <Text>Value</Text>
+      <ForeColor>DarkGray</ForeColor>
+
+      <Left>27</Left>
+      <Top>2</Top>
+    </Label>
+
+    <Label name="lbl_material">
+      <Text>Material</Text>
+      <ForeColor>DarkGray</ForeColor>
+
+      <Left>34</Left>
+      <Top>2</Top>
+    </Label>
+  </Children>
+</client:widget>
+
+
+<client:widget name="InventoryListing" base="Frame">
+  <Title>Inventory Listing</Title>
+
+  <Width>92</Width>
+  <Height>28</Height>
+
+  <CenterToParent />
+
+  <Children>
+    <Label name="lbl_name">
+      <Text>Name</Text>
+      <ForeColor>DarkGray</ForeColor>
+
+      <Left>2</Left>
+      <Top>2</Top>
+    </Label>
+
+    <Label name="lbl_weight">
+      <Text>Weight</Text>
+      <ForeColor>DarkGray</ForeColor>
+
+      <Left>20</Left>
+      <Top>2</Top>
+    </Label>
+
+    <Label name="lbl_value">
+      <Text>Value</Text>
+      <ForeColor>DarkGray</ForeColor>
+
+      <Left>27</Left>
+      <Top>2</Top>
+    </Label>
+
+    <Label name="lbl_material">
+      <Text>Material</Text>
+      <ForeColor>DarkGray</ForeColor>
+
+      <Left>34</Left>
+      <Top>2</Top>
+    </Label>
+  </Children>
+</client:widget>

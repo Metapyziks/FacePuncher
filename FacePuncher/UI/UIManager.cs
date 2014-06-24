@@ -45,22 +45,23 @@ namespace FacePuncher.UI
         private int _selectedId;
 
         private readonly Frame _parent;
+        
+        private Dictionary<string, Widget> _children { get; set; }
+
+        public Widget this[String name] { get { return _children[name]; } }
 
         /// <summary>
         /// Creates empty manager.
         /// </summary>
         public UIManager()
         {
-            Children = new Dictionary<string, Widget>();
+            _children = new Dictionary<string, Widget>();
 
             _selectableWidgets = new List<Widget>();
             _selectedId = 0;
 
             _parent = new Frame("ui", new Position(), Interface.Display.Width, Interface.Display.Height);
         }
-
-        public Dictionary<string, Widget> Children
-        { get; set; }
 
         /// <summary>
         /// Function used to render widgets and check for UI input.
@@ -108,7 +109,7 @@ namespace FacePuncher.UI
         /// </summary>
         public void DrawChildren()
         {
-            foreach (var w in Children)
+            foreach (var w in _children)
             {
                 w.Value.Draw();
             }
@@ -139,7 +140,7 @@ namespace FacePuncher.UI
         {
             _selectableWidgets = new List<Widget>();
 
-            foreach (var widget in Children)
+            foreach (var widget in _children)
             {
                 _selectableWidgets.AddRange(widget.Value.GetSelectableWidgets());
             }
@@ -155,12 +156,17 @@ namespace FacePuncher.UI
         public void AddChild(Widget w)
         {
             w.Parent = _parent;
-            Children.Add(w.Name, w);
+            _children.Add(w.Name, w);
         }
 
         public void RemoveChild(Widget w)
         {
-            Children.Remove(w.Name);
+            _children.Remove(w.Name);
+        }
+
+        public bool ContainsChild(String name)
+        {
+            return _children.ContainsKey(name);
         }
     }
 }
