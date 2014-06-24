@@ -21,7 +21,7 @@ using System.Collections.Generic;
 
 namespace FacePuncher.Entities
 {
-    class Weapon : Component
+    class Weapon : Equipable
     {
         class AttackClass : IDefinitionLoadable
         {

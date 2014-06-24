@@ -8,6 +8,10 @@
     <Damageable>
         <MaxHealth>10</MaxHealth>
     </Damageable>
+
+    <Container>
+        <MaxWeight>25</MaxWeight>
+    </Container>
 </server:entity>
 
 <server:entity name="kobold" base="character">

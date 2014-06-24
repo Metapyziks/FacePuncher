@@ -13,6 +13,9 @@
         <Skill name="blades" weight="1" />
         <Skill name="daggers" weight="2" />
 
+        <EquipTime>0.3</EquipTime>
+        <UnequipTime>0.4</UnequipTime>
+
         <Attack name="stab">
             <BaseDamage>4</BaseDamage>
             <BaseDuration>0.4</BaseDuration>
