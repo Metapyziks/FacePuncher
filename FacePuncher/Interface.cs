@@ -152,6 +152,10 @@ namespace FacePuncher
 
         public abstract bool TryReadMovement(out Direction result);
 
+        public abstract Interaction ReadInteraction();
+
+        public abstract bool TryReadInteraction(out Interaction result);
+
         public abstract UINavigation ReadUINavigation();
 
         public abstract bool TryReadUINavigation(out UINavigation result);

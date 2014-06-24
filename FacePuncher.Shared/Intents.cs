@@ -16,18 +16,23 @@
  * along with FacePuncher. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using FacePuncher.Geometry;
-using ProtoBuf;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using ProtoBuf;
+
+using FacePuncher.Geometry;
 
 namespace FacePuncher
 {
+    public enum Interaction : byte
+    {
+        None = 0,
+        PickupItem = 1
+    }
+
     [ProtoContract]
     [ProtoInclude(1, typeof(MoveIntent))]
+    [ProtoInclude(2, typeof(InteractIntent))]
     public abstract class Intent
     {
         public static bool HandleIntent<THandled>(ref Intent intent, Action<THandled> handler) where THandled : Intent
@@ -52,5 +57,15 @@ namespace FacePuncher
         public MoveIntent() : this(Direction.None) { }
         public MoveIntent(Direction direction)
         { Direction = direction; }
+    }
+
+    [ProtoContract]
+    public class InteractIntent : Intent
+    {
+        [ProtoMember(1)]
+        public Interaction Interaction { get; set; }
+        public InteractIntent() : this(Interaction.None) { }
+        public InteractIntent(Interaction interaction)
+        { Interaction = interaction; }
     }
 }

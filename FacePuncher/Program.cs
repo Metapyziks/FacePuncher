@@ -97,6 +97,7 @@ namespace FacePuncher
             UIManager.CalculateSelectableWidgets();
 
             var direc = Direction.None;
+            var action = Interaction.None;
 
             while (true) {
                 if (server == null) {
@@ -104,6 +105,8 @@ namespace FacePuncher
                     await Task.Delay(100);
                 } else if (Interface.Input.TryReadMovement(out direc)) {
                     server.SendIntent(new MoveIntent(direc));
+                } else if (Interface.Input.TryReadInteraction(out action)) {
+                    server.SendIntent(new InteractIntent(action));
                 } else {
                     await Task.Delay(100);
                 }

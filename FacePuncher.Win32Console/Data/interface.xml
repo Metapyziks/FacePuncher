@@ -24,6 +24,10 @@
 
             <Key name="NumPad3">SouthEast</Key>
         </MovementKeys>
+        <InteractionKeys>
+            <Key name="G">PickupItem</Key>
+            <Key name="OemComma">PickupItem</Key>
+        </InteractionKeys>
         <UINavigationKeys>
             <Key name="W">Up</Key>
             <Key name="UpArrow">Up</Key>

@@ -28,6 +28,7 @@ namespace FacePuncher.Win32Console
     public class Input : FacePuncher.Input
     {
         private Dictionary<ConsoleKey, Direction> _movementKeys;
+        private Dictionary<ConsoleKey, Interaction> _interactionKeys;
         private Dictionary<ConsoleKey, UINavigation> _uiNavigationKeys;
 
         protected override void OnLoadFromDefinition(System.Xml.Linq.XElement elem)
@@ -36,6 +37,10 @@ namespace FacePuncher.Win32Console
 
             if (elem.HasElement("MovementKeys")) {
                 _movementKeys = ReadKeyBindings<ConsoleKey, Direction>(elem.Element("MovementKeys"));
+            }
+
+            if (elem.HasElement("InteractionKeys")) {
+                _interactionKeys = ReadKeyBindings<ConsoleKey, Interaction>(elem.Element("InteractionKeys"));
             }
 
             if (elem.HasElement("UINavigationKeys")) {
@@ -73,6 +78,16 @@ namespace FacePuncher.Win32Console
         public override bool TryReadMovement(out Direction result)
         {
             return TryReadKey(_movementKeys, out result);
+        }
+
+        public override Interaction ReadInteraction()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool TryReadInteraction(out Interaction result)
+        {
+            throw new NotImplementedException();
         }
 
         public override UINavigation ReadUINavigation()
