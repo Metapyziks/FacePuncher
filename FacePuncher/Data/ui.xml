@@ -57,7 +57,7 @@
 </client:widget>
 
 <client:widget name="InventoryEntry" base="Panel">
-  <Width>52</Width>
+  <Width>64</Width>
   <Height>1</Height>
 
   <CenterToParent />
@@ -75,7 +75,7 @@
       <Text>0.00</Text>
       <ForeColor>Gray</ForeColor>
 
-      <Left>19</Left>
+      <Left>31</Left>
       <Top>0</Top>
     </Label>
 
@@ -83,7 +83,7 @@
       <Text>0</Text>
       <ForeColor>Gray</ForeColor>
 
-      <Left>27</Left>
+      <Left>39</Left>
       <Top>0</Top>
     </Label>
 
@@ -91,7 +91,7 @@
       <Text></Text>
       <ForeColor>Gray</ForeColor>
 
-      <Left>34</Left>
+      <Left>56</Left>
       <Top>0</Top>
     </Label>
   </Children>
@@ -100,7 +100,7 @@
 <client:widget name="InventoryListing" base="Frame">
   <Title>Inventory Listing</Title>
 
-  <Width>54</Width>
+  <Width>66</Width>
   <Height>28</Height>
 
   <CenterToParent />
@@ -118,7 +118,7 @@
       <Text>Weight</Text>
       <ForeColor>DarkGray</ForeColor>
 
-      <Left>20</Left>
+      <Left>32</Left>
       <Top>2</Top>
     </Label>
 
@@ -126,7 +126,7 @@
       <Text>Value</Text>
       <ForeColor>DarkGray</ForeColor>
 
-      <Left>28</Left>
+      <Left>40</Left>
       <Top>2</Top>
     </Label>
 
@@ -134,7 +134,7 @@
       <Text>Material</Text>
       <ForeColor>DarkGray</ForeColor>
 
-      <Left>35</Left>
+      <Left>47</Left>
       <Top>2</Top>
     </Label>
   </Children>

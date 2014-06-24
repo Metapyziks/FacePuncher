@@ -115,15 +115,17 @@ namespace FacePuncher
 
             int i = 0;
             foreach (var item in inv) {
-                var entry = Widget.Create<Panel>("InventoryEntry", "entry_" + i++);
+                var entry = Widget.Create<Panel>("InventoryEntry", "entry_" + i);
 
-                entry.Position = new Position(1, i * 2 + 2);
-                ((Label) entry["name"]).Text = item.Name;
+                entry.Position = new Position(1, i * 2 + 4);
+                ((Label) entry["name"]).Text = (char) ('a' + i) + " - " + item.Name;
                 ((Label) entry["weight"]).Text = item.Weight.ToString("F2");
                 ((Label) entry["value"]).Text = item.Value.ToString();
                 ((Label) entry["material"]).Text = item.Material ?? "";
 
                 InventoryView.AddChild(entry);
+
+                ++i;
             }
 
             Program.Draw(this);
