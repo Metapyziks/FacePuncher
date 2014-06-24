@@ -5,11 +5,11 @@
     </MaterialDrawable>
 
     <InventoryItem>
-        <Weight>0.6</Weight>
-        <Value>10</Value>
+        <BaseWeight>0.6</BaseWeight>
+        <BaseValue>10</BaseValue>
     </InventoryItem>
 
-    <Weapon>      
+    <Weapon>
         <Skill name="blades" weight="1" />
         <Skill name="daggers" weight="2" />
 
@@ -17,9 +17,9 @@
             <BaseDamage>4</BaseDamage>
             <BaseDuration>0.4</BaseDuration>
 
-            <Effort>1</Effort>
+            <Effort>2</Effort>
             <Precision>4</Precision>
-            <Range>1</Range>
+            <Range>3</Range>
             <DamageType>Piercing</DamageType>
         </Attack>
 
@@ -29,7 +29,7 @@
 
             <Effort>3</Effort>
             <Precision>2</Precision>
-            <Range>1</Range>
+            <Range>1.5</Range>
             <DamageType>Piercing</DamageType>
         </Attack>
 
@@ -39,7 +39,7 @@
 
             <Effort>1</Effort>
             <Precision>1</Precision>
-            <Range>1</Range>
+            <Range>1.5</Range>
             <DamageType>Blunt</DamageType>
         </Attack>
     </Weapon>

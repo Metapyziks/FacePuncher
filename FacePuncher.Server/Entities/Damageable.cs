@@ -17,6 +17,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Xml.Linq;
 
 namespace FacePuncher.Entities
@@ -41,16 +42,34 @@ namespace FacePuncher.Entities
 
         public Entity Inflictor { get; set; }
 
-        public String[] DamageTypes { get; set; }
+        private Dictionary<String, Object> _keyVals;
 
-        public DamageInfo(int baseDamage, params String[] damageTypes)
+        public DamageInfo(int baseDamage)
         {
             DamageMultiplier = 1f;
 
             BaseDamage = baseDamage;
             MaxDamage = int.MaxValue;
 
-            DamageTypes = damageTypes;
+            _keyVals = new Dictionary<string, object>();
+        }
+
+        public void Set<T>(String key, T val)
+        {
+            if (!_keyVals.ContainsKey(key)) {
+                _keyVals.Add(key, val);
+            } else {
+                _keyVals[key] = val;
+            }
+        }
+
+        public T Get<T>(String key, T defaultVal = default(T))
+        {
+            if (!_keyVals.ContainsKey(key)) {
+                return defaultVal;
+            } else {
+                return (T) _keyVals[key];
+            }
         }
 
         public void Add(int damage)

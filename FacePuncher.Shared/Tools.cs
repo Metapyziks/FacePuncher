@@ -189,6 +189,38 @@ namespace FacePuncher
             return min + (float) rand.NextDouble() * (max - min);
         }
 
+        public static void LoadDictionary<T>(this IEnumerable<XElement> elems,
+            Dictionary<String, T> dict)
+            where T : IDefinitionLoadable, new()
+        {
+            foreach (var elem in elems) {
+                var name = elem.Attribute("name").Value;
+
+                if (!dict.ContainsKey(name)) {
+                    var val = new T();
+                    val.LoadFromDefinition(elem);
+                    dict.Add(name, val);
+                } else {
+                    dict[name].LoadFromDefinition(elem);
+                }
+            }
+        }
+
+        public static void LoadDictionary<T>(this IEnumerable<XElement> elems,
+            Dictionary<String, T> dict, Func<XElement, T> keySelector)
+        {
+            foreach (var elem in elems) {
+                var name = elem.Attribute("name").Value;
+                var val = keySelector(elem);
+
+                if (!dict.ContainsKey(name)) {
+                    dict.Add(name, val);
+                } else {
+                    dict[name] = val;
+                }
+            }
+        }
+
         public static Dictionary<T, int> ToFrequencyDictionary<T>(this IEnumerable<XElement> elems,
             Func<String, T> keySelector)
         {

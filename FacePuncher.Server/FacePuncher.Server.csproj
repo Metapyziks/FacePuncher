@@ -55,6 +55,7 @@
     <Compile Include="Entities\PlayerControl.cs" />
     <Compile Include="Entities\StaticDrawable.cs" />
     <Compile Include="Entities\VerminControl.cs" />
+    <Compile Include="Entities\Weapon.cs" />
     <Compile Include="Geometry\EntitySelector.cs" />
     <Compile Include="Geometry\EntitySelectors\Default.cs" />
     <Compile Include="Generator.cs" />

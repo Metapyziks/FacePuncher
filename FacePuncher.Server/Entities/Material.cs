@@ -88,10 +88,12 @@ namespace FacePuncher.Entities
 
             public void ModifyDamage(DamageInfo info)
             {
-                foreach (var type in info.DamageTypes) {
-                    if (_damageModifiers.ContainsKey(type)) {
-                        info.Scale(_damageModifiers[type]);
-                    }
+                if (info.Inflictor == null) return;
+
+                var type = info.Get<String>("DamageType");
+
+                if (_damageModifiers.ContainsKey(type)) {
+                    info.Scale(_damageModifiers[type]);
                 }
             }
         }
