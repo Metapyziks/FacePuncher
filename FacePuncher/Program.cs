@@ -67,7 +67,7 @@ namespace FacePuncher
 
             UIManager = new UIManager();
 
-            var select = (Frame) Widget.Create("ServerSelect", "serverselect");
+            var select = Widget.Create<Frame>("ServerSelect", "serverselect");
 
             ((Button) select["btn_connect"]).Used += (sender, e) => {
                 var txtHost = ((TextBox) select["txt_hostname"]);
@@ -121,6 +121,10 @@ namespace FacePuncher
 
                 foreach (var vis in server.Visibility) {
                     vis.Draw(rect, Position.Zero, attribs, server.Time);
+                }
+
+                if (server.InventoryView != null && !UIManager.ContainsChild(server.InventoryView.Name)) {
+                    UIManager.AddChild(server.InventoryView);
                 }
             }
 

@@ -16,6 +16,8 @@
  * along with FacePuncher. If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
+
 namespace FacePuncher.Entities
 {
     interface IWeighable
@@ -51,7 +53,7 @@ namespace FacePuncher.Entities
             }
         }
 
-        public float Value
+        public int Value
         {
             get
             {
@@ -62,7 +64,7 @@ namespace FacePuncher.Entities
                     }
                 }
 
-                return BaseValue * mul;
+                return (int) Math.Round(BaseValue * mul);
             }
         }
     }

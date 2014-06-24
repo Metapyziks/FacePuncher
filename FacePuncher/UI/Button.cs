@@ -74,7 +74,7 @@ namespace FacePuncher.UI
                 bc = ForeColor;
             }
 
-            UIManager.DrawString(Parent.Position + Position, Text, fc, bc);
+            UIManager.DrawString(ScreenPosition, Text, fc, bc);
         }
     }
 }

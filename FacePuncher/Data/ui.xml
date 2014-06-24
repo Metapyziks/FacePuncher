@@ -2,7 +2,7 @@
     <Title>Connect to Server</Title>
 
     <Width>32</Width>
-    <Height>12</Height>
+    <Height>13</Height>
 
     <CenterToParent />
 
@@ -56,54 +56,51 @@
     </Children>
 </client:widget>
 
-<client:widget name="InventoryEntry" base="Frame">
-  <Title>Inventory Listing</Title>
-
-  <Width>92</Width>
-  <Height>28</Height>
+<client:widget name="InventoryEntry" base="Panel">
+  <Width>52</Width>
+  <Height>1</Height>
 
   <CenterToParent />
 
   <Children>
-    <Label name="lbl_name">
-      <Text>Name</Text>
-      <ForeColor>DarkGray</ForeColor>
+    <Label name="name">
+      <Text>unnamed</Text>
+      <ForeColor>Gray</ForeColor>
 
-      <Left>2</Left>
-      <Top>2</Top>
+      <Left>1</Left>
+      <Top>0</Top>
     </Label>
 
-    <Label name="lbl_weight">
-      <Text>Weight</Text>
-      <ForeColor>DarkGray</ForeColor>
+    <Label name="weight">
+      <Text>0.00</Text>
+      <ForeColor>Gray</ForeColor>
 
-      <Left>20</Left>
-      <Top>2</Top>
+      <Left>19</Left>
+      <Top>0</Top>
     </Label>
 
-    <Label name="lbl_value">
-      <Text>Value</Text>
-      <ForeColor>DarkGray</ForeColor>
+    <Label name="value">
+      <Text>0</Text>
+      <ForeColor>Gray</ForeColor>
 
       <Left>27</Left>
-      <Top>2</Top>
+      <Top>0</Top>
     </Label>
 
-    <Label name="lbl_material">
-      <Text>Material</Text>
-      <ForeColor>DarkGray</ForeColor>
+    <Label name="material">
+      <Text></Text>
+      <ForeColor>Gray</ForeColor>
 
       <Left>34</Left>
-      <Top>2</Top>
+      <Top>0</Top>
     </Label>
   </Children>
 </client:widget>
 
-
 <client:widget name="InventoryListing" base="Frame">
   <Title>Inventory Listing</Title>
 
-  <Width>92</Width>
+  <Width>54</Width>
   <Height>28</Height>
 
   <CenterToParent />
@@ -129,7 +126,7 @@
       <Text>Value</Text>
       <ForeColor>DarkGray</ForeColor>
 
-      <Left>27</Left>
+      <Left>28</Left>
       <Top>2</Top>
     </Label>
 
@@ -137,7 +134,7 @@
       <Text>Material</Text>
       <ForeColor>DarkGray</ForeColor>
 
-      <Left>34</Left>
+      <Left>35</Left>
       <Top>2</Top>
     </Label>
   </Children>

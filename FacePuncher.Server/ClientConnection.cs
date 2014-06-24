@@ -136,6 +136,9 @@ namespace FacePuncher
 
         public void SendInventoryContents(Entity ent, int count = 10, int page = 0)
         {
+            _stream.Write((byte) 0); // Pushed packet
+            _stream.Write((byte) ServerPacketType.InventoryContents);
+
             var listing = new InventoryListing();
 
             var cont = ent.GetComponentOrNull<Container>();

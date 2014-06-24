@@ -57,12 +57,10 @@ namespace FacePuncher.UI
 
         public override void Draw()
         {
-            var pos = Parent.Position + Position;
-
             // Draws background
             for (var x = 0; x < Width; x++)
             {
-                Interface.Display.SetCell(pos.X + x, pos.Y, (char) 219, BackColor, ConsoleColor.Black);
+                Interface.Display.SetCell(ScreenPosition.X + x, ScreenPosition.Y, (char) 219, BackColor, ConsoleColor.Black);
             }
 
             int progress = (int)((float)(Value / MaxValue) * Width);
@@ -70,7 +68,7 @@ namespace FacePuncher.UI
             // Draws actual progress
             for (var x = 0; x < progress; x++)
             {
-                Interface.Display.SetCell(pos.X + x, pos.Y, (char) 219, ForeColor, ConsoleColor.Black);
+                Interface.Display.SetCell(ScreenPosition.X + x, ScreenPosition.Y, (char) 219, ForeColor, ConsoleColor.Black);
             }
         }
     }

@@ -32,7 +32,7 @@ namespace FacePuncher.Graphics
             var result = new InventoryEntry {
                 Name = await stream.ReadString(),
                 Weight = await stream.ReadSingle(),
-                Value = await stream.ReadSingle()
+                Value = await stream.ReadInt32()
             };
 
             var flags = await stream.ReadByteAsync();
@@ -50,7 +50,7 @@ namespace FacePuncher.Graphics
 
         public String Name { get; set; }
         public float Weight { get; set; }
-        public float Value { get; set; }
+        public int Value { get; set; }
 
         public String Material { get; set; }
         public EntityAppearance Appearance { get; set; }
@@ -115,7 +115,7 @@ namespace FacePuncher.Graphics
             _entries = new List<InventoryEntry>();
         }
 
-        public void Add(String name, float weight, float value,
+        public void Add(String name, float weight, int value,
             EntityAppearance appearance = null, String material = null)
         {
             _entries.Add(new InventoryEntry {

@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Xml.Linq;
+
 using FacePuncher.Geometry;
 
 namespace FacePuncher.UI
@@ -96,16 +97,17 @@ namespace FacePuncher.UI
             return Extends(_sWidgetCtors[className].Base, baseName);
         }
 
-        public static Widget Create(String typeName, String name)
+        public static T Create<T>(String typeName, String name)
+            where T : Widget
         {
-            Widget widget;
+            T widget;
 
             if (_sWidgetCtors.ContainsKey(typeName)) {
                 var info = _sWidgetCtors[typeName];
-                widget = Create(info.Base, name);
+                widget = Create<T>(info.Base, name);
                 info.Constructor(widget);
             } else {
-                widget = (Widget) _sBaseCtors[typeName].Invoke(new Object[] { name });
+                widget = (T) _sBaseCtors[typeName].Invoke(new Object[] { name });
             }
 
             return widget;
@@ -215,6 +217,16 @@ namespace FacePuncher.UI
             set { rectangle.Height = value; }
         }
 
+        public Position ScreenPosition
+        {
+            get { return Parent != null ? Parent.ScreenPosition + Position : Position; }
+        }
+
+        public Rectangle ScreenRectangle
+        {
+            get {return Parent != null ? rectangle + Parent.ScreenPosition : rectangle; }
+        }
+
         /// <summary>
         /// List of widgets that can be selected.
         /// </summary>
@@ -254,7 +266,7 @@ namespace FacePuncher.UI
                     if (container.ContainsChild(name)) {
                         child = container[name];
                     } else {
-                        child = Create(childElem.Name.LocalName, name);
+                        child = Create<Widget>(childElem.Name.LocalName, name);
                         container.AddChild(child);
                     }
 

@@ -64,31 +64,28 @@ namespace FacePuncher.UI
         {
             base.Draw();
 
-            var parentX = Parent.Position.X;
-            var parentY = Parent.Position.Y;
-
             // Render frame corners
-            Interface.Display.SetCell(Parent.Position + rectangle.TopLeft, _frameChars[2], ForeColor, BackColor);
-            Interface.Display.SetCell(Parent.Position + rectangle.TopRight, _frameChars[3], ForeColor, BackColor);
-            Interface.Display.SetCell(Parent.Position + rectangle.BottomLeft, _frameChars[4], ForeColor, BackColor);
-            Interface.Display.SetCell(Parent.Position + rectangle.BottomRight, _frameChars[5], ForeColor, BackColor);
+            Interface.Display.SetCell(ScreenRectangle.TopLeft, _frameChars[2], ForeColor, BackColor);
+            Interface.Display.SetCell(ScreenRectangle.TopRight - Position.UnitX, _frameChars[3], ForeColor, BackColor);
+            Interface.Display.SetCell(ScreenRectangle.BottomLeft - Position.UnitY, _frameChars[4], ForeColor, BackColor);
+            Interface.Display.SetCell(ScreenRectangle.BottomRight - Position.UnitX - Position.UnitY, _frameChars[5], ForeColor, BackColor);
 
             // Render horizontal line
-            for (var x = 0; x < rectangle.Width - 1; x++)
+            for (var x = 1; x < rectangle.Width - 1; x++)
             {
-                Interface.Display.SetCell(parentX + x + rectangle.Left + 1, parentY + rectangle.Top, _frameChars[0], ForeColor, BackColor);
-                Interface.Display.SetCell(parentX + x + rectangle.Left + 1, parentY + rectangle.Bottom, _frameChars[0], ForeColor, BackColor);
+                Interface.Display.SetCell(ScreenRectangle.Left + x, ScreenRectangle.Top, _frameChars[0], ForeColor, BackColor);
+                Interface.Display.SetCell(ScreenRectangle.Left + x, ScreenRectangle.Bottom - 1, _frameChars[0], ForeColor, BackColor);
             }
 
             // Render vertical line
-            for (var y = 0; y < rectangle.Height - 1; y++)
+            for (var y = 1; y < rectangle.Height - 1; y++)
             {
-                Interface.Display.SetCell(parentX + rectangle.Left, parentY + y + rectangle.Top + 1, _frameChars[1], ForeColor, BackColor);
-                Interface.Display.SetCell(parentX + rectangle.Right, parentY + y + rectangle.Top + 1, _frameChars[1], ForeColor, BackColor);
+                Interface.Display.SetCell(ScreenRectangle.Left, ScreenRectangle.Top + y, _frameChars[1], ForeColor, BackColor);
+                Interface.Display.SetCell(ScreenRectangle.Right - 1, ScreenRectangle.Top + y, _frameChars[1], ForeColor, BackColor);
             }
 
             // Render title
-            UIManager.DrawString(new Position(parentX + Position.X + 2, parentY + Position.Y), Title);
+            UIManager.DrawString(new Position(ScreenPosition.X + 2, ScreenPosition.Y), Title);
         }
     }
 }

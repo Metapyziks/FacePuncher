@@ -22,11 +22,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 using FacePuncher.Geometry;
-using System.Threading.Tasks;
-using FacePuncher.Network;
 using FacePuncher.Graphics;
+using FacePuncher.Network;
+using FacePuncher.UI;
 
 namespace FacePuncher
 {
@@ -43,7 +44,7 @@ namespace FacePuncher
 
         public double Time { get; private set; }
 
-        public InventoryListing ViewedInventory { get; private set; }
+        public Frame InventoryView { get; private set; }
 
         /// <summary>
         /// Gets a set of visibility masks for rooms that are either
@@ -60,12 +61,12 @@ namespace FacePuncher
             : base(new TcpClient(hostname, port))
         {
             _visibility = new List<RoomVisibility>();
-            ViewedInventory = null;
+            InventoryView = null;
         }
 
         public void CloseInventory()
         {
-            ViewedInventory = null;
+            InventoryView = null;
         }
 
         /// <summary>
@@ -108,7 +109,24 @@ namespace FacePuncher
 
         private async Task ReadInventoryContents(NetworkStream stream)
         {
-            ViewedInventory = await InventoryListing.Read(stream);
+            var inv = await InventoryListing.Read(stream);
+
+            InventoryView = Widget.Create<Frame>("InventoryListing", "inventory");
+
+            int i = 0;
+            foreach (var item in inv) {
+                var entry = Widget.Create<Panel>("InventoryEntry", "entry_" + i++);
+
+                entry.Position = new Position(1, i * 2 + 2);
+                ((Label) entry["name"]).Text = item.Name;
+                ((Label) entry["weight"]).Text = item.Weight.ToString("F2");
+                ((Label) entry["value"]).Text = item.Value.ToString();
+                ((Label) entry["material"]).Text = item.Material ?? "";
+
+                InventoryView.AddChild(entry);
+            }
+
+            Program.Draw(this);
         }
 
         /// <summary>
