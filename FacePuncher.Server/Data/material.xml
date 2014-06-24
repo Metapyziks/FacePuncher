@@ -5,5 +5,5 @@
 	<Color>DarkYellow</Color>
 
 	<DamageModifier type="Piercing">1</DamageModifier>
-  <DamageModifier type="Blunt">1.25</DamageModifier>
+	<DamageModifier type="Blunt">1.25</DamageModifier>
 </server:material>

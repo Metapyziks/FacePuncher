@@ -1,46 +1,48 @@
 <server:entity name="weapon_dagger">
-	<MaterialDrawable>
+    <MaterialDrawable>
         <Layer>Items</Layer>
         <Symbol>/</Symbol>
     </MaterialDrawable>
 
+    <Material>copper</Material>
+
     <InventoryItem>
-    	<Weight>0.6</Weight>
-		<Value>10</Value>
+        <Weight>0.6</Weight>
+        <Value>10</Value>
     </InventoryItem>
 
-	<Weapon>
-		<Skill name="blades" weight="1" />
-		<Skill name="daggers" weight="2" />
-	
-		<Attack name="stab">
-			<BaseDamage>4</BaseDamage>
-			<BaseDuration>0.4</BaseDuration>
+    <Weapon>      
+        <Skill name="blades" weight="1" />
+        <Skill name="daggers" weight="2" />
 
-			<Effort>1</Effort>
-			<Precision>4</Precision>
-			<Range>1</Range>
-			<DamageType>Piercing</DamageType>
-		</Attack>
+        <Attack name="stab">
+            <BaseDamage>4</BaseDamage>
+            <BaseDuration>0.4</BaseDuration>
 
-		<Attack name="slash">
-			<BaseDamage>6</BaseDamage>
-			<BaseDuration>0.7</BaseDuration>
+            <Effort>1</Effort>
+            <Precision>4</Precision>
+            <Range>1</Range>
+            <DamageType>Piercing</DamageType>
+        </Attack>
 
-			<Effort>3</Effort>
-			<Precision>2</Precision>
-			<Range>1</Range>
-			<DamageType>Piercing</DamageType>
-		</Attack>
-		
-		<Attack name="slap">
-			<BaseDamage>1</BaseDamage>
-			<BaseDuration>0.3</BaseDuration>
+        <Attack name="slash">
+            <BaseDamage>6</BaseDamage>
+            <BaseDuration>0.7</BaseDuration>
 
-			<Effort>1</Effort>
-			<Precision>1</Precision>
-			<Range>1</Range>
-			<DamageType>Blunt</DamageType>
-		</Attack>
-	</Weapon>
+            <Effort>3</Effort>
+            <Precision>2</Precision>
+            <Range>1</Range>
+            <DamageType>Piercing</DamageType>
+        </Attack>
+
+        <Attack name="slap">
+            <BaseDamage>1</BaseDamage>
+            <BaseDuration>0.3</BaseDuration>
+
+            <Effort>1</Effort>
+            <Precision>1</Precision>
+            <Range>1</Range>
+            <DamageType>Blunt</DamageType>
+        </Attack>
+    </Weapon>
 </server:entity>

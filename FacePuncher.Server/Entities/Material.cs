@@ -21,67 +21,110 @@ using System.Collections.Generic;
 
 namespace FacePuncher.Entities
 {
-    class Material : IDefinitionLoadable
+    public class Material : Component
     {
-        private static Dictionary<String, Material> _sMaterials;
-
-        static Material()
+        class MaterialClass : IDefinitionLoadable
         {
-            _sMaterials = new Dictionary<string, Material>();
+            private static Dictionary<String, MaterialClass> _sMaterials;
 
-            Definitions.RegisterType("material", elem => {
-                var name = elem.Attribute("name").Value;
+            static MaterialClass()
+            {
+                _sMaterials = new Dictionary<string, MaterialClass>();
 
-                if (!_sMaterials.ContainsKey(name)) {
-                    _sMaterials.Add(name, new Material());
+                Definitions.RegisterType("material", elem => {
+                    var name = elem.Attribute("name").Value;
+
+                    if (!_sMaterials.ContainsKey(name)) {
+                        _sMaterials.Add(name, new MaterialClass(name));
+                    }
+
+                    _sMaterials[name].LoadFromDefinition(elem);
+                });
+            }
+
+            public static MaterialClass Get(String name)
+            {
+                return _sMaterials[name];
+            }
+
+            public String Name { get; set; }
+
+            [ScriptDefinable]
+            public float Weight { get; set; }
+
+            [ScriptDefinable]
+            public float Durability { get; set; }
+
+            [ScriptDefinable]
+            public float Value { get; set; }
+
+            [ScriptDefinable]
+            public ConsoleColor Color { get; set; }
+
+            private Dictionary<String, float> _damageModifiers;
+
+            public MaterialClass(String name)
+            {
+                Name = name;
+
+                _damageModifiers = new Dictionary<string, float>();
+            }
+
+            public void LoadFromDefinition(System.Xml.Linq.XElement elem)
+            {
+                Definitions.LoadProperties(this, elem);
+
+                foreach (var mod in elem.Elements("DamageModifier")) {
+                    var type = mod.Attribute("type").Value;
+                    var value = float.Parse(mod.Value);
+
+                    if (!_damageModifiers.ContainsKey(type)) {
+                        _damageModifiers.Add(type, value);
+                    } else {
+                        _damageModifiers[type] = value;
+                    }
                 }
+            }
 
-                _sMaterials[name].LoadFromDefinition(elem);
-            });
-        }
-
-        [ScriptDefinable]
-        public float Weight { get; set; }
-
-        [ScriptDefinable]
-        public float Durability { get; set; }
-
-        [ScriptDefinable]
-        public float Value { get; set; }
-
-        [ScriptDefinable]
-        public ConsoleColor Color { get; set; }
-
-        private Dictionary<String, float> _damageModifiers;
-
-        public Material()
-        {
-            _damageModifiers = new Dictionary<string, float>();
-        }
-
-        public void LoadFromDefinition(System.Xml.Linq.XElement elem)
-        {
-            Definitions.LoadProperties(this, elem);
-
-            foreach (var mod in elem.Elements("DamageModifier")) {
-                var type = mod.Attribute("type").Value;
-                var value = float.Parse(mod.Value);
-
-                if (!_damageModifiers.ContainsKey(type) {
-                    _damageModifiers.Add(type, value);
-                } else {
-                    _damageModifiers[type] = value;
+            public void ModifyDamage(DamageInfo info)
+            {
+                foreach (var type in info.DamageTypes) {
+                    if (_damageModifiers.ContainsKey(type)) {
+                        info.Scale(_damageModifiers[type]);
+                    }
                 }
             }
         }
+
+        private MaterialClass _class;
+
+        private MaterialClass Class
+        {
+            get
+            {
+                if (_class == null || _class.Name != ClassName) {
+                    _class = MaterialClass.Get(ClassName);
+                }
+
+                return _class;
+            }
+        }
+
+        public String ClassName { get; set; }
+
+        public float Weight { get { return Class.Weight; } }
+        public float Durability { get { return Class.Durability; } }
+        public float Value { get { return Class.Value; } }
+        public ConsoleColor Color { get { return Class.Color; } }
 
         public void ModifyDamage(DamageInfo info)
         {
-            foreach (var type in info.DamageTypes) {
-                if (_damageModifiers.ContainsKey(type)) {
-                    info.Scale(_damageModifiers[type]);
-                }
-            }
+            Class.ModifyDamage(info);
+        }
+
+        public override void LoadFromDefinition(System.Xml.Linq.XElement elem)
+        {
+            ClassName = elem.Value.Trim();
         }
     }
 }
