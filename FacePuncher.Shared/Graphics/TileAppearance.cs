@@ -20,11 +20,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
+using System.Threading.Tasks;
 
 using FacePuncher.Geometry;
 using FacePuncher.Network;
-using System.Net.Sockets;
-using System.Threading.Tasks;
 
 namespace FacePuncher.Graphics
 {

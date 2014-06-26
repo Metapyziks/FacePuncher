@@ -11,6 +11,7 @@
         <Key name="LeftArrow">West</Key>
 
         <Key name="NumPad5">None</Key>
+        <Key name="OemPeriod">None</Key>
 
         <Key name="NumPad6">East</Key>
         <Key name="RightArrow">East</Key>
@@ -27,6 +28,10 @@
         <Key name="OemComma">PickupItem</Key>
 
         <Key name="I">ViewInventory</Key>
+
+        <Key name="W">EquipItem</Key>
+
+        <Key name="R">RemoveItem</Key>
     </InteractionKeys>
     <UINavigationKeys>
         <Key name="W">Up</Key>

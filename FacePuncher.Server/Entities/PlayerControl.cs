@@ -19,7 +19,7 @@
 
 using System;
 using System.Linq;
-
+using System.Threading.Tasks;
 using FacePuncher.Geometry;
 
 namespace FacePuncher.Entities
@@ -30,7 +30,7 @@ namespace FacePuncher.Entities
     class PlayerControl : AgentControl
     {
         const double VisibilityLoopPeriod = 0.25;
-        const double MovementLoopPeriod = 0.25;
+        const double ActionLoopPeriod = 0.25;
 
         /// <summary>
         /// Gets or sets the client that dictates the actions of this entity.
@@ -52,7 +52,7 @@ namespace FacePuncher.Entities
         protected override void OnWake()
         {
             VisibilityUpdateLoop();
-            MovementLoop();
+            ActionLoop();
         }
 
         private async void VisibilityUpdateLoop()
@@ -63,34 +63,46 @@ namespace FacePuncher.Entities
             }
         }
 
-        private async void MovementLoop()
+        private async Task HandleMoveIntent(MoveIntent intent)
+        {
+            if (!CanMove(intent.Direction)) return;
+
+            await Move(intent.Direction);
+        }
+
+        private async Task HandleInteractIntent(InteractIntent intent)
+        {
+            switch (intent.Interaction) {
+                case Interaction.PickupItem: {
+                    var item = Tile.Entities
+                        .Where(x => x != Entity)
+                        .Where(x => x.HasComponent<InventoryItem>())
+                        .FirstOrDefault();
+
+                    var cont = Entity.GetComponentOrNull<Container>();
+
+                    if (item != null && cont != null && cont.CanAddItem(item)) {
+                        cont.AddItem(item);
+                    }
+
+                    await Delay(ActionLoopPeriod);
+                } break;
+                case Interaction.ViewInventory: {
+                    Client.SendInventoryContents(Entity);
+                } break;
+            }
+        }
+
+        private async void ActionLoop()
         {
             while (IsActive) {
-                var direc = Direction.None;
-                var action = Interaction.None;
+                if (_intent != null && (
+                    await Intent.HandleIntentAsync<MoveIntent>(_intent, HandleMoveIntent) ||
+                    await Intent.HandleIntentAsync<InteractIntent>(_intent, HandleInteractIntent))) {
 
-                if (Intent.HandleIntent<MoveIntent>(ref _intent, x => direc = x.Direction) && CanMove(direc)) {
-                    await Move(direc);
-                } else if (Intent.HandleIntent<InteractIntent>(ref _intent, x => action = x.Interaction)) {
-                    switch (action) {
-                        case Interaction.PickupItem: {
-                            var item = Tile.Entities
-                                .Where(x => x != Entity)
-                                .Where(x => x.HasComponent<InventoryItem>())
-                                .FirstOrDefault();
-
-                            var cont = Entity.GetComponentOrNull<Container>();
-
-                            if (item != null && cont != null && cont.CanAddItem(item)) {
-                                cont.AddItem(item);
-                            }
-                        } break;
-                        case Interaction.ViewInventory: {
-                            Client.SendInventoryContents(Entity);
-                        } break;
-                    }
+                    _intent = null;
                 } else {
-                    await Delay(MovementLoopPeriod);
+                    await Delay(ActionLoopPeriod);
                 }
             }
         }

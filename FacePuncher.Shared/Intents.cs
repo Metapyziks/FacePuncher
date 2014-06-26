@@ -21,6 +21,7 @@ using System;
 using ProtoBuf;
 
 using FacePuncher.Geometry;
+using System.Threading.Tasks;
 
 namespace FacePuncher
 {
@@ -28,7 +29,9 @@ namespace FacePuncher
     {
         None = 0,
         PickupItem = 1,
-        ViewInventory = 2
+        ViewInventory = 2,
+        EquipItem = 3,
+        RemoveItem = 4
     }
 
     [ProtoContract]
@@ -36,13 +39,26 @@ namespace FacePuncher
     [ProtoInclude(2, typeof(InteractIntent))]
     public abstract class Intent
     {
-        public static bool HandleIntent<THandled>(ref Intent intent, Action<THandled> handler) where THandled : Intent
+        private bool _handled = false;
+
+        public static bool HandleIntent<THandled>(Intent intent, Action<THandled> handler) where THandled : Intent
         {
             var castIntent = intent as THandled;
-            if (castIntent != null)
-            {
+            if (castIntent != null && !castIntent._handled) {
+                castIntent._handled = true;
                 handler(castIntent);
-                intent = null;
+                return true;
+            }
+
+            return false;
+        }
+
+        public static async Task<bool> HandleIntentAsync<THandled>(Intent intent, Func<THandled, Task> handler) where THandled : Intent
+        {
+            var castIntent = intent as THandled;
+            if (castIntent != null && !castIntent._handled) {
+                castIntent._handled = true;
+                await handler(castIntent);
                 return true;
             }
 
