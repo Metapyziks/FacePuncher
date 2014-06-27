@@ -49,7 +49,19 @@ namespace FacePuncher.UI
     /// </summary>
     class UIManager : IWidgetContainer
     {
-        public Widget Selected { get; internal set; }
+        private Widget _selected;
+
+        public Widget Selected
+        {
+            get
+            {
+                if (_selected != null && !_selected.IsSelectable) {
+                    _selected = null;
+                }
+
+                return _selected;
+            }
+        }
 
         public bool IsInputIntercepted { get { return Selected != null && Selected.InterceptInput; } }
         
@@ -83,7 +95,7 @@ namespace FacePuncher.UI
                 Selected.Deselect();
             }
 
-            Selected = widget;
+            _selected = widget;
 
             return true;
         }
@@ -92,7 +104,7 @@ namespace FacePuncher.UI
         {
             if (Selected != widget) return false;
 
-            Selected = null;
+            _selected = null;
 
             return true;
         }
@@ -103,7 +115,7 @@ namespace FacePuncher.UI
         public void Draw()
         {
             UINavigation nav;
-            if (!IsInputIntercepted && Interface.Input.TryReadUINavigation(out nav)) {
+            if (!IsInputIntercepted && Selected != null && Interface.Input.TryReadUINavigation(out nav)) {
                 switch (nav) {
                     case UINavigation.Up: {
                         var prev = this.GetPrevSelectable(Selected);

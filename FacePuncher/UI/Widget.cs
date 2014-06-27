@@ -238,8 +238,14 @@ namespace FacePuncher.UI
         internal void SetParent(IWidgetContainer parent)
         {
             if (Parent != parent) {
-                if (Parent != null && Parent.ContainsChild(Name)) {
-                    Parent.RemoveChild(this);
+                if (Parent != null) {
+                    if (IsSelected) {
+                        Manager.Deselect(this);
+                    }
+
+                    if (Parent.ContainsChild(Name)) {
+                        Parent.RemoveChild(this);
+                    }
                 }
 
                 Parent = parent;
