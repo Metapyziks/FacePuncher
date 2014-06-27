@@ -113,6 +113,24 @@ namespace FacePuncher
 
             InventoryView = Widget.Create<Frame>("InventoryListing", "inventory");
 
+            switch (inv.AllowedAction) {
+                case InventoryAction.None:
+                    InventoryView.Title = "Your inventory";
+                    break;
+                case InventoryAction.Drop:
+                    InventoryView.Title = "Select item to drop";
+                    break;
+                case InventoryAction.Pickup:
+                    InventoryView.Title = "Select item to pick up";
+                    break;
+                case InventoryAction.Equip:
+                    InventoryView.Title = "Select item to weild or wear";
+                    break;
+                case InventoryAction.Remove:
+                    InventoryView.Title = "Select item to unweild or take off";
+                    break;
+            }
+
             int i = 0;
             foreach (var item in inv) {
                 var entry = Widget.Create<Panel>("InventoryEntry", "entry_" + i);

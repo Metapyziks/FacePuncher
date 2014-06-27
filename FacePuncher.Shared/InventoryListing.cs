@@ -21,15 +21,26 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
+using FacePuncher.Graphics;
 using FacePuncher.Network;
 
-namespace FacePuncher.Graphics
+namespace FacePuncher
 {
+    public enum InventoryAction
+    {
+        None = 0,
+        Pickup,
+        Drop,
+        Equip,
+        Remove
+    }
+
     public class InventoryEntry
     {
         public static async Task<InventoryEntry> Read(NetworkStream stream)
         {
             var result = new InventoryEntry {
+                ID = await stream.ReadUInt32(),
                 Name = await stream.ReadString(),
                 Weight = await stream.ReadSingle(),
                 Value = await stream.ReadInt32()
@@ -48,6 +59,8 @@ namespace FacePuncher.Graphics
             return result;
         }
 
+        public uint ID { get; set; }
+
         public String Name { get; set; }
         public float Weight { get; set; }
         public int Value { get; set; }
@@ -57,6 +70,7 @@ namespace FacePuncher.Graphics
 
         public void WriteToStream(NetworkStream stream)
         {
+            stream.Write(ID);
             stream.Write(Name);
 
             stream.Write(Weight);
@@ -80,8 +94,8 @@ namespace FacePuncher.Graphics
     {
         public static async Task<InventoryListing> Read(NetworkStream stream)
         {
+            var result = new InventoryListing((InventoryAction) await stream.ReadByteAsync());
             int count = await stream.ReadInt32();
-            var result = new InventoryListing();
             result.Offset = await stream.ReadInt32();
             result.Total = await stream.ReadInt32();
             for (int i = 0; i < count; ++i) {
@@ -91,6 +105,8 @@ namespace FacePuncher.Graphics
         }
 
         private List<InventoryEntry> _entries;
+
+        public InventoryAction AllowedAction { get; set; }
 
         public int Count
         {
@@ -110,15 +126,17 @@ namespace FacePuncher.Graphics
             }
         }
 
-        public InventoryListing()
+        public InventoryListing(InventoryAction action)
         {
+            AllowedAction = action;
             _entries = new List<InventoryEntry>();
         }
 
-        public void Add(String name, float weight, int value,
+        public void Add(uint id, String name, float weight, int value,
             EntityAppearance appearance = null, String material = null)
         {
             _entries.Add(new InventoryEntry {
+                ID = id,
                 Name = name,
                 Weight = weight,
                 Value = value,
@@ -139,9 +157,11 @@ namespace FacePuncher.Graphics
 
         public void WriteToStream(NetworkStream stream)
         {
+            stream.Write((byte) AllowedAction);
             stream.Write(Count);
             stream.Write(Offset);
             stream.Write(Total);
+
             foreach (var entry in this) {
                 entry.WriteToStream(stream);
             }

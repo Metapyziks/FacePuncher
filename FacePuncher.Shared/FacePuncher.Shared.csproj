@@ -44,7 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Graphics\InventoryListing.cs" />
+    <Compile Include="InventoryListing.cs" />
     <Compile Include="Network\Connection.cs" />
     <Compile Include="Definitions.cs" />
     <Compile Include="Graphics\EntityAppearance.cs" />

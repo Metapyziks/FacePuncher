@@ -20,7 +20,9 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+
 using FacePuncher.Geometry;
+using FacePuncher.Graphics;
 
 namespace FacePuncher.Entities
 {
@@ -74,36 +76,52 @@ namespace FacePuncher.Entities
         {
             switch (intent.Interaction) {
                 case Interaction.PickupItem: {
-                    var item = Tile.Entities
-                        .Where(x => x != Entity)
-                        .Where(x => x.HasComponent<InventoryItem>())
-                        .FirstOrDefault();
-
                     var cont = Entity.GetComponentOrNull<Container>();
 
-                    if (item != null && cont != null && cont.CanAddItem(item)) {
-                        cont.AddItem(item);
+                    if (cont == null) break;
+
+                    var items = Tile.Entities
+                        .Where(x => x != Entity)
+                        .Where(x => x.HasComponent<InventoryItem>())
+                        .Where(x => cont.CanAddItem(x))
+                        .ToArray();
+
+                    if (items.Length == 0) break;
+
+                    if (items.Length == 1) {
+                        cont.AddItem(items[0]);
+                        break;
                     }
 
-                    await Delay(ActionLoopPeriod);
+                    Client.SendInventoryContents(Entity, InventoryAction.Pickup);
                 } break;
                 case Interaction.ViewInventory: {
-                    Client.SendInventoryContents(Entity);
+                    Client.SendInventoryContents(Entity, InventoryAction.None);
+                } break;
+                case Interaction.EquipItem: {
+                    Client.SendInventoryContents(Entity, InventoryAction.Equip);
+                } break;
+                case Interaction.RemoveItem: {
+                    Client.SendInventoryContents(Entity, InventoryAction.Remove);
                 } break;
             }
+
+            await Delay(ActionLoopPeriod);
         }
 
         private async void ActionLoop()
         {
             while (IsActive) {
-                if (_intent != null && (
-                    await Intent.HandleIntentAsync<MoveIntent>(_intent, HandleMoveIntent) ||
-                    await Intent.HandleIntentAsync<InteractIntent>(_intent, HandleInteractIntent))) {
+                if (_intent != null) {
+                    var intent = _intent; _intent = null;
 
-                    _intent = null;
-                } else {
-                    await Delay(ActionLoopPeriod);
+                    if (await Intent.HandleIntentAsync<MoveIntent>(intent, HandleMoveIntent) ||
+                        await Intent.HandleIntentAsync<InteractIntent>(intent, HandleInteractIntent)) {
+                        continue;
+                    }
                 }
+
+                await Delay(ActionLoopPeriod);
             }
         }
     }

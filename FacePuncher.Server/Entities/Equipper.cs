@@ -31,6 +31,15 @@ namespace FacePuncher.Entities
             _slots = new Dictionary<string, Entity>();
         }
 
+        public override void LoadFromDefinition(System.Xml.Linq.XElement elem)
+        {
+            base.LoadFromDefinition(elem);
+
+            foreach (var slot in elem.Elements("Slot")) {
+                _slots.Add(slot.Attribute("name").Value, null);
+            }
+        }
+
         public Delay Equip(Entity item, String[] slots)
         {
             if (_slots.Values.All(x => x == item)) return Delay(0);
@@ -80,6 +89,11 @@ namespace FacePuncher.Entities
             }
 
             return true;
+        }
+
+        public bool HasEquipped(Entity item)
+        {
+            return _slots.Any(x => x.Value == item);
         }
 
         public Entity GetEquipped(String slot)

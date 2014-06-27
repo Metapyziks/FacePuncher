@@ -91,7 +91,7 @@
       <Text></Text>
       <ForeColor>Gray</ForeColor>
 
-      <Left>56</Left>
+      <Left>46</Left>
       <Top>0</Top>
     </Label>
   </Children>
@@ -136,6 +136,14 @@
 
       <Left>47</Left>
       <Top>2</Top>
+    </Label>
+
+    <Label name="lbl_pageinfo">
+        <Text>Page 1 of 1</Text>
+        <ForeColor>DarkGray</ForeColor>
+
+        <Left>2</Left>
+        <Top>25</Top>
     </Label>
   </Children>
 </client:widget>

@@ -134,16 +134,41 @@ namespace FacePuncher
             _stream.Flush();
         }
 
-        public void SendInventoryContents(Entity ent, int count = 10, int page = 0)
+        public void SendInventoryContents(Entity ent, InventoryAction action, int count = 10, int page = 0)
         {
             _stream.Write((byte) 0); // Pushed packet
             _stream.Write((byte) ServerPacketType.InventoryContents);
 
-            var listing = new InventoryListing();
+            var listing = new InventoryListing(action);
+            var cont = ent.IsValid ? ent.GetComponentOrNull<Container>() : null;
+            var equipper = ent.IsValid ? ent.GetComponentOrNull<Equipper>() : null;
 
-            var cont = ent.GetComponentOrNull<Container>();
-            if (cont != null && ent.IsValid) {
-                var items = cont.Items
+            Entity[] items = null;
+
+            switch (action) {
+                case InventoryAction.None:
+                case InventoryAction.Drop: {
+                    items = cont != null ? cont.Items.ToArray() : null;
+                } break;
+                case InventoryAction.Equip: {
+                    items = cont != null && equipper != null ? cont.Items
+                        .Where(x => x.HasComponent<Equipable>() && !equipper.HasEquipped(x))
+                        .ToArray() : null;
+                } break;
+                case InventoryAction.Remove: {
+                    items = cont != null && equipper != null ? cont.Items
+                        .Where(x => x.HasComponent<Equipable>() && equipper.HasEquipped(x))
+                        .ToArray() : null;
+                } break;
+                case InventoryAction.Pickup: {
+                    items = ent.IsValid ? ent.Tile.Entities
+                        .Where(x => x.HasComponent<InventoryItem>())
+                        .ToArray() : null;
+                } break;
+            }
+
+            if (items != null) {
+                items = items
                     .Skip(page * count)
                     .Take(count)
                     .ToArray();
@@ -156,7 +181,7 @@ namespace FacePuncher
                     var drw = item.GetComponentOrNull<Drawable>();
                     var mat = item.GetComponentOrNull<Material>();
 
-                    listing.Add(item.ClassName, itm.Weight, itm.Value,
+                    listing.Add(item.ID, item.ClassName, itm.Weight, itm.Value,
                         drw != null ? drw.GetAppearance() : null,
                         mat != null ? mat.ClassName : null);
                 }
