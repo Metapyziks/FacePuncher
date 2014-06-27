@@ -28,6 +28,8 @@ namespace FacePuncher.UI
     {
         private Dictionary<string, Widget> _children { get; set; }
 
+        public IEnumerable<Widget> Children { get { return _children.Values; } }
+
         public Widget this[String name]
         {
             get { return _children[name]; }
@@ -43,7 +45,7 @@ namespace FacePuncher.UI
             _children = new Dictionary<string, Widget>();
         }
 
-        public override void Draw()
+        protected override void OnDraw()
         {
             for (int y = ScreenRectangle.Top; y < ScreenRectangle.Bottom; ++y) {
                 for (int x = ScreenRectangle.Left; x < ScreenRectangle.Right; ++x) {
@@ -61,27 +63,16 @@ namespace FacePuncher.UI
             }
         }
 
-        public override List<Widget> GetSelectableWidgets()
-        {
-            List<Widget> list = new List<Widget>();
-            if (IsSelectable) list.Add(this);
-
-            foreach (var widget in _children) {
-                list.AddRange(widget.Value.GetSelectableWidgets());
-            }
-
-            return list;
-        }
-
         public void AddChild(Widget w)
         {
-            w.Parent = this;
             _children.Add(w.Name, w);
+            w.SetParent(this);
         }
 
         public void RemoveChild(Widget w)
         {
             _children.Remove(w.Name);
+            w.SetParent(null);
         }
 
         public bool ContainsChild(String name)

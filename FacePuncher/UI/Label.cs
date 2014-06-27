@@ -50,7 +50,7 @@ namespace FacePuncher.UI
             this.Text = text;
         }
 
-        public override void Draw()
+        protected override void OnDraw()
         {
             UIManager.DrawString(ScreenPosition, Text, ForeColor, BackColor);
         }

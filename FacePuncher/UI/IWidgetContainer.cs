@@ -18,6 +18,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
+using FacePuncher.Geometry;
 
 namespace FacePuncher.UI
 {
@@ -26,7 +29,17 @@ namespace FacePuncher.UI
     /// </summary>
     interface IWidgetContainer
     {
+        IEnumerable<Widget> Children { get; }
+
         Widget this[String name] { get; }
+
+        UIManager Manager { get; }
+
+        Position ScreenPosition { get; }
+
+        int Width { get; }
+
+        int Height { get; }
 
         /// <summary>
         /// Adds widget.
@@ -42,5 +55,49 @@ namespace FacePuncher.UI
         /// Renders stored widgets.
         /// </summary>
         void DrawChildren();
+    }
+
+    static class WidgetContainerExtensions
+    {
+        public static Widget[] GetSelectableWidgets(this IWidgetContainer container)
+        {
+            return container.Children
+                .SelectMany(x => {
+                    if (x.IsHidden) return Enumerable.Empty<Widget>();
+
+                    var widgets = new List<Widget>();
+                    if (x.IsSelectable) widgets.Add(x);
+
+                    if (x is IWidgetContainer) {
+                        widgets.AddRange(((IWidgetContainer) x).GetSelectableWidgets());
+                    }
+
+                    return widgets;
+                }).ToArray();
+        }
+
+        public static Widget GetNextSelectable(this IWidgetContainer container, Widget widget)
+        {
+            var selectable = container.GetSelectableWidgets();
+
+            if (selectable.Length == 0) return null;
+            if (widget == null) return selectable.First();
+
+            int index = Array.IndexOf(selectable, widget);
+
+            return selectable[(index + 1) % selectable.Length];
+        }
+
+        public static Widget GetPrevSelectable(this IWidgetContainer container, Widget widget)
+        {
+            var selectable = container.GetSelectableWidgets();
+
+            if (selectable.Length == 0) return null;
+            if (widget == null) return selectable.First();
+
+            int index = Array.IndexOf(selectable, widget);
+
+            return selectable[(index + selectable.Length - 1) % selectable.Length];
+        }
     }
 }

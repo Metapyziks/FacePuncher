@@ -4,7 +4,7 @@
     <Width>32</Width>
     <Height>13</Height>
 
-    <CenterToParent />
+    <CenterToParent>True</CenterToParent>
 
     <Children>
         <Label name="lbl_hostname">
@@ -57,93 +57,91 @@
 </client:widget>
 
 <client:widget name="InventoryEntry" base="Panel">
-  <Width>64</Width>
-  <Height>1</Height>
+    <Width>64</Width>
+    <Height>1</Height>
 
-  <CenterToParent />
+    <Children>
+        <Label name="name">
+            <Text>unnamed</Text>
+            <ForeColor>Gray</ForeColor>
 
-  <Children>
-    <Label name="name">
-      <Text>unnamed</Text>
-      <ForeColor>Gray</ForeColor>
+            <Left>1</Left>
+            <Top>0</Top>
+        </Label>
 
-      <Left>1</Left>
-      <Top>0</Top>
-    </Label>
+        <Label name="weight">
+            <Text>0.00</Text>
+            <ForeColor>Gray</ForeColor>
 
-    <Label name="weight">
-      <Text>0.00</Text>
-      <ForeColor>Gray</ForeColor>
+            <Left>31</Left>
+            <Top>0</Top>
+        </Label>
 
-      <Left>31</Left>
-      <Top>0</Top>
-    </Label>
+        <Label name="value">
+            <Text>0</Text>
+            <ForeColor>Gray</ForeColor>
 
-    <Label name="value">
-      <Text>0</Text>
-      <ForeColor>Gray</ForeColor>
+            <Left>39</Left>
+            <Top>0</Top>
+        </Label>
 
-      <Left>39</Left>
-      <Top>0</Top>
-    </Label>
+        <Label name="material">
+            <Text></Text>
+            <ForeColor>Gray</ForeColor>
 
-    <Label name="material">
-      <Text></Text>
-      <ForeColor>Gray</ForeColor>
-
-      <Left>46</Left>
-      <Top>0</Top>
-    </Label>
-  </Children>
+            <Left>46</Left>
+            <Top>0</Top>
+        </Label>
+    </Children>
 </client:widget>
 
 <client:widget name="InventoryListing" base="Frame">
-  <Title>Inventory Listing</Title>
+    <Title>Inventory Listing</Title>
 
-  <Width>66</Width>
-  <Height>28</Height>
+    <Width>66</Width>
+    <Height>28</Height>
 
-  <CenterToParent />
+    <CenterToParent>True</CenterToParent>
 
-  <Children>
-    <Label name="lbl_name">
-      <Text>Name</Text>
-      <ForeColor>DarkGray</ForeColor>
+    <Children>
+        <Label name="lbl_name">
+            <Text>Name</Text>
+            <ForeColor>DarkGray</ForeColor>
 
-      <Left>2</Left>
-      <Top>2</Top>
-    </Label>
+            <Left>2</Left>
+            <Top>2</Top>
+        </Label>
 
-    <Label name="lbl_weight">
-      <Text>Weight</Text>
-      <ForeColor>DarkGray</ForeColor>
+        <Label name="lbl_weight">
+            <Text>Weight</Text>
+            <ForeColor>DarkGray</ForeColor>
 
-      <Left>32</Left>
-      <Top>2</Top>
-    </Label>
+            <Left>32</Left>
+            <Top>2</Top>
+        </Label>
 
-    <Label name="lbl_value">
-      <Text>Value</Text>
-      <ForeColor>DarkGray</ForeColor>
+        <Label name="lbl_value">
+            <Text>Value</Text>
+            <ForeColor>DarkGray</ForeColor>
 
-      <Left>40</Left>
-      <Top>2</Top>
-    </Label>
+            <Left>40</Left>
+            <Top>2</Top>
+        </Label>
 
-    <Label name="lbl_material">
-      <Text>Material</Text>
-      <ForeColor>DarkGray</ForeColor>
+        <Label name="lbl_material">
+            <Text>Material</Text>
+            <ForeColor>DarkGray</ForeColor>
 
-      <Left>47</Left>
-      <Top>2</Top>
-    </Label>
+            <Left>47</Left>
+            <Top>2</Top>
+        </Label>
 
-    <Label name="lbl_pageinfo">
-        <Text>Page 1 of 1</Text>
-        <ForeColor>DarkGray</ForeColor>
+        <Label name="lbl_pageinfo">
+            <Text>Page 1 of 1</Text>
+            <ForeColor>DarkGray</ForeColor>
 
-        <Left>2</Left>
-        <Top>25</Top>
-    </Label>
-  </Children>
+            <Left>2</Left>
+            <Top>25</Top>
+        </Label>
+    </Children>
 </client:widget>

@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using FacePuncher.Geometry;
 using FacePuncher.Graphics;
 
@@ -26,9 +27,21 @@ namespace FacePuncher.UI
 {
     public enum UINavigation
     {
-        Up,
+        Option1 = 1,
+        Option2,
+        Option3,
+        Option4,
+        Option5,
+        Option6,
+        Option7,
+        Option8,
+        Option9,
+        Option10,
+
+        Up = 11,
         Down,
-        Select
+        Select,
+        Escape
     }
 
     /// <summary>
@@ -36,16 +49,20 @@ namespace FacePuncher.UI
     /// </summary>
     class UIManager : IWidgetContainer
     {
-        /// <summary>
-        /// Is one of widgets blocking input
-        /// </summary>
-        public static bool IsInputBlocked { get; set; }
+        public Widget Selected { get; internal set; }
 
-        private List<Widget> _selectableWidgets;
-        private int _selectedId;
-
-        private readonly Frame _parent;
+        public bool IsInputIntercepted { get { return Selected != null && Selected.InterceptInput; } }
         
+        public IEnumerable<Widget> Children { get { return _children.Values; } }
+
+        public UIManager Manager { get { return this; } }
+
+        public Position ScreenPosition { get { return Position.Zero; } }
+
+        public int Width { get { return Interface.Display.Width; } }
+
+        public int Height { get { return Interface.Display.Height; } }
+
         private Dictionary<string, Widget> _children { get; set; }
 
         public Widget this[String name] { get { return _children[name]; } }
@@ -56,11 +73,28 @@ namespace FacePuncher.UI
         public UIManager()
         {
             _children = new Dictionary<string, Widget>();
+        }
 
-            _selectableWidgets = new List<Widget>();
-            _selectedId = 0;
+        internal bool Select(Widget widget)
+        {
+            if (Selected == widget) return false;
 
-            _parent = new Frame("ui", new Position(), Interface.Display.Width, Interface.Display.Height);
+            if (Selected != null) {
+                Selected.Deselect();
+            }
+
+            Selected = widget;
+
+            return true;
+        }
+
+        internal bool Deselect(Widget widget)
+        {
+            if (Selected != widget) return false;
+
+            Selected = null;
+
+            return true;
         }
 
         /// <summary>
@@ -68,38 +102,24 @@ namespace FacePuncher.UI
         /// </summary>
         public void Draw()
         {
-            if (_selectedId > _selectableWidgets.Count - 1)
-                _selectedId = _selectableWidgets.Count - 1;
-            else if (_selectedId < 0)
-                _selectedId = 0;
-
-            // Deselect currently selected item
-            if (_selectableWidgets.Count > 0)
-                _selectableWidgets[_selectedId].IsSelected = false;
-
             UINavigation nav;
-            if (!IsInputBlocked && Interface.Input.TryReadUINavigation(out nav))
-            {
+            if (!IsInputIntercepted && Interface.Input.TryReadUINavigation(out nav)) {
                 switch (nav) {
-                    case UINavigation.Up:
-                        _selectedId--; break;
-                    case UINavigation.Down:
-                        _selectedId++; break;
-                    case UINavigation.Select:
-                        if (_selectableWidgets[_selectedId] is UsableWidget) {
-                            ((UsableWidget) _selectableWidgets[_selectedId]).Use();
+                    case UINavigation.Up: {
+                        var prev = this.GetPrevSelectable(Selected);
+                        if (prev != null) prev.Select();
+                    } break;
+                    case UINavigation.Down: {
+                        var next = this.GetNextSelectable(Selected);
+                        if (next != null) next.Select();
+                    } break;
+                    case UINavigation.Select: {
+                        if (Selected is UsableWidget) {
+                            ((UsableWidget) Selected).Use();
                         }
-                        break;
+                    } break;
                 }
             }
-
-            if (_selectedId > _selectableWidgets.Count - 1)
-                _selectedId = _selectableWidgets.Count - 1;
-            else if (_selectedId < 0)
-                _selectedId = 0;
-
-            if (_selectableWidgets.Count > 0)
-                _selectableWidgets[_selectedId].IsSelected = true;
 
             DrawChildren();
         }
@@ -109,8 +129,7 @@ namespace FacePuncher.UI
         /// </summary>
         public void DrawChildren()
         {
-            foreach (var w in _children)
-            {
+            foreach (var w in _children) {
                 w.Value.Draw();
             }
         }
@@ -125,43 +144,21 @@ namespace FacePuncher.UI
         public static void DrawString(Position pos, string text,
             ConsoleColor fc = ConsoleColor.Gray, ConsoleColor bc = ConsoleColor.Black)
         {
-            for (var x = 0; x < text.Length; x++)
-            {
+            for (var x = 0; x < text.Length; x++) {
                 Interface.Display.SetCell(pos.X + x, pos.Y, text[x], fc, bc);
             }
         }
 
-        /// <summary>
-        /// Calculates information about widgets that can be selected.
-        /// Call only once, after adding or removing widgets.
-        /// </summary>
-        /// <returns>Number of widgets that can be selected.</returns>
-        public int CalculateSelectableWidgets()
-        {
-            _selectableWidgets = new List<Widget>();
-
-            foreach (var widget in _children)
-            {
-                _selectableWidgets.AddRange(widget.Value.GetSelectableWidgets());
-            }
-
-            _selectedId = 0;
-
-            if (_selectableWidgets.Count > 0)
-                _selectableWidgets[_selectedId].IsSelected = true;
-
-            return _selectableWidgets.Count;
-        }
-
         public void AddChild(Widget w)
         {
-            w.Parent = _parent;
             _children.Add(w.Name, w);
+            w.SetParent(this);
         }
 
         public void RemoveChild(Widget w)
         {
             _children.Remove(w.Name);
+            w.SetParent(null);
         }
 
         public bool ContainsChild(String name)

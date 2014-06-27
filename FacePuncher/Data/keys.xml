@@ -45,5 +45,18 @@
         <Key name="Add">Down</Key>
 
         <Key name="Enter">Select</Key>
+
+        <Key name="Escape">Escape</Key>
+
+        <Key name="A">Option1</Key>
+        <Key name="B">Option2</Key>
+        <Key name="C">Option3</Key>
+        <Key name="D">Option4</Key>
+        <Key name="E">Option5</Key>
+        <Key name="F">Option6</Key>
+        <Key name="G">Option7</Key>
+        <Key name="H">Option8</Key>
+        <Key name="I">Option9</Key>
+        <Key name="J">Option10</Key>
     </UINavigationKeys>
 </client:keybindings>

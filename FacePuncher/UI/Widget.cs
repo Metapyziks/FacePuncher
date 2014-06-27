@@ -121,16 +121,21 @@ namespace FacePuncher.UI
         /// <summary>
         /// Describes whether widget can be selected.
         /// </summary>
-        public bool IsSelectable
-        {
-            get { return _isSelectable; }
-        }
-        private bool _isSelectable;
+        public bool IsSelectable { get; protected set; }
+
+        public bool InterceptInput { get; protected set; }
 
         /// <summary>
         /// Describes whether widget is selected.
         /// </summary>
-        public bool IsSelected { get; set; }
+        public bool IsSelected { get { return Manager.Selected == this; } }
+
+        public bool IsHidden { get; private set; }
+
+        public bool IsVisible { get { return !IsHidden; } }
+
+        [ScriptDefinable]
+        public bool CenterToParent { get; set; }
 
         /// <summary>
         /// Widgets foreground color.
@@ -147,7 +152,9 @@ namespace FacePuncher.UI
         /// <summary>
         /// Widgets parent.
         /// </summary>
-        public Widget Parent { get; set; }
+        public IWidgetContainer Parent { get; private set; }
+
+        public UIManager Manager { get { return Parent.Manager; } }
 
         protected Rectangle rectangle;
 
@@ -171,7 +178,8 @@ namespace FacePuncher.UI
             this.ForeColor = fc;
             this.BackColor = bc;
 
-            _isSelectable = isSelectable;
+            IsSelectable = isSelectable;
+            InterceptInput = false;
         }
 
         /// <summary>
@@ -219,43 +227,84 @@ namespace FacePuncher.UI
 
         public Position ScreenPosition
         {
-            get { return Parent != null ? Parent.ScreenPosition + Position : Position; }
+            get { return Parent.ScreenPosition + Position; }
         }
 
         public Rectangle ScreenRectangle
         {
-            get {return Parent != null ? rectangle + Parent.ScreenPosition : rectangle; }
+            get { return rectangle + Parent.ScreenPosition; }
         }
 
-        /// <summary>
-        /// List of widgets that can be selected.
-        /// </summary>
-        /// <returns>List of selectable widgets.</returns>
-        public virtual List<Widget> GetSelectableWidgets()
+        internal void SetParent(IWidgetContainer parent)
         {
-            List<Widget> list = new List<Widget>();
-            if (IsSelectable) list.Add(this);
+            if (Parent != parent) {
+                if (Parent != null && Parent.ContainsChild(Name)) {
+                    Parent.RemoveChild(this);
+                }
 
-            return list;
+                Parent = parent;
+                OnChangeParent();
+            }
         }
 
-        /// <summary>
-        /// Function used to render widget.
-        /// </summary>
-        abstract public void Draw();
+        protected virtual void OnChangeParent()
+        {
+            if (CenterToParent && Parent != null) {
+                Left = (Parent.Width - Width) / 2;
+                Top = (Parent.Height - Height) / 2;
+            }
+        }
+
+        public void Draw()
+        {
+            if (IsVisible) OnDraw();
+        }
+
+        protected abstract void OnDraw();
+
+        public void Select()
+        {
+            if (IsSelectable && Manager.Select(this)) {
+                OnSelect();
+            }
+        }
+
+        protected void OnSelect()
+        {
+
+        }
+
+        public void Deselect()
+        {
+            if (Manager.Deselect(this)) {
+                OnDeselect();
+            }
+        }
+
+        protected void OnDeselect()
+        {
+
+        }
+
+        public void Hide()
+        {
+            IsHidden = true;
+        }
+
+        public void Show()
+        {
+            IsHidden = false;
+        }
+
+        public void Remove()
+        {
+            Parent.RemoveChild(this);
+        }
 
         public virtual void LoadFromDefinition(XElement elem)
         {
             Definitions.LoadProperties(this, elem);
-
-            if (elem.HasElement("CenterToParent")) {
-                int parentWidth = Parent != null ? Parent.Width : Interface.Display.Width;
-                int parentHeight = Parent != null ? Parent.Height : Interface.Display.Height;
-
-                Left = (parentWidth - Width) / 2;
-                Top = (parentHeight - Height) / 2;
-            }
-
+            
             if (this is IWidgetContainer && elem.HasElement("Children")) {
                 var container = (IWidgetContainer) this;
 

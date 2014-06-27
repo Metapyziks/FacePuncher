@@ -61,7 +61,7 @@ namespace FacePuncher.UI
             this.Text = text;
         }
 
-        public override void Draw()
+        protected override void OnDraw()
         {
             ConsoleColor fc = ForeColor;
             ConsoleColor bc = BackColor;

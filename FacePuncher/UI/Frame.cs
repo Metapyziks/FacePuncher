@@ -60,9 +60,9 @@ namespace FacePuncher.UI
             Title = title;
         }
 
-        public override void Draw()
+        protected override void OnDraw()
         {
-            base.Draw();
+            base.OnDraw();
 
             // Render frame corners
             Interface.Display.SetCell(ScreenRectangle.TopLeft, _frameChars[2], ForeColor, BackColor);

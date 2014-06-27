@@ -65,11 +65,11 @@ namespace FacePuncher.UI
         protected override void OnUse()
         {
             _isEdited = true;
-            UIManager.IsInputBlocked = true;
+            InterceptInput = true;
             Text = "";
         }
 
-        public override void Draw()
+        protected override void OnDraw()
         {
             ConsoleColor fc = ForeColor;
             ConsoleColor bc = BackColor;
@@ -90,7 +90,7 @@ namespace FacePuncher.UI
                 // If pressed key is enter - stop editing
                 if (info.Key == ConsoleKey.Enter) {
                     _isEdited = false;
-                    UIManager.IsInputBlocked = false;
+                    InterceptInput = false;
                 }
                     // If pressed key is backspace - remove last char
                 else if (info.Key == ConsoleKey.Backspace) {
@@ -104,10 +104,10 @@ namespace FacePuncher.UI
                 }
             }
 
-            UIManager.DrawString(Parent.Position + Position, "[" + Text + "]", fc, bc);
+            UIManager.DrawString(ScreenPosition, "[" + Text + "]", fc, bc);
 
             if (_isEdited) {
-                var CursorPos = Parent.Position + Position;
+                var CursorPos = ScreenPosition;
                 CursorPos.X += Text.Length + 1;
 
                 var cfc = fc;

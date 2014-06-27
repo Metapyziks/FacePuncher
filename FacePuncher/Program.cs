@@ -76,13 +76,10 @@ namespace FacePuncher
                 int port;
                 if (!int.TryParse(txtPort.Text, out port) || port >= ushort.MaxValue) return;
 
-                UIManager.IsInputBlocked = true;
-
                 server = new ServerConnection(txtHost.Text, port);
                 server.Run();
 
                 UIManager.RemoveChild(select);
-                UIManager.CalculateSelectableWidgets();
             };
 
             ((Button) select["btn_quit"]).Used += (sender, e) => {
@@ -90,7 +87,8 @@ namespace FacePuncher
             };
 
             UIManager.AddChild(select);
-            UIManager.CalculateSelectableWidgets();
+
+            select["btn_connect"].Select();
 
             Intent intent;
 

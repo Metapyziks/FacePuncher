@@ -17,6 +17,7 @@
  */
 
 using System;
+
 using FacePuncher.Geometry;
 using FacePuncher.Graphics;
 
@@ -55,19 +56,17 @@ namespace FacePuncher.UI
             this.MaxValue = maxValue;
         }
 
-        public override void Draw()
+        protected override void OnDraw()
         {
             // Draws background
-            for (var x = 0; x < Width; x++)
-            {
+            for (var x = 0; x < Width; x++) {
                 Interface.Display.SetCell(ScreenPosition.X + x, ScreenPosition.Y, (char) 219, BackColor, ConsoleColor.Black);
             }
 
-            int progress = (int)((float)(Value / MaxValue) * Width);
+            int progress = (int) ((float) (Value / MaxValue) * Width);
 
             // Draws actual progress
-            for (var x = 0; x < progress; x++)
-            {
+            for (var x = 0; x < progress; x++) {
                 Interface.Display.SetCell(ScreenPosition.X + x, ScreenPosition.Y, (char) 219, ForeColor, ConsoleColor.Black);
             }
         }
